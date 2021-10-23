@@ -54,8 +54,7 @@ export const ComponentBox: React.FC = (props) => {
 								<div
 									key={item.key}
 									onMouseDown={() => {
-										console.log("moo");
-										DesignComponentSelected.next(Comp);
+										DesignComponentSelected.next(item);
 									}}
 								>
 									<Comp {...item.props} />
