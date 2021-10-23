@@ -5,6 +5,7 @@ import { PropertiesBox } from "./components/PropertiesBox";
 import { DesignComponentSelected } from "./rxjs/DrawState";
 
 export const DesignContainer: React.FC = (props) => {
+	// cursor management
 	const combinedContainer = useRef<HTMLDivElement>(null);
 	const [cursor, setCursor] = useState<string>("");
 	const compContainer = useRef<HTMLDivElement>(null);
@@ -24,7 +25,6 @@ export const DesignContainer: React.FC = (props) => {
 			DesignComponentSelected.subscribe({
 				next: (v) => {
 					if (v) {
-						console.log("set grabbin");
 						setCursor("grabbing");
 						setCompCursor("grabbing");
 					}
@@ -33,16 +33,15 @@ export const DesignContainer: React.FC = (props) => {
 			// mouse leave, mouse up -> DesignComponent assigned nil; cursor = pointer
 			combinedContainer.current.addEventListener("mouseleave", () => {
 				DesignComponentSelected.next(null);
-				setCursor("pointer");
-				setCompCursor("pointer");
+				setCursor("default");
 			});
 			combinedContainer.current.addEventListener("mouseup", () => {
 				DesignComponentSelected.next(null);
-				setCursor("pointer");
-				setCompCursor("pointer");
+				setCursor("default");
 			});
 		}
 	}, []);
+
 	return (
 		<div style={{ display: "flex", height: "100%", userSelect: "none" }}>
 			<div
