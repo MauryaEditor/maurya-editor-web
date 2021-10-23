@@ -20,7 +20,6 @@ export const CanvasBox: React.FC = (props) => {
 					setCanvasHeight(`${BaseHeight * factor}px`);
 				} else {
 					factor = Math.ceil((BaseWidth / width) * 10) / 10;
-					console.log(BaseWidth / width);
 					setCanvasWidth(`${BaseWidth / factor}px`);
 					setCanvasHeight(`${BaseHeight / factor}px`);
 				}
