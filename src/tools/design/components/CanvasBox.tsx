@@ -59,18 +59,13 @@ export const CanvasBox: React.FC = (props) => {
 				<div
 					id="canvasRoot"
 					style={{
-						overflow: "scroll",
+						overflow: "auto",
 						width: canvasWidth,
 						height: canvasHeight,
 						scrollbarWidth: "thin",
 						boxSizing: "border-box",
 					}}
-				>
-					<div style={{ height: "5000px", background: "blue" }}>
-						<div>asd</div>
-						<div>dasd</div>
-					</div>
-				</div>
+				></div>
 			</div>
 		</div>
 	);
