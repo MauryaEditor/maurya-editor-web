@@ -44,6 +44,7 @@ export const Menu: React.FC = (props) => {
 				boxSizing: "border-box",
 				background: "#C4C4C4",
 				borderRight: "1px solid black",
+				cursor: "pointer",
 			}}
 		>
 			{Object.keys(menu).map((key) => {

@@ -1,54 +1,16 @@
-import React, { useState } from "react";
-
-// TODO: write a better type
-type ComponentItem = { key: string; comp: React.FC<object>; props: object };
-
-type ComponentList = [string, ComponentItem[]][];
-
-const SimpleComponent: React.FC<object> = (props: any) => {
-	return (
-		<div style={{ height: "2em", position: "relative" }}>
-			<span
-				style={{
-					position: "absolute",
-					top: "50%",
-					left: "0.5em",
-					transform: "translate(0, -50%)",
-				}}
-			>
-				{props.name}
-			</span>
-		</div>
-	);
-};
-
-const inputList: ComponentItem[] = [
-	{
-		key: "Inputbox",
-		comp: SimpleComponent,
-		props: { name: "Inputbox" },
-	},
-	{
-		key: "Checkbox",
-		comp: SimpleComponent,
-		props: { name: "Checkbox" },
-	},
-	{
-		key: "Dropdown",
-		comp: SimpleComponent,
-		props: { name: "Dropdown" },
-	},
-	{
-		key: "Searchbox",
-		comp: SimpleComponent,
-		props: { name: "Searchbox" },
-	},
-];
+import React, { useEffect, useRef, useState } from "react";
+import { ComponentList, ComponentRegistry } from "../rxjs/ComponentRegistry";
+import { DesignComponentSelected } from "../rxjs/DrawState";
 
 export const ComponentBox: React.FC = (props) => {
-	const [componentLists, setComponentLists] = useState<ComponentList>([
-		["Input", inputList],
-	]);
+	const [componentLists, setComponentLists] = useState<ComponentList>([]);
+	useEffect(() => {
+		ComponentRegistry.subscribe({
+			next: (v) => {
+				setComponentLists(v);
+			},
+		});
+	}, [setComponentLists]);
 	return (
 		<div style={{ borderRight: "1px solid black", height: "100%" }}>
 			{componentLists.map((componentList) => {
@@ -89,7 +51,13 @@ export const ComponentBox: React.FC = (props) => {
 						{list.map((item) => {
 							const Comp = item.comp;
 							return (
-								<div key={item.key}>
+								<div
+									key={item.key}
+									onMouseDown={() => {
+										console.log("moo");
+										DesignComponentSelected.next(Comp);
+									}}
+								>
 									<Comp {...item.props} />
 								</div>
 							);
