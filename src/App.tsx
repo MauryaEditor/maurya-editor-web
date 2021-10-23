@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import "./App.css";
 import { Editor } from "./pages";
 import "./rxjs/EditorConfig";
+import "./runtime/Runtime";
 import DesignConfig from "./tools/design/index";
 import DevtoolConfig from "./tools/devtools/index";
 function App() {

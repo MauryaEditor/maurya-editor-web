@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, Subject, Subscriber, Subscription } from "rxjs";
 
 export interface MenuItem {
 	name: string;
@@ -52,4 +52,23 @@ export const ToolRegistry = new BehaviorSubject<{ [key: string]: any }>({});
 // needed so that tools can find one another
 export const RegisterTool = (pkg: string, value: any) => {
 	ToolRegistry.next({ ...ToolRegistry.value, [pkg]: value });
+};
+
+export interface WebCreateData {
+	compKey: string;
+	pkg: string;
+	tempID: string;
+}
+
+export interface WebBusEvent {
+	type: "CREATE" | "UPDATE" | "PATCH" | "DELETE"; // types of event
+	payload: WebCreateData; // payload
+}
+
+export const WebBus = new BehaviorSubject<WebBusEvent | null>(null);
+
+(window as any).SubscribeWebBus = (
+	next: (v: WebBusEvent | null) => {}
+): Subscription => {
+	return WebBus.subscribe({ next });
 };

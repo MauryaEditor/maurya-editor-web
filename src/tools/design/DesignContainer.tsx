@@ -70,8 +70,8 @@ export const DesignContainer: React.FC = (props) => {
 			combinedContainer.current.addEventListener("mousemove", (ev) => {
 				// container top and left
 				const { top, left } = getCoords(combinedContainer.current!);
-				setSampleTop(`${ev.clientY - top}px`);
-				setSampleLeft(`${ev.clientX - left}px`);
+				setSampleTop(`${ev.clientY - top + 10}px`);
+				setSampleLeft(`${ev.clientX - left + 10}px`);
 			});
 		}
 	}, [combinedContainer.current]);

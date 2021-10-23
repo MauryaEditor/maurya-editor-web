@@ -1,3 +1,4 @@
+import React from "react";
 import { BehaviorSubject } from "rxjs";
 
 // TODO: write a better type
@@ -7,6 +8,8 @@ export type ComponentItem = {
 	props: object;
 	ondragComp: React.FC<object>;
 	ondragProps: object;
+	renderComp: React.FC<object>;
+	renderCompProps: object;
 };
 
 export type ComponentList = [string, ComponentItem[]][];
@@ -43,6 +46,10 @@ const inputList: ComponentItem[] = [
 		props: { name: "Inputbox" },
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Inputbox" },
+		renderComp: (props) => {
+			return <input />;
+		},
+		renderCompProps: {},
 	},
 	{
 		key: "Checkbox",
@@ -50,6 +57,10 @@ const inputList: ComponentItem[] = [
 		props: { name: "Checkbox" },
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Checkbox" },
+		renderComp: (props) => {
+			return <input type="checkbox" />;
+		},
+		renderCompProps: {},
 	},
 	{
 		key: "Dropdown",
@@ -57,6 +68,14 @@ const inputList: ComponentItem[] = [
 		props: { name: "Dropdown" },
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Dropdown" },
+		renderComp: (props) => {
+			return (
+				<select>
+					<option>dummy option</option>
+				</select>
+			);
+		},
+		renderCompProps: {},
 	},
 	{
 		key: "Searchbox",
@@ -64,6 +83,10 @@ const inputList: ComponentItem[] = [
 		props: { name: "Searchbox" },
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Searchbox" },
+		renderComp: (props) => {
+			return <div>No Searchbox available</div>;
+		},
+		renderCompProps: {},
 	},
 ];
 

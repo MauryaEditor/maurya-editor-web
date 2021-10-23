@@ -1,11 +1,33 @@
-import { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import { Observer, Subscription } from "rxjs";
+import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
+import { DesignComponentSelected } from "../rxjs/DrawState";
 const BaseWidth = 1440;
 const BaseHeight = 900;
+
+declare interface WebCreateData {
+	compKey: string;
+	pkg: string;
+	tempID: string;
+}
+
+declare interface WebBusEvent {
+	type: "CREATE" | "UPDATE" | "PATCH" | "DELETE"; // types of event
+	payload: WebCreateData; // payload
+}
+
+declare const SubscribeWebBus: (
+	next: (v: WebBusEvent | null) => void
+) => Subscription;
+
+declare const PostCreateEvent: (
+	payload: Omit<WebCreateData, "tempID">
+) => string;
 
 export const CanvasBox: React.FC = (props) => {
 	const box = useRef<HTMLDivElement>(null);
 	const canvas = useRef<HTMLDivElement>(null);
+	// canvas size resizeable
 	const [canvasHeight, setCanvasHeight] = useState<string>("");
 	const [canvasWidth, setCanvasWidth] = useState<string>("");
 	useEffect(() => {
@@ -31,6 +53,53 @@ export const CanvasBox: React.FC = (props) => {
 			window.removeEventListener("resize", resize);
 		};
 	}, [box, canvas]);
+
+	// post events: create and patch
+	useEffect(() => {
+		if (canvas.current) {
+			canvas.current.addEventListener("mouseup", (ev) => {
+				if (DesignComponentSelected.value) {
+					const tempID = PostCreateEvent({
+						compKey: DesignComponentSelected.value.key,
+						pkg: "design",
+					});
+				}
+			});
+		}
+	}, [canvas]);
+
+	// add component
+	const [renderedComps, setRenderedComps] = useState<
+		[React.FC, object, string][]
+	>([]);
+	useEffect(() => {
+		SubscribeWebBus((v: WebBusEvent | null) => {
+			if (v) {
+				setRenderedComps((val) => {
+					let compItem: ComponentItem;
+					for (let i = 0; i < ComponentRegistry.value.length; i++) {
+						const compItems = ComponentRegistry.value[i][1];
+						for (let j = 0; j < compItems.length; j++) {
+							if (compItems[j].key === v.payload.compKey) {
+								compItem = compItems[j];
+							}
+						}
+					}
+					if (compItem!)
+						return [
+							...val,
+							[
+								compItem.renderComp,
+								{ ...compItem.renderCompProps },
+								compItem.key,
+							],
+						];
+					return [...val];
+				});
+			}
+		});
+	}, [setRenderedComps]);
+
 	return (
 		<div
 			style={{
@@ -64,7 +133,11 @@ export const CanvasBox: React.FC = (props) => {
 						scrollbarWidth: "thin",
 						boxSizing: "border-box",
 					}}
-				></div>
+				>
+					{renderedComps.map(([Comp, props, key]) => {
+						return <Comp {...props} key={key} />;
+					})}
+				</div>
 			</div>
 		</div>
 	);
