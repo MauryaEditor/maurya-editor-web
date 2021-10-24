@@ -1,3 +1,4 @@
+import React from "react";
 import { BehaviorSubject, Subject, Subscriber, Subscription } from "rxjs";
 
 export interface MenuItem {
@@ -60,9 +61,14 @@ export interface WebCreateData {
 	tempID: string;
 }
 
+export interface WebPatchData {
+	tempID: string;
+	style: React.CSSProperties;
+}
+
 export interface WebBusEvent {
 	type: "CREATE" | "UPDATE" | "PATCH" | "DELETE"; // types of event
-	payload: WebCreateData; // payload
+	payload: WebCreateData | WebPatchData; // payload
 }
 
 export const WebBus = new BehaviorSubject<WebBusEvent | null>(null);

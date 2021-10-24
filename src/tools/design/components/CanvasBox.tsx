@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Observer, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import { DesignComponentSelected } from "../rxjs/DrawState";
+import getCoords from "../utils/getCoords";
 const BaseWidth = 1440;
 const BaseHeight = 900;
 
@@ -11,9 +12,14 @@ declare interface WebCreateData {
 	tempID: string;
 }
 
+export interface WebPatchData {
+	tempID: string;
+	style: React.CSSProperties;
+}
+
 declare interface WebBusEvent {
 	type: "CREATE" | "UPDATE" | "PATCH" | "DELETE"; // types of event
-	payload: WebCreateData; // payload
+	payload: WebCreateData | WebPatchData; // payload
 }
 
 declare const SubscribeWebBus: (
@@ -24,9 +30,12 @@ declare const PostCreateEvent: (
 	payload: Omit<WebCreateData, "tempID">
 ) => string;
 
+declare const PostPatchEvent: (payload: WebPatchData) => string;
+
 export const CanvasBox: React.FC = (props) => {
 	const box = useRef<HTMLDivElement>(null);
 	const canvas = useRef<HTMLDivElement>(null);
+	const root = useRef<HTMLDivElement>(null);
 	// canvas size resizeable
 	const [canvasHeight, setCanvasHeight] = useState<string>("");
 	const [canvasWidth, setCanvasWidth] = useState<string>("");
@@ -56,17 +65,26 @@ export const CanvasBox: React.FC = (props) => {
 
 	// post events: create and patch
 	useEffect(() => {
-		if (canvas.current) {
+		if (canvas.current && root.current) {
 			canvas.current.addEventListener("mouseup", (ev) => {
 				if (DesignComponentSelected.value) {
 					const tempID = PostCreateEvent({
 						compKey: DesignComponentSelected.value.key,
 						pkg: "design",
 					});
+					const { top, left } = getCoords(root.current!);
+					PostPatchEvent({
+						tempID,
+						style: {
+							position: "absolute",
+							top: `${ev.clientY - top}px`,
+							left: `${ev.clientX - left}px`,
+						},
+					});
 				}
 			});
 		}
-	}, [canvas]);
+	}, [canvas, root]);
 
 	// add component
 	const [renderedComps, setRenderedComps] = useState<
@@ -75,27 +93,50 @@ export const CanvasBox: React.FC = (props) => {
 	useEffect(() => {
 		SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v) {
-				setRenderedComps((val) => {
-					let compItem: ComponentItem;
-					for (let i = 0; i < ComponentRegistry.value.length; i++) {
-						const compItems = ComponentRegistry.value[i][1];
-						for (let j = 0; j < compItems.length; j++) {
-							if (compItems[j].key === v.payload.compKey) {
-								compItem = compItems[j];
+				if (v.type === "CREATE") {
+					setRenderedComps((val) => {
+						let compItem: ComponentItem;
+						for (
+							let i = 0;
+							i < ComponentRegistry.value.length;
+							i++
+						) {
+							const compItems = ComponentRegistry.value[i][1];
+							for (let j = 0; j < compItems.length; j++) {
+								if (
+									compItems[j].key ===
+									(v.payload as WebCreateData).compKey
+								) {
+									compItem = compItems[j];
+								}
 							}
 						}
-					}
-					if (compItem!)
-						return [
-							...val,
-							[
-								compItem.renderComp,
-								{ ...compItem.renderCompProps },
-								compItem.key,
-							],
-						];
-					return [...val];
-				});
+						if (compItem!)
+							return [
+								...val,
+								[
+									compItem.renderComp,
+									{ ...compItem.renderCompProps },
+									v.payload.tempID,
+								],
+							];
+						return [...val];
+					});
+				}
+
+				if (v.type === "PATCH") {
+					setRenderedComps((val) => {
+						for (let i = 0; i < val.length; i++) {
+							const [Comp, props, tempID] = val[i];
+							if (tempID === v.payload.tempID) {
+								(props as any).style = (
+									v.payload as WebPatchData
+								).style;
+							}
+						}
+						return [...val];
+					});
+				}
 			}
 		});
 	}, [setRenderedComps]);
@@ -129,13 +170,14 @@ export const CanvasBox: React.FC = (props) => {
 					style={{
 						overflow: "auto",
 						width: canvasWidth,
-						height: canvasHeight,
+						height: "auto",
 						scrollbarWidth: "thin",
 						boxSizing: "border-box",
 					}}
+					ref={root}
 				>
 					{renderedComps.map(([Comp, props, key]) => {
-						return <Comp {...props} key={key} />;
+						return <Comp {...props} key={key} data-id={key} />;
 					})}
 				</div>
 			</div>

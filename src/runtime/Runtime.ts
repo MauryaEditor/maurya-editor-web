@@ -1,4 +1,9 @@
-import { WebBus, WebBusEvent, WebCreateData } from "../rxjs/EditorConfig";
+import {
+	WebBus,
+	WebBusEvent,
+	WebCreateData,
+	WebPatchData,
+} from "../rxjs/EditorConfig";
 
 export const RuntimeState: {
 	tempIDIssued: any;
@@ -31,3 +36,18 @@ export const PostCreateEvent = (
 };
 
 (window as any).PostCreateEvent = PostCreateEvent;
+
+export const PostPatchEvent = (payload: WebPatchData): string => {
+	const webEvent: WebBusEvent = {
+		payload: { ...payload },
+		type: "PATCH",
+	};
+	if (!RuntimeState.tempIDIssued[payload.tempID]) {
+		throw new Error(`The tempID: ${payload.tempID} was not issued`);
+	}
+	RuntimeState.tempEvents.push({ ...webEvent });
+	WebBus.next({ ...webEvent });
+	return payload.tempID;
+};
+
+(window as any).PostPatchEvent = PostPatchEvent;

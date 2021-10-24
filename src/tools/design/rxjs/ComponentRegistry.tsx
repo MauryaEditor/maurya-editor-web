@@ -47,7 +47,7 @@ const inputList: ComponentItem[] = [
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Inputbox" },
 		renderComp: (props) => {
-			return <input />;
+			return <input {...props} />;
 		},
 		renderCompProps: {},
 	},
@@ -58,7 +58,7 @@ const inputList: ComponentItem[] = [
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Checkbox" },
 		renderComp: (props) => {
-			return <input type="checkbox" />;
+			return <input type="checkbox" {...props} />;
 		},
 		renderCompProps: {},
 	},
@@ -70,7 +70,7 @@ const inputList: ComponentItem[] = [
 		ondragProps: { name: "Dropdown" },
 		renderComp: (props) => {
 			return (
-				<select>
+				<select {...props}>
 					<option>dummy option</option>
 				</select>
 			);
@@ -84,7 +84,7 @@ const inputList: ComponentItem[] = [
 		ondragComp: SimpleDragComponent,
 		ondragProps: { name: "Searchbox" },
 		renderComp: (props) => {
-			return <div>No Searchbox available</div>;
+			return <div {...props}>No Searchbox available</div>;
 		},
 		renderCompProps: {},
 	},
