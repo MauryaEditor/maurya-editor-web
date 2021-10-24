@@ -1,43 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { SimpleComponent } from "../elements/utils/SimpleComponent";
+import { SimpleDragComponent } from "../elements/utils/SimpleDragComponent";
+import TextBoxManifest from "../elements/Textbox";
+import ButtonManifest from "../elements/Button";
+import ImageManifest from "../elements/Image";
 
 // TODO: write a better type
+type RenderProps = { bus: BehaviorSubject<any> };
 export type ComponentItem = {
 	key: string;
 	comp: React.FC<object>;
 	props: object;
 	ondragComp: React.FC<object>;
 	ondragProps: object;
-	renderComp: React.FC<object>;
-	renderCompProps: object;
+	renderComp: React.FC<any>;
+	renderCompProps: object & RenderProps;
 };
 
 export type ComponentList = [string, ComponentItem[]][];
-
-export const SimpleComponent: React.FC<object> = (props: any) => {
-	return (
-		<div style={{ height: "2em", position: "relative" }}>
-			<span
-				style={{
-					position: "absolute",
-					top: "50%",
-					left: "0.5em",
-					transform: "translate(0, -50%)",
-				}}
-			>
-				{props.name}
-			</span>
-		</div>
-	);
-};
-
-export const SimpleDragComponent: React.FC<object> = (props: any) => {
-	return (
-		<div style={{ border: "1px solid black", borderRadius: "2px" }}>
-			{props.name}
-		</div>
-	);
-};
 
 const inputList: ComponentItem[] = [
 	{
@@ -49,7 +30,7 @@ const inputList: ComponentItem[] = [
 		renderComp: (props) => {
 			return <input {...props} />;
 		},
-		renderCompProps: {},
+		renderCompProps: { bus: new BehaviorSubject<any>({}) },
 	},
 	{
 		key: "Checkbox",
@@ -60,7 +41,7 @@ const inputList: ComponentItem[] = [
 		renderComp: (props) => {
 			return <input type="checkbox" {...props} />;
 		},
-		renderCompProps: {},
+		renderCompProps: { bus: new BehaviorSubject<any>({}) },
 	},
 	{
 		key: "Dropdown",
@@ -71,11 +52,11 @@ const inputList: ComponentItem[] = [
 		renderComp: (props) => {
 			return (
 				<select {...props}>
-					<option>dummy option</option>
+					<option>Add Options</option>
 				</select>
 			);
 		},
-		renderCompProps: {},
+		renderCompProps: { bus: new BehaviorSubject<any>({}) },
 	},
 	{
 		key: "Searchbox",
@@ -86,10 +67,14 @@ const inputList: ComponentItem[] = [
 		renderComp: (props) => {
 			return <div {...props}>No Searchbox available</div>;
 		},
-		renderCompProps: {},
+		renderCompProps: { bus: new BehaviorSubject<any>({}) },
 	},
+	ButtonManifest,
+	ImageManifest,
 ];
 
+const outputList: ComponentItem[] = [TextBoxManifest as ComponentItem];
 export const ComponentRegistry = new BehaviorSubject<ComponentList>([
 	["Input", inputList],
+	["Output", outputList],
 ]);

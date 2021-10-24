@@ -76,9 +76,10 @@ export const CanvasBox: React.FC = (props) => {
 					PostPatchEvent({
 						tempID,
 						style: {
+							// ...DesignComponentSelected.value.renderCompProps,
 							position: "absolute",
-							top: `${ev.clientY - top}px`,
-							left: `${ev.clientX - left}px`,
+							top: `${ev.clientY - top + 10}px`,
+							left: `${ev.clientX - left + 10}px`,
 						},
 					});
 				}
@@ -129,6 +130,7 @@ export const CanvasBox: React.FC = (props) => {
 						for (let i = 0; i < val.length; i++) {
 							const [Comp, props, tempID] = val[i];
 							if (tempID === v.payload.tempID) {
+								console.log(v.payload);
 								(props as any).style = (
 									v.payload as WebPatchData
 								).style;
