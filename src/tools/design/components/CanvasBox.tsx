@@ -76,7 +76,8 @@ export const CanvasBox: React.FC = (props) => {
 					PostPatchEvent({
 						tempID,
 						style: {
-							// ...DesignComponentSelected.value.renderCompProps,
+							...DesignComponentSelected.value.renderCompProps!
+								.style,
 							position: "absolute",
 							top: `${ev.clientY - top + 10}px`,
 							left: `${ev.clientX - left + 10}px`,
