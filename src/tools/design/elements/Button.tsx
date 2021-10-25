@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { AttachProperty } from "./hooks/AttachProperty";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
@@ -39,9 +40,18 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 			},
 		});
 	}, [setStyle, setChildren, bus]);
+
+	// attach properties
+	const TextValue = AttachProperty(
+		props.ID!,
+		"TextInputbox",
+		"Value",
+		props.children
+	);
+
 	return (
 		<button style={{ ...style }} {...attrs}>
-			{children}
+			{TextValue || children}
 		</button>
 	);
 };

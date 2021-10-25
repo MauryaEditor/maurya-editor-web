@@ -8,13 +8,12 @@ export const DesignComponentSelected =
 export const DrawRuntimeState: { [ID: string]: { bus: BehaviorSubject<any> } } =
 	{};
 
-export const DrawRuntimeBus = new BehaviorSubject<{
-	ID: string;
-	bus?: BehaviorSubject<any>;
-} | null>(null);
+export const DrawRuntimeBus = new BehaviorSubject<
+	({ [key: string]: any } & { ID: string }) | null
+>(null);
 
 DrawRuntimeBus.subscribe({
 	next: (v) => {
-		if (v && v.bus) DrawRuntimeState[v?.ID] = { bus: v.bus };
+		if (v && v.bus) DrawRuntimeState[v?.ID] = { bus: v.bus, ...v };
 	},
 });

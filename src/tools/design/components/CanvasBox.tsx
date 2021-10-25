@@ -125,7 +125,7 @@ export const CanvasBox: React.FC = (props) => {
 								...val,
 								[
 									compItem.renderComp,
-									{ ...renderProps },
+									{ ...renderProps, ID: v.payload.tempID },
 									v.payload.tempID,
 								],
 							];

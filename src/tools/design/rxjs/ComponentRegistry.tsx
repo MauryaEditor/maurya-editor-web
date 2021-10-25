@@ -16,7 +16,7 @@ export type ComponentItem = {
 	ondragComp: React.FC<object>;
 	ondragProps: object;
 	renderComp: React.FC<any>;
-	renderCompProps: () => object & RenderProps;
+	renderCompProps: () => object & Omit<RenderProps, "ID">;
 };
 
 export type ComponentList = [string, ComponentItem[]][];
