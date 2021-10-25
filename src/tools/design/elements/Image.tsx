@@ -1,38 +1,46 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import AddImage from "./assets/add-image.png";
-const RenderComp: React.FC<any> = (props) => {
-	const [style, setStyle] = useState(props.style);
-	const [value, setValue] = useState(props.value);
+const RenderComp: React.FC<RenderProps> = (props) => {
+	const [style, setStyle] = useState(props.style!);
+	const [children, setChildren] = useState(props.children!);
+	const [attrs, setAttrs] = useState({ src: AddImage, ...props.attributes! });
 	const [bus, setBus] = useState<BehaviorSubject<any>>(props.bus);
+
+	// render component again if props changes
+	// can be used from places where acces to component is available
 	useEffect(() => {
-		setStyle((val: any) => {
-			return { ...val, ...props.style };
-		});
+		setStyle(props.style!);
 	}, [props.style, setStyle]);
 	useEffect(() => {
-		setValue(props.value);
-	}, [props.value, setValue]);
+		setChildren(props.children!);
+	}, [props.children, setChildren]);
+	useEffect(() => {
+		setAttrs({ src: AddImage, ...props.attributes! });
+	}, [props.attributes, setAttrs, AddImage]);
+
+	// listen to patch events
 	useEffect(() => {
 		bus.subscribe({
 			next: (v) => {
 				if (v.style) {
-					setStyle(v.style);
+					setStyle((old: React.CSSProperties | undefined) => {
+						return { ...old!, ...v.style };
+					});
 				}
-				if (v.value) {
-					setValue(v.value);
+				if (v.attributes) {
+					setChildren((old: string | HTMLElement | undefined) => {
+						return v.attributes;
+					});
 				}
 			},
 		});
-	}, [setStyle, setValue, bus]);
-	return (
-		<img style={{ ...style }} src={value} alt={"Place your image here"} />
-	);
+	}, [setStyle, setChildren, bus]);
+	return <img {...attrs} style={{ ...style }} />;
 };
-
-const bus = new BehaviorSubject<any>({});
 
 const manifest = {
 	key: "Image",
@@ -41,10 +49,11 @@ const manifest = {
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Image" },
 	renderComp: RenderComp,
-	renderCompProps: {
-		style: { width: "5em" },
-		value: AddImage,
-		bus: new BehaviorSubject<any>({}),
+	renderCompProps: () => {
+		return {
+			style: {} as React.CSSProperties,
+			bus: new BehaviorSubject<any>({}),
+		};
 	},
 };
 

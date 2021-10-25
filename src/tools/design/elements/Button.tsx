@@ -1,36 +1,51 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
-const RenderComp: React.FC<any> = (props) => {
-	const [style, setStyle] = useState(props.style);
-	const [value, setValue] = useState(props.value);
+const RenderComp: React.FC<RenderProps> = (props) => {
+	const [style, setStyle] = useState(props.style!);
+	const [children, setChildren] = useState(props.children!);
+	const [attrs, setAttrs] = useState(props.attributes!);
 	const [bus, setBus] = useState<BehaviorSubject<any>>(props.bus);
+
+	// render component again if props changes
+	// can be used from places where acces to component is available
 	useEffect(() => {
-		setStyle((val: any) => {
-			return { ...val, ...props.style };
-		});
+		setStyle(props.style!);
 	}, [props.style, setStyle]);
 	useEffect(() => {
-		setValue(props.value);
-	}, [props.value, setValue]);
+		setChildren(props.children!);
+	}, [props.children, setChildren]);
+	useEffect(() => {
+		setAttrs(props.attributes!);
+	}, [props.attributes, setAttrs]);
+
+	// listen to patch events
 	useEffect(() => {
 		bus.subscribe({
 			next: (v) => {
+				console.log(v);
 				if (v.style) {
-					setStyle(v.style);
+					setStyle((old: React.CSSProperties | undefined) => {
+						return { ...old!, ...v.style };
+					});
 				}
-				if (v.value) {
-					setValue(v.value);
+				if (v.children) {
+					setChildren((old: string | HTMLElement | undefined) => {
+						return v.children;
+					});
 				}
 			},
 		});
-	}, [setStyle, setValue, bus]);
-	return <button style={{ ...style }}>{value}</button>;
+	}, [setStyle, setChildren, bus]);
+	return (
+		<button style={{ ...style }} {...attrs}>
+			{children}
+		</button>
+	);
 };
-
-const bus = new BehaviorSubject<any>({});
 
 const manifest = {
 	key: "Button",
@@ -39,10 +54,12 @@ const manifest = {
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Button" },
 	renderComp: RenderComp,
-	renderCompProps: {
-		style: { width: "5em" },
-		value: "Search",
-		bus: new BehaviorSubject<any>({}),
+	renderCompProps: () => {
+		return {
+			style: {} as React.CSSProperties,
+			bus: new BehaviorSubject<any>({}),
+			children: "Button",
+		};
 	},
 };
 

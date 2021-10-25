@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
-import { DesignComponentSelected } from "../rxjs/DrawState";
+import {
+	DesignComponentSelected,
+	DrawRuntimeBus,
+	DrawRuntimeState,
+} from "../rxjs/DrawState";
 import getCoords from "../utils/getCoords";
 const BaseWidth = 1440;
 const BaseHeight = 900;
@@ -76,8 +80,6 @@ export const CanvasBox: React.FC = (props) => {
 					PostPatchEvent({
 						tempID,
 						style: {
-							...DesignComponentSelected.value.renderCompProps!
-								.style,
 							position: "absolute",
 							top: `${ev.clientY - top + 10}px`,
 							left: `${ev.clientX - left + 10}px`,
@@ -113,36 +115,40 @@ export const CanvasBox: React.FC = (props) => {
 								}
 							}
 						}
+						const renderProps = compItem!.renderCompProps!();
+						DrawRuntimeBus.next({
+							ID: v.payload.tempID,
+							bus: renderProps.bus,
+						});
 						if (compItem!)
 							return [
 								...val,
 								[
 									compItem.renderComp,
-									{ ...compItem.renderCompProps },
+									{ ...renderProps },
 									v.payload.tempID,
 								],
 							];
 						return [...val];
 					});
 				}
-
-				if (v.type === "PATCH") {
-					setRenderedComps((val) => {
-						for (let i = 0; i < val.length; i++) {
-							const [Comp, props, tempID] = val[i];
-							if (tempID === v.payload.tempID) {
-								console.log(v.payload);
-								(props as any).style = (
-									v.payload as WebPatchData
-								).style;
-							}
-						}
-						return [...val];
-					});
-				}
 			}
 		});
 	}, [setRenderedComps]);
+
+	useEffect(() => {
+		SubscribeWebBus((v: WebBusEvent | null) => {
+			if (v && v.type === "PATCH") {
+				for (let i = 0; i < renderedComps.length; i++) {
+					const tempID = renderedComps[i][2];
+					if (tempID === v.payload.tempID)
+						DrawRuntimeState[tempID].bus.next({
+							style: (v.payload as WebPatchData).style,
+						});
+				}
+			}
+		});
+	}, [renderedComps]);
 
 	return (
 		<div

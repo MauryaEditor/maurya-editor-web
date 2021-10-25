@@ -1,35 +1,46 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
-const RenderComp: React.FC<any> = (props) => {
-	const [style, setStyle] = useState(props.style);
-	const [value, setValue] = useState(props.value);
+const RenderComp: React.FC<RenderProps> = (props) => {
+	const [style, setStyle] = useState(props.style!);
+	const [children, setChildren] = useState(props.children!);
+	const [attrs, setAttrs] = useState(props.attributes!);
 	const [bus, setBus] = useState<BehaviorSubject<any>>(props.bus);
+
+	// render component again if props changes
+	// can be used from places where acces to component is available
 	useEffect(() => {
-		console.log(props.style);
-		setStyle(props.style);
+		setStyle(props.style!);
 	}, [props.style, setStyle]);
 	useEffect(() => {
-		setValue(props.value);
-	}, [props.value, setValue]);
+		setChildren(props.children!);
+	}, [props.children, setChildren]);
+	useEffect(() => {
+		setAttrs(props.attributes!);
+	}, [props.attributes, setAttrs]);
+
+	// listen to patch events
 	useEffect(() => {
 		bus.subscribe({
 			next: (v) => {
 				if (v.style) {
-					setStyle(v.style);
+					setStyle((old: React.CSSProperties | undefined) => {
+						return { ...old!, ...v.style };
+					});
 				}
-				if (v.value) {
-					setValue(v.value);
+				if (v.attributes) {
+					setChildren((old: string | HTMLElement | undefined) => {
+						return v.attributes;
+					});
 				}
 			},
 		});
-	}, [setStyle, setValue, bus]);
-	return <input type="checkbox" style={{ ...style }} />;
+	}, [setStyle, setChildren, bus]);
+	return <input type="checkbox" style={{ ...style }} {...attrs} />;
 };
-
-const bus = new BehaviorSubject<any>({});
 
 const manifest = {
 	key: "Checkbox",
@@ -38,9 +49,11 @@ const manifest = {
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Checkbox" },
 	renderComp: RenderComp,
-	renderCompProps: {
-		style: {},
-		bus: new BehaviorSubject<any>({}),
+	renderCompProps: () => {
+		return {
+			style: {} as React.CSSProperties,
+			bus: new BehaviorSubject<any>({}),
+		};
 	},
 };
 
