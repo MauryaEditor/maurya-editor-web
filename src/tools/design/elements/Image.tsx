@@ -51,7 +51,7 @@ const manifest = {
 	renderComp: RenderComp,
 	renderCompProps: () => {
 		return {
-			style: {} as React.CSSProperties,
+			style: { width: "5em" } as React.CSSProperties,
 			bus: new BehaviorSubject<any>({}),
 		};
 	},
