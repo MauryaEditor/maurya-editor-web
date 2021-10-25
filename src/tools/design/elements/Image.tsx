@@ -31,9 +31,9 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 						return { ...old!, ...v.style };
 					});
 				}
-				if (v.attributes) {
+				if (v.children) {
 					setChildren((old: string | HTMLElement | undefined) => {
-						return v.attributes;
+						return v.children;
 					});
 				}
 			},

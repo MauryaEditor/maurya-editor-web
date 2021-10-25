@@ -26,7 +26,6 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	useEffect(() => {
 		bus.subscribe({
 			next: (v) => {
-				console.log(v);
 				if (v.style) {
 					setStyle((old: React.CSSProperties | undefined) => {
 						return { ...old!, ...v.style };
