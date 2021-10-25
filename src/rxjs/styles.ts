@@ -1,7 +1,7 @@
 import React from "react";
 import { BehaviorSubject } from "rxjs";
 
-export const HeaderHeight = new BehaviorSubject<string>("2.5em");
+export const HeaderHeight = new BehaviorSubject<string>("3em");
 
 export const MenuWidth = new BehaviorSubject<string>("5em");
 
