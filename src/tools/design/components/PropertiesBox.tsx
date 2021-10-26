@@ -54,7 +54,6 @@ export const PropertiesBox: React.FC = (props) => {
 
 	return (
 		<div style={{ borderLeft: "1px solid black", height: "100%" }}>
-			Hi From Properties Box
 			{comps.map(([Comp, props]) => {
 				return <Comp {...props} key={props.propertyName} />;
 			})}
