@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
-import { DrawRuntimeState } from "../rxjs/DrawState";
 
 export const TextProperty: React.FC<{
 	bus: BehaviorSubject<any>;
