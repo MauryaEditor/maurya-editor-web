@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
 import { TextProperty } from "../properties/TextProperty";
-import { DisplayProperty } from "../rxjs/DrawState";
+import { DisplayProperty, PropertyMap } from "../rxjs/DrawState";
 
 export const PropertiesBox: React.FC = (props) => {
 	const [bus, setBus] = useState<BehaviorSubject<any>>();
-	const [properties, setProperties] =
-		useState<{ [key: string]: { value: any; type: string } }>();
+	const [properties, setProperties] = useState<PropertyMap>();
 	// listen to DisplayProperty
 	useEffect(() => {
 		DisplayProperty.subscribe({
