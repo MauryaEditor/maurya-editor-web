@@ -18,8 +18,12 @@ export const AttachProperty = (
 	useEffect(() => {
 		DrawRuntimeBus.next({
 			ID: tempID,
-			propertyName: initialValue,
-			propertyType,
+			payload: {
+				properties: {
+					...DrawRuntimeState[tempID].properties!,
+					[propertyName]: { value: initialValue, type: propertyType },
+				},
+			},
 		});
 	}, []);
 
@@ -27,12 +31,15 @@ export const AttachProperty = (
 	useEffect(() => {
 		bus.subscribe({
 			next: (v) => {
-				if (v[propertyName]) {
-					setValue(value);
+				if (
+					v["properties"] &&
+					v["properties"][propertyName] != undefined
+				) {
+					setValue(v["properties"][propertyName]);
 				}
 			},
 		});
-	}, [bus, propertyName]);
+	}, [bus, propertyName, setValue]);
 
 	return value;
 };

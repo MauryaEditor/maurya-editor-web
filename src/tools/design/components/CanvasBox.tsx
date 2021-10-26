@@ -118,7 +118,9 @@ export const CanvasBox: React.FC = (props) => {
 						const renderProps = compItem!.renderCompProps!();
 						DrawRuntimeBus.next({
 							ID: v.payload.tempID,
-							bus: renderProps.bus,
+							payload: {
+								bus: renderProps.bus,
+							},
 						});
 						if (compItem!)
 							return [

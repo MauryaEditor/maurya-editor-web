@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
+import { DisplayProperty, DrawRuntimeState } from "../rxjs/DrawState";
 import { AttachProperty } from "./hooks/AttachProperty";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
@@ -44,14 +45,21 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	// attach properties
 	const TextValue = AttachProperty(
 		props.ID!,
-		"TextInputbox",
+		"TextProperty",
 		"Value",
 		props.children
 	);
 
+	// TODO: move this effect to when component is selected
+	useEffect(() => {
+		DisplayProperty.next({
+			bus: DrawRuntimeState[props.ID!].bus,
+			properties: { ...DrawRuntimeState[props.ID!].properties },
+		});
+	}, []);
 	return (
 		<button style={{ ...style }} {...attrs}>
-			{TextValue || children}
+			{TextValue}
 		</button>
 	);
 };
