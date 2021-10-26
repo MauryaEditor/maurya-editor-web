@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BehaviorSubject } from "rxjs";
 
+// Simplification-7 Take ID as props rather than bus
 export const TextProperty: React.FC<{
 	bus: BehaviorSubject<any>;
 	propertyName: string;
@@ -9,6 +10,7 @@ export const TextProperty: React.FC<{
 	// Publish to bus on value change
 	const [value, setValue] = useState<string>(props.initialValue);
 	useEffect(() => {
+		// Simplification-8 PostPatchEvent instead of publishing on bus
 		props.bus.next({ properties: { [props.propertyName]: value } });
 	}, [props.bus, props.propertyName, value]);
 

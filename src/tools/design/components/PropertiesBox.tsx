@@ -8,6 +8,7 @@ export const PropertiesBox: React.FC = (props) => {
 	const [properties, setProperties] = useState<PropertyMap>();
 	// listen to DisplayProperty
 	useEffect(() => {
+		// Simplification-6 DisplayProperty should get ID instead of bus
 		DisplayProperty.subscribe({
 			next: (v) => {
 				setBus(v?.bus);
@@ -37,6 +38,7 @@ export const PropertiesBox: React.FC = (props) => {
 							...old,
 							[
 								TextProperty,
+								// Simplification-9 Send ID instead of bus
 								{
 									bus,
 									propertyName: propertyNames[i],

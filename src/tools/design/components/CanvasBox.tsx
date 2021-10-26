@@ -72,11 +72,13 @@ export const CanvasBox: React.FC = (props) => {
 		if (canvas.current && root.current) {
 			canvas.current.addEventListener("mouseup", (ev) => {
 				if (DesignComponentSelected.value) {
+					// Simplification-1: Send style in PostCreateEvent
 					const tempID = PostCreateEvent({
 						compKey: DesignComponentSelected.value.key,
 						pkg: "design",
 					});
 					const { top, left } = getCoords(root.current!);
+					// Simplification-2: Remove Patch Event
 					PostPatchEvent({
 						tempID,
 						style: {
@@ -115,6 +117,7 @@ export const CanvasBox: React.FC = (props) => {
 								}
 							}
 						}
+						// Simplification-3: Props must take bus and extend style with position, top, left
 						const renderProps = compItem!.renderCompProps!();
 						DrawRuntimeBus.next({
 							ID: v.payload.tempID,
@@ -141,9 +144,15 @@ export const CanvasBox: React.FC = (props) => {
 	useEffect(() => {
 		SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v && v.type === "PATCH") {
+				// Simplification-4 Maintain a map of tempID and renderedComps
+				// Why not put rendered component in DataRuntimeState?
+				// Because we don't know if the component gets destroyed
 				for (let i = 0; i < renderedComps.length; i++) {
 					const tempID = renderedComps[i][2];
 					if (tempID === v.payload.tempID)
+						// Simplification-5 Bus can take any key value pair
+						// but some keys are reserved - style, properties and appearnce
+						// Why? - For PropertyBox to work properly
 						DrawRuntimeState[tempID].bus.next({
 							style: (v.payload as WebPatchData).style,
 						});

@@ -50,6 +50,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 		props.children
 	);
 
+	// Simplification-10 Dislayproperty sends ID instead of bus
 	// TODO: move this effect to when component is selected
 	useEffect(() => {
 		DisplayProperty.next({
