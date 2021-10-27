@@ -59,6 +59,7 @@ export interface WebCreateData {
 	compKey: string;
 	pkg: string;
 	tempID: string;
+	props?: any;
 }
 
 export interface WebPatchData {

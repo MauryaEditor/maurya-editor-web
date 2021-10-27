@@ -6,18 +6,6 @@ import { DisplayProperty, PropertyMap } from "../rxjs/DrawState";
 export const PropertiesBox: React.FC = (props) => {
 	const [bus, setBus] = useState<BehaviorSubject<any>>();
 	const [properties, setProperties] = useState<PropertyMap>();
-	// listen to DisplayProperty
-	useEffect(() => {
-		// Simplification-6 DisplayProperty should get ID instead of bus
-		DisplayProperty.subscribe({
-			next: (v) => {
-				setBus(v?.bus);
-				setProperties(v?.properties);
-			},
-		});
-	}, [setBus, setProperties]);
-
-	// show properties
 	const [comps, setComps] = useState<
 		[
 			React.FC<any>,
@@ -28,6 +16,19 @@ export const PropertiesBox: React.FC = (props) => {
 			}
 		][]
 	>([]);
+	// listen to DisplayProperty
+	useEffect(() => {
+		// Simplification-6 DisplayProperty should get ID instead of bus
+		DisplayProperty.subscribe({
+			next: (v) => {
+				setBus(v?.bus);
+				setProperties(v?.properties);
+				setComps([]);
+			},
+		});
+	}, [setBus, setProperties, setComps]);
+
+	// show properties
 	useEffect(() => {
 		if (properties && bus) {
 			const propertyNames = Object.keys(properties);
