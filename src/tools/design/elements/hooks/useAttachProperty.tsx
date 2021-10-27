@@ -3,13 +3,13 @@ import { DrawRuntimeBus, DrawRuntimeState } from "../../rxjs/DrawState";
 import { useBus } from "./useBus";
 
 // TODO: Make the
-export const useAttachProperty = (
+export function useAttachProperty<ReturnType>(
 	ID: string,
 	propertyType: string,
 	propertyName: string,
 	initialValue: any
-) => {
-	const [value, setValue] = useState<any>(initialValue);
+) {
+	const [value, setValue] = useState<ReturnType>(initialValue);
 	const bus = useBus(ID);
 
 	// attach property
@@ -41,4 +41,4 @@ export const useAttachProperty = (
 	}, [bus, propertyName, setValue]);
 
 	return value;
-};
+}

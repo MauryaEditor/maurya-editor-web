@@ -30,9 +30,9 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	}, [setStyle, bus]);
 
 	// attach properties
-	const Options = useAttachProperty(
+	const Options = useAttachProperty<string[]>(
 		props.ID,
-		"ArrayProperty<string>",
+		"ArrayProperty",
 		"Options",
 		props.properties?.Options || []
 	);

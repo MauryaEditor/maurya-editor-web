@@ -9,7 +9,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 const RenderComp: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useStyle(props.ID, props.style!);
 	// attach properties
-	const TextValue = useAttachProperty(
+	const TextValue = useAttachProperty<string>(
 		props.ID,
 		"TextProperty",
 		"Value",
