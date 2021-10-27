@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import {
 	DesignComponentSelected,
@@ -14,11 +14,12 @@ declare interface WebCreateData {
 	compKey: string;
 	pkg: string;
 	tempID: string;
+	state?: { [key: string | number]: any };
 }
 
 export interface WebPatchData {
 	tempID: string;
-	style: React.CSSProperties;
+	slice: { [key: string | number]: any };
 }
 
 declare interface WebBusEvent {
@@ -33,8 +34,6 @@ declare const SubscribeWebBus: (
 declare const PostCreateEvent: (
 	payload: Omit<WebCreateData, "tempID">
 ) => string;
-
-declare const PostPatchEvent: (payload: WebPatchData) => string;
 
 export const CanvasBox: React.FC = (props) => {
 	const box = useRef<HTMLDivElement>(null);
@@ -73,20 +72,19 @@ export const CanvasBox: React.FC = (props) => {
 			canvas.current.addEventListener("mouseup", (ev) => {
 				if (DesignComponentSelected.value) {
 					// Simplification-1: Send style in PostCreateEvent
-					const tempID = PostCreateEvent({
+					const { top, left } = getCoords(root.current!);
+					PostCreateEvent({
 						compKey: DesignComponentSelected.value.key,
 						pkg: "design",
-					});
-					const { top, left } = getCoords(root.current!);
-					// Simplification-2: Remove Patch Event
-					PostPatchEvent({
-						tempID,
-						style: {
-							position: "absolute",
-							top: `${ev.clientY - top + 10}px`,
-							left: `${ev.clientX - left + 10}px`,
+						state: {
+							style: {
+								position: "absolute",
+								top: `${ev.clientY - top + 10}px`,
+								left: `${ev.clientX - left + 10}px`,
+							},
 						},
 					});
+					// Simplification-2: Remove Patch Event
 				}
 			});
 		}
@@ -102,6 +100,7 @@ export const CanvasBox: React.FC = (props) => {
 				if (v.type === "CREATE") {
 					setRenderedComps((val) => {
 						let compItem: ComponentItem;
+						const webCreateData = v.payload as WebCreateData;
 						for (
 							let i = 0;
 							i < ComponentRegistry.value.length;
@@ -110,27 +109,31 @@ export const CanvasBox: React.FC = (props) => {
 							const compItems = ComponentRegistry.value[i][1];
 							for (let j = 0; j < compItems.length; j++) {
 								if (
-									compItems[j].key ===
-									(v.payload as WebCreateData).compKey
+									compItems[j].key === webCreateData.compKey
 								) {
 									compItem = compItems[j];
+									break;
 								}
 							}
 						}
-						// Simplification-3: Props must take bus and extend style with position, top, left
+						// Simplification-3: Props must take ID and extend style with position, top, left
 						const renderProps = compItem!.renderCompProps!();
+						const bus = new BehaviorSubject<any>({});
+						const props = {
+							renderProps: renderProps,
+							...webCreateData.state,
+							ID: webCreateData.tempID,
+						};
 						DrawRuntimeBus.next({
-							ID: v.payload.tempID,
-							payload: {
-								bus: renderProps.bus,
-							},
+							ID: webCreateData.tempID,
+							payload: { bus: bus, ...props },
 						});
 						if (compItem!)
 							return [
 								...val,
 								[
 									compItem.renderComp,
-									{ ...renderProps, ID: v.payload.tempID },
+									{ ...props },
 									v.payload.tempID,
 								],
 							];
@@ -144,18 +147,17 @@ export const CanvasBox: React.FC = (props) => {
 	useEffect(() => {
 		SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v && v.type === "PATCH") {
+				const webPatchData = v.payload as WebPatchData;
 				// Simplification-4 Maintain a map of tempID and renderedComps
 				// Why not put rendered component in DataRuntimeState?
 				// Because we don't know if the component gets destroyed
 				for (let i = 0; i < renderedComps.length; i++) {
 					const tempID = renderedComps[i][2];
-					if (tempID === v.payload.tempID)
+					if (tempID === webPatchData.tempID)
 						// Simplification-5 Bus can take any key value pair
 						// but some keys are reserved - style, properties and appearnce
 						// Why? - For PropertyBox to work properly
-						DrawRuntimeState[tempID].bus.next({
-							style: (v.payload as WebPatchData).style,
-						});
+						DrawRuntimeState[tempID].bus.next(webPatchData.slice);
 				}
 			}
 		});

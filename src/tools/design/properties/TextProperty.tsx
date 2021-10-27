@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { BehaviorSubject } from "rxjs";
+declare interface WebPatchData {
+	tempID: string;
+	slice: { [key: string | number]: any };
+}
+declare const PostPatchEvent: (payload: WebPatchData) => string;
 
 // Simplification-7 Take ID as props rather than bus
 export const TextProperty: React.FC<{
-	bus: BehaviorSubject<any>;
+	ID: string;
 	propertyName: string;
 	initialValue: string;
 }> = (props) => {
@@ -11,8 +15,11 @@ export const TextProperty: React.FC<{
 	const [value, setValue] = useState<string>(props.initialValue);
 	useEffect(() => {
 		// Simplification-8 PostPatchEvent instead of publishing on bus
-		props.bus.next({ properties: { [props.propertyName]: value } });
-	}, [props.bus, props.propertyName, value]);
+		PostPatchEvent({
+			tempID: props.ID,
+			slice: { properties: { [props.propertyName]: value } },
+		});
+	}, [props.ID, props.propertyName, value]);
 
 	return (
 		<div>

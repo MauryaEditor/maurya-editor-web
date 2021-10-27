@@ -1,5 +1,4 @@
-import React from "react";
-import { BehaviorSubject, Subject, Subscriber, Subscription } from "rxjs";
+import { BehaviorSubject, Subject, Subscription } from "rxjs";
 
 export interface MenuItem {
 	name: string;
@@ -59,12 +58,12 @@ export interface WebCreateData {
 	compKey: string;
 	pkg: string;
 	tempID: string;
-	props?: any;
+	state?: { [key: string | number]: any };
 }
 
 export interface WebPatchData {
 	tempID: string;
-	style: React.CSSProperties;
+	slice: { [key: string | number]: any };
 }
 
 export interface WebBusEvent {

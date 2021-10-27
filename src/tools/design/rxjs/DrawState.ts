@@ -1,3 +1,4 @@
+import React from "react";
 import { BehaviorSubject } from "rxjs";
 import { ComponentItem } from "./ComponentRegistry";
 
@@ -8,9 +9,11 @@ export type PropertyMap = { [key: string]: { value: any; type: string } };
 
 // store ID: Bus
 export const DrawRuntimeState: {
-	[ID: string]: {
+	[ID: string]: { [key: string | number]: any } & {
 		bus: BehaviorSubject<any>;
+		style: React.CSSProperties;
 		properties: PropertyMap;
+		renderProps: { [key: string | number]: any };
 	};
 } = {};
 
@@ -18,7 +21,9 @@ export const DrawRuntimeBus = new BehaviorSubject<{
 	ID: string;
 	payload: {
 		bus?: BehaviorSubject<any>;
+		style?: React.CSSProperties;
 		properties?: PropertyMap;
+		renderProps?: { [key: string | number]: any };
 	};
 } | null>(null);
 
@@ -33,6 +38,6 @@ DrawRuntimeBus.subscribe({
 });
 
 export const DisplayProperty = new BehaviorSubject<{
-	bus: BehaviorSubject<any>;
+	ID: string;
 	properties: PropertyMap;
 } | null>(null);

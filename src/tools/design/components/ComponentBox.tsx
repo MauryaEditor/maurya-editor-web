@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ComponentList, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import { DesignComponentSelected } from "../rxjs/DrawState";
 

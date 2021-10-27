@@ -1,10 +1,6 @@
-import { BehaviorSubject } from "rxjs";
-
-// TODO: remove bus becaue ID is included
-export type RenderProps = {
-	bus: BehaviorSubject<any>;
+// TODO-Done: remove bus becaue ID is included
+export type RenderProps = { [key: string | number]: any } & {
 	ID: string;
 	style?: React.CSSProperties;
-	children?: HTMLElement | string;
-	attributes?: { [key: string]: string | number | boolean };
+	properties?: { [key: string | number]: any };
 };

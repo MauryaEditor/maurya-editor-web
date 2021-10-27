@@ -1,68 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { BehaviorSubject } from "rxjs";
+import React, { useEffect } from "react";
 import { DisplayProperty, DrawRuntimeState } from "../rxjs/DrawState";
-import { AttachProperty } from "./hooks/AttachProperty";
+import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const RenderComp: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useState(props.style!);
-	const [children, setChildren] = useState(props.children!);
-	const [attrs, setAttrs] = useState(props.attributes!);
-	const [bus, setBus] = useState<BehaviorSubject<any>>(props.bus);
-
-	// render component again if props changes
-	// can be used from places where acces to component is available
-	useEffect(() => {
-		setStyle(props.style!);
-	}, [props.style, setStyle]);
-	useEffect(() => {
-		setChildren(props.children!);
-	}, [props.children, setChildren]);
-	useEffect(() => {
-		setAttrs(props.attributes!);
-	}, [props.attributes, setAttrs]);
-
-	// listen to patch events
-	useEffect(() => {
-		bus.subscribe({
-			next: (v) => {
-				if (v.style) {
-					setStyle((old: React.CSSProperties | undefined) => {
-						return { ...old!, ...v.style };
-					});
-				}
-				if (v.children) {
-					setChildren((old: string | HTMLElement | undefined) => {
-						return v.children;
-					});
-				}
-			},
-		});
-	}, [setStyle, setChildren, bus]);
-
+	const [style, setStyle] = useStyle(props.ID, props.style!);
 	// attach properties
-	const TextValue = AttachProperty(
-		props.ID!,
+	const TextValue = useAttachProperty(
+		props.ID,
 		"TextProperty",
 		"Value",
-		props.children
+		props.properties?.Value || ""
 	);
 
 	// Simplification-10 Dislayproperty sends ID instead of bus
 	// TODO: move this effect to when component is selected
 	useEffect(() => {
 		DisplayProperty.next({
-			bus: DrawRuntimeState[props.ID!].bus,
+			ID: props.ID,
 			properties: { ...DrawRuntimeState[props.ID!].properties },
 		});
 	}, []);
-	return (
-		<button style={{ ...style }} {...attrs}>
-			{TextValue}
-		</button>
-	);
+	return <button style={{ ...style }}>{TextValue}</button>;
 };
 
 const manifest = {
@@ -75,7 +37,6 @@ const manifest = {
 	renderCompProps: () => {
 		return {
 			style: {} as React.CSSProperties,
-			bus: new BehaviorSubject<any>({}),
 			children: "Button",
 		};
 	},

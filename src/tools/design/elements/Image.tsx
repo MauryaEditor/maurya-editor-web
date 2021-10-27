@@ -1,45 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { BehaviorSubject } from "rxjs";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
-import AddImage from "./assets/add-image.png";
+import { useBus } from "./hooks/useBus";
 const RenderComp: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useState(props.style!);
-	const [children, setChildren] = useState(props.children!);
-	const [attrs, setAttrs] = useState({ src: AddImage, ...props.attributes! });
-	const [bus, setBus] = useState<BehaviorSubject<any>>(props.bus);
+	const bus = useBus(props.ID);
 
 	// render component again if props changes
 	// can be used from places where acces to component is available
 	useEffect(() => {
 		setStyle(props.style!);
 	}, [props.style, setStyle]);
-	useEffect(() => {
-		setChildren(props.children!);
-	}, [props.children, setChildren]);
-	useEffect(() => {
-		setAttrs({ src: AddImage, ...props.attributes! });
-	}, [props.attributes, setAttrs, AddImage]);
 
 	// listen to patch events
 	useEffect(() => {
-		bus.subscribe({
-			next: (v) => {
-				if (v.style) {
-					setStyle((old: React.CSSProperties | undefined) => {
-						return { ...old!, ...v.style };
-					});
-				}
-				if (v.children) {
-					setChildren((old: string | HTMLElement | undefined) => {
-						return v.children;
-					});
-				}
-			},
-		});
-	}, [setStyle, setChildren, bus]);
-	return <img {...attrs} style={{ ...style }} />;
+		if (bus)
+			bus.subscribe({
+				next: (v) => {
+					if (v.style) {
+						setStyle((old: React.CSSProperties | undefined) => {
+							return { ...old!, ...v.style };
+						});
+					}
+				},
+			});
+	}, [setStyle, bus]);
+	return <img style={{ ...style }} alt={""} />;
 };
 
 const manifest = {
@@ -52,7 +39,6 @@ const manifest = {
 	renderCompProps: () => {
 		return {
 			style: { width: "5em" } as React.CSSProperties,
-			bus: new BehaviorSubject<any>({}),
 		};
 	},
 };

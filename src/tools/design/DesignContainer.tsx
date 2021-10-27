@@ -74,7 +74,7 @@ export const DesignContainer: React.FC = (props) => {
 				setSampleLeft(`${ev.clientX - left + 10}px`);
 			});
 		}
-	}, [combinedContainer.current]);
+	}, [combinedContainer]);
 	return (
 		<div style={{ display: "flex", height: "100%", userSelect: "none" }}>
 			<div
