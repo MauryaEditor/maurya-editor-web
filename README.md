@@ -1,46 +1,29 @@
-# Getting Started with Create React App
+# [Maurya Editor](https://mauryaeditor.com)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+    Maurya Editor is an open source tool from Quaffle's Rapid Product Development kit.
 
-## Available Scripts
+    Every action performed in the editor produces a stream of event. These events are then processed by different compilers to generate code for different platforms/environments. The generated code may run inside some runtime.
 
-In the project directory, you can run:
+<a name="philosophies"></a>
 
-### `npm start`
+## Core philosophies
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    1. Extensibility - The Editor can be extended in multiple dimensions such as adding new components or adding an entirely new feature in the editor.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+    2. Software Developer friendly - The Editor is focused on software developers experience in their day to day work. The generated code will be of high quality and always accessible via various tools.
 
-### `npm test`
+    3. Inclusive - The Editor can be packaged in different ways to make it useful for citizen developers.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<a name="set-local-copy"></a>
 
-### `npm run build`
+## Setting Up a Local Copy
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    You will need `npm >= 6.14.12 ` and `node >= v14.16.1`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    ```bash
+        git clone https://github.com/MauryaEditor/maurya-editor-web.git
+        cd maurya-editor-web
+        npm install
+    ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+    Verify that everything is working correctly by running `npm run start` or `npm run build`
