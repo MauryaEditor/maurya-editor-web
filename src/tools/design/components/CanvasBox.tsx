@@ -13,12 +13,12 @@ const BaseHeight = 900;
 declare interface WebCreateData {
 	compKey: string;
 	pkg: string;
-	tempID: string;
+	ID: string;
 	state?: { [key: string | number]: any };
 }
 
 export interface WebPatchData {
-	tempID: string;
+	ID: string;
 	slice: { [key: string | number]: any };
 }
 
@@ -31,9 +31,7 @@ declare const SubscribeWebBus: (
 	next: (v: WebBusEvent | null) => void
 ) => Subscription;
 
-declare const PostCreateEvent: (
-	payload: Omit<WebCreateData, "tempID">
-) => string;
+declare const PostCreateEvent: (payload: Omit<WebCreateData, "ID">) => string;
 
 export const CanvasBox: React.FC = (props) => {
 	const box = useRef<HTMLDivElement>(null);
@@ -122,10 +120,10 @@ export const CanvasBox: React.FC = (props) => {
 						const props = {
 							renderProps: renderProps,
 							...webCreateData.state,
-							ID: webCreateData.tempID,
+							ID: webCreateData.ID,
 						};
 						DrawRuntimeBus.next({
-							ID: webCreateData.tempID,
+							ID: webCreateData.ID,
 							payload: { bus: bus, ...props },
 						});
 						if (compItem!)
@@ -134,7 +132,7 @@ export const CanvasBox: React.FC = (props) => {
 								[
 									compItem.renderComp,
 									{ ...props },
-									v.payload.tempID,
+									v.payload.ID,
 								],
 							];
 						return [...val];
@@ -153,7 +151,7 @@ export const CanvasBox: React.FC = (props) => {
 				// Because we don't know if the component gets destroyed
 				for (let i = 0; i < renderedComps.length; i++) {
 					const tempID = renderedComps[i][2];
-					if (tempID === webPatchData.tempID)
+					if (tempID === webPatchData.ID)
 						// Simplification-5 Bus can take any key value pair
 						// but some keys are reserved - style, properties and appearnce
 						// Why? - For PropertyBox to work properly

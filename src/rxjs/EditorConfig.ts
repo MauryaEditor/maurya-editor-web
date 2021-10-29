@@ -57,12 +57,12 @@ export const RegisterTool = (pkg: string, value: any) => {
 export interface WebCreateData {
 	compKey: string;
 	pkg: string;
-	tempID: string;
+	ID: string;
 	state?: { [key: string | number]: any };
 }
 
 export interface WebPatchData {
-	tempID: string;
+	ID: string;
 	slice: { [key: string | number]: any };
 }
 

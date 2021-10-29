@@ -19,6 +19,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	// Simplification-10 Dislayproperty sends ID instead of bus
 	// TODO: move this effect to when component is selected
 	useEffect(() => {
+		console.log(props.ID);
 		DisplayProperty.next({
 			ID: props.ID,
 			properties: { ...DrawRuntimeState[props.ID!].properties },

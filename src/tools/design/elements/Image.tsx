@@ -3,6 +3,7 @@ import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import { useBus } from "./hooks/useBus";
+import AddImage from "./assets/add-image.png";
 const RenderComp: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useState(props.style!);
 	const bus = useBus(props.ID);
@@ -26,7 +27,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 				},
 			});
 	}, [setStyle, bus]);
-	return <img style={{ ...style }} alt={""} />;
+	return <img style={{ ...style }} alt={""} src={AddImage} width="100px" />;
 };
 
 const manifest = {
@@ -38,7 +39,7 @@ const manifest = {
 	renderComp: RenderComp,
 	renderCompProps: () => {
 		return {
-			style: { width: "5em" } as React.CSSProperties,
+			style: { width: "2em" } as React.CSSProperties,
 		};
 	},
 };

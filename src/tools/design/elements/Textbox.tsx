@@ -27,7 +27,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 				},
 			});
 	}, [setStyle, bus]);
-	return <div style={{ ...style }}></div>;
+	return <div style={{ ...style }}>Put some text here</div>;
 };
 
 const manifest = {

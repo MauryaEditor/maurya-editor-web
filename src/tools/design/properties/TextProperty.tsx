@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 declare interface WebPatchData {
-	tempID: string;
+	ID: string;
 	slice: { [key: string | number]: any };
 }
 declare const PostPatchEvent: (payload: WebPatchData) => string;
@@ -16,7 +16,7 @@ export const TextProperty: React.FC<{
 	useEffect(() => {
 		// Simplification-8 PostPatchEvent instead of publishing on bus
 		PostPatchEvent({
-			tempID: props.ID,
+			ID: props.ID,
 			slice: { properties: { [props.propertyName]: value } },
 		});
 	}, [props.ID, props.propertyName, value]);
