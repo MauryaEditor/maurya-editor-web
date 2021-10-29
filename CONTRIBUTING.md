@@ -68,3 +68,8 @@ Once all the node modules are installed, run `npm start` or `npm build` to valid
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project
 owners to license your work under the terms of the [MIT License](LICENSE.txt).
+
+<a name="references"></a>
+References:
+
+-   This CONTRIBUTING.md file is inspired/copied from [h5bp](https://github.com/h5bp/html5-boilerplate/blob/main/.github/CONTRIBUTING.md#pull-requests)
