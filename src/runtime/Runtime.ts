@@ -110,14 +110,22 @@ const sendEvent = (event: WebBusEvent) => {
 		options
 	).then((resp) => resp.json());
 };
+
 // send events to backend
-WebBus.subscribe(async (event) => {
-	for (
-		let i = RuntimeState.currSyncIndex;
-		i < RuntimeState.tempEvents.length;
-		i++
-	) {
-		await sendEvent(RuntimeState.tempEvents[RuntimeState.currSyncIndex]);
-		RuntimeState.currSyncIndex++;
-	}
-});
+function syncEngine() {
+	setTimeout(async () => {
+		for (
+			let i = RuntimeState.currSyncIndex;
+			i < RuntimeState.tempEvents.length;
+			i++
+		) {
+			await sendEvent(
+				RuntimeState.tempEvents[RuntimeState.currSyncIndex]
+			);
+			RuntimeState.currSyncIndex++;
+		}
+		syncEngine();
+	}, 5000);
+}
+
+syncEngine();
