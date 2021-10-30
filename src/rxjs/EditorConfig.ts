@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { BehaviorSubject, Subject, Subscription } from "rxjs";
+import { BehaviorSubject, ReplaySubject, Subject, Subscription } from "rxjs";
 
 export interface MenuItem {
 	name: string;
@@ -89,7 +89,7 @@ export interface WebBusEvent {
 	payload: WebCreateData | WebPatchData; // payload
 }
 
-export const WebBus = new BehaviorSubject<WebBusEvent | null>(null);
+export const WebBus = new ReplaySubject<WebBusEvent>();
 
 (window as any).SubscribeWebBus = (
 	next: (v: WebBusEvent | null) => {}
