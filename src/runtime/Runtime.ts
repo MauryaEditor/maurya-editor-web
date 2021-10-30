@@ -147,3 +147,7 @@ function syncEngine() {
 }
 
 syncEngine();
+
+(window as any).ReplayAllEvents = (cb: (ev: WebBusEvent) => void) => {
+	RuntimeState.tempEvents.forEach(cb);
+};
