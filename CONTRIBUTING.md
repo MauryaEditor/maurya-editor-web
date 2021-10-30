@@ -67,7 +67,7 @@ Once all the node modules are installed, run `npm start` or `npm build` to valid
 2. Close the milestone and create a new one for the next release.
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project
-owners to license your work under the terms of the [MIT License](LICENSE.txt).
+owners to license your work under the terms of the [GPL v2.0 License](COPYING).
 
 <a name="references"></a>
 References:
