@@ -33,16 +33,17 @@ export const DesignContainer: React.FC = (props) => {
 	useEffect(() => {
 		if (compContainer.current && combinedContainer.current) {
 			// mouse over component box and no component selected -> cursor = grab
+			const mouseOverListener = (ev: MouseEvent) => {
+				if (!DesignComponentSelected.value) {
+					setCompCursor("grab");
+				}
+			};
 			compContainer.current.addEventListener(
 				"mouseover",
-				(ev: MouseEvent) => {
-					if (!DesignComponentSelected.value) {
-						setCompCursor("grab");
-					}
-				}
+				mouseOverListener
 			);
 			// design component selected -> cursor = grabbing
-			DesignComponentSelected.subscribe({
+			const subscription = DesignComponentSelected.subscribe({
 				next: (v) => {
 					if (v) {
 						setCursor("grabbing");
@@ -55,14 +56,33 @@ export const DesignContainer: React.FC = (props) => {
 				},
 			});
 			// mouse leave, mouse up -> DesignComponent assigned nil; cursor = pointer
-			combinedContainer.current.addEventListener("mouseleave", () => {
+			const mouseLeaveOrUpListener = () => {
 				DesignComponentSelected.next(null);
 				setCursor("default");
-			});
-			combinedContainer.current.addEventListener("mouseup", () => {
-				DesignComponentSelected.next(null);
-				setCursor("default");
-			});
+			};
+			combinedContainer.current.addEventListener(
+				"mouseleave",
+				mouseOverListener
+			);
+			combinedContainer.current.addEventListener(
+				"mouseup",
+				mouseLeaveOrUpListener
+			);
+			return () => {
+				compContainer.current?.removeEventListener(
+					"mouseover",
+					mouseOverListener
+				);
+				subscription.unsubscribe();
+				combinedContainer.current?.removeEventListener(
+					"mouseleave",
+					mouseOverListener
+				);
+				combinedContainer.current?.removeEventListener(
+					"mouseup",
+					mouseLeaveOrUpListener
+				);
+			};
 		}
 	}, []);
 
@@ -72,7 +92,7 @@ export const DesignContainer: React.FC = (props) => {
 	const [sampleLeft, setSampleLeft] = useState<string>("");
 	useEffect(() => {
 		// design component selected -> set on-drag component
-		DesignComponentSelected.subscribe({
+		const subscription = DesignComponentSelected.subscribe({
 			next: (v) => {
 				if (v) {
 					setSampleComp(v);
@@ -82,15 +102,28 @@ export const DesignContainer: React.FC = (props) => {
 				}
 			},
 		});
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, []);
 	useEffect(() => {
 		if (combinedContainer.current) {
-			combinedContainer.current.addEventListener("mousemove", (ev) => {
+			const mouseMoveListener = (ev: MouseEvent) => {
 				// container top and left
 				const { top, left } = getCoords(combinedContainer.current!);
 				setSampleTop(`${ev.clientY - top + 10}px`);
 				setSampleLeft(`${ev.clientX - left + 10}px`);
-			});
+			};
+			combinedContainer.current.addEventListener(
+				"mousemove",
+				mouseMoveListener
+			);
+			return () => {
+				combinedContainer.current?.removeEventListener(
+					"mousemove",
+					mouseMoveListener
+				);
+			};
 		}
 	}, [combinedContainer]);
 	return (
