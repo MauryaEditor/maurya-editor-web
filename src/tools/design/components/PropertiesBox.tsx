@@ -52,25 +52,28 @@ export const PropertiesBox: React.FC = (props) => {
 	useEffect(() => {
 		if (properties && ID) {
 			const propertyNames = Object.keys(properties);
+			const comps: [
+				React.FC<any>,
+				{
+					ID: string;
+					propertyName: string;
+					initialValue: string;
+				}
+			][] = [];
 			for (let i = 0; i < propertyNames.length; i++) {
 				if (properties[propertyNames[i]].type === "TextProperty") {
-					setComps((old) => {
-						return [
-							...old,
-							[
-								TextProperty,
-								// Simplification-9 Send ID instead of bus
-								{
-									ID,
-									propertyName: propertyNames[i],
-									initialValue:
-										properties[propertyNames[i]].value,
-								},
-							],
-						];
-					});
+					comps.push([
+						TextProperty,
+						// Simplification-9 Send ID instead of bus
+						{
+							ID,
+							propertyName: propertyNames[i],
+							initialValue: properties[propertyNames[i]].value,
+						},
+					]);
 				}
 			}
+			setComps(comps);
 		}
 	}, [properties, setComps, ID]);
 

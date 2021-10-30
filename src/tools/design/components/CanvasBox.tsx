@@ -115,47 +115,35 @@ export const CanvasBox: React.FC = (props) => {
 		const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v) {
 				if (v.type === "CREATE") {
-					setRenderedComps((val) => {
-						let compItem: ComponentItem;
-						const webCreateData = v.payload as WebCreateData;
-						for (
-							let i = 0;
-							i < ComponentRegistry.value.length;
-							i++
-						) {
-							const compItems = ComponentRegistry.value[i][1];
-							for (let j = 0; j < compItems.length; j++) {
-								if (
-									compItems[j].key === webCreateData.compKey
-								) {
-									compItem = compItems[j];
-									break;
-								}
+					let compItem: ComponentItem;
+					const webCreateData = v.payload as WebCreateData;
+					for (let i = 0; i < ComponentRegistry.value.length; i++) {
+						const compItems = ComponentRegistry.value[i][1];
+						for (let j = 0; j < compItems.length; j++) {
+							if (compItems[j].key === webCreateData.compKey) {
+								compItem = compItems[j];
+								break;
 							}
 						}
-						// Simplification-3: Props must take ID and extend style with position, top, left
-						const renderProps = compItem!.renderCompProps!();
-						const bus = new BehaviorSubject<any>({});
-						const props = {
-							renderProps: renderProps,
-							...webCreateData.state,
-							ID: webCreateData.ID,
-						};
-						DrawRuntimeBus.next({
-							ID: webCreateData.ID,
-							payload: { bus: bus, ...props },
-						});
-						if (compItem!)
-							return [
-								...val,
-								[
-									compItem.renderComp,
-									{ ...props },
-									v.payload.ID,
-								],
-							];
-						return [...val];
+					}
+					// Simplification-3: Props must take ID and extend style with position, top, left
+					const renderProps = compItem!.renderCompProps!();
+					const bus = new BehaviorSubject<any>({});
+					const props = {
+						renderProps: renderProps,
+						...webCreateData.state,
+						ID: webCreateData.ID,
+					};
+					DrawRuntimeBus.next({
+						ID: webCreateData.ID,
+						payload: { bus: bus, ...props },
 					});
+					if (compItem!) {
+						setRenderedComps((val) => [
+							...val,
+							[compItem.renderComp, { ...props }, v.payload.ID],
+						]);
+					}
 				}
 			}
 		});
@@ -168,23 +156,13 @@ export const CanvasBox: React.FC = (props) => {
 		const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v && v.type === "PATCH") {
 				const webPatchData = v.payload as WebPatchData;
-				// Simplification-4 Maintain a map of tempID and renderedComps
-				// Why not put rendered component in DataRuntimeState?
-				// Because we don't know if the component gets destroyed
-				for (let i = 0; i < renderedComps.length; i++) {
-					const tempID = renderedComps[i][2];
-					if (tempID === webPatchData.ID)
-						// Simplification-5 Bus can take any key value pair
-						// but some keys are reserved - style, properties and appearnce
-						// Why? - For PropertyBox to work properly
-						DrawRuntimeState[tempID].bus.next(webPatchData.slice);
-				}
+				DrawRuntimeState[v.payload.ID].bus.next(webPatchData.slice);
 			}
 		});
 		return () => {
 			subscription.unsubscribe();
 		};
-	}, [renderedComps]);
+	}, []);
 
 	return (
 		<div

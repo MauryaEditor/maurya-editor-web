@@ -31,13 +31,6 @@ export const TextProperty: React.FC<{
 }> = (props) => {
 	// Publish to bus on value change
 	const [value, setValue] = useState<string>(props.initialValue);
-	useEffect(() => {
-		// Simplification-8 PostPatchEvent instead of publishing on bus
-		PostPatchEvent({
-			ID: props.ID,
-			slice: { properties: { [props.propertyName]: value } },
-		});
-	}, [props.ID, props.propertyName, value]);
 
 	return (
 		<div>
@@ -45,6 +38,14 @@ export const TextProperty: React.FC<{
 			<input
 				type="text"
 				onChange={(event) => {
+					PostPatchEvent({
+						ID: props.ID,
+						slice: {
+							properties: {
+								[props.propertyName]: event.target.value,
+							},
+						},
+					});
 					setValue(event.target.value);
 				}}
 				value={value}
