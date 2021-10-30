@@ -37,8 +37,8 @@ export const useStyle = (ID: string, initialStyle: React.CSSProperties) => {
 
 	// listen to patch events
 	useEffect(() => {
-		if (bus)
-			bus.subscribe({
+		if (bus) {
+			const subscription = bus.subscribe({
 				next: (v) => {
 					if (v.style) {
 						setStyle((old: React.CSSProperties | undefined) => {
@@ -47,6 +47,10 @@ export const useStyle = (ID: string, initialStyle: React.CSSProperties) => {
 					}
 				},
 			});
+			return () => {
+				subscription.unsubscribe();
+			};
+		}
 	}, [setStyle, bus]);
 
 	return [style, setStyle];

@@ -85,7 +85,7 @@ export const CanvasBox: React.FC = (props) => {
 	// post events: create and patch
 	useEffect(() => {
 		if (canvas.current && root.current) {
-			canvas.current.addEventListener("mouseup", (ev) => {
+			const mouseUpListener = (ev: MouseEvent) => {
 				if (DesignComponentSelected.value) {
 					// Simplification-1: Send style in PostCreateEvent
 					const { top, left } = getCoords(root.current!);
@@ -102,7 +102,8 @@ export const CanvasBox: React.FC = (props) => {
 					});
 					// Simplification-2: Remove Patch Event
 				}
-			});
+			};
+			canvas.current.addEventListener("mouseup", mouseUpListener);
 		}
 	}, [canvas, root]);
 
@@ -111,7 +112,7 @@ export const CanvasBox: React.FC = (props) => {
 		[React.FC, object, string][]
 	>([]);
 	useEffect(() => {
-		SubscribeWebBus((v: WebBusEvent | null) => {
+		const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v) {
 				if (v.type === "CREATE") {
 					setRenderedComps((val) => {
@@ -158,10 +159,13 @@ export const CanvasBox: React.FC = (props) => {
 				}
 			}
 		});
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [setRenderedComps]);
 
 	useEffect(() => {
-		SubscribeWebBus((v: WebBusEvent | null) => {
+		const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
 			if (v && v.type === "PATCH") {
 				const webPatchData = v.payload as WebPatchData;
 				// Simplification-4 Maintain a map of tempID and renderedComps
@@ -177,6 +181,9 @@ export const CanvasBox: React.FC = (props) => {
 				}
 			}
 		});
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [renderedComps]);
 
 	return (

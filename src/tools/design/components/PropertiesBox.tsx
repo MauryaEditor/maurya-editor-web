@@ -36,13 +36,16 @@ export const PropertiesBox: React.FC = (props) => {
 	// listen to DisplayProperty
 	useEffect(() => {
 		// Simplification-6 DisplayProperty should get ID instead of bus
-		DisplayProperty.subscribe({
+		const subscription = DisplayProperty.subscribe({
 			next: (v) => {
 				setID(v?.ID);
 				setProperties(v?.properties);
 				setComps([]);
 			},
 		});
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [setID, setProperties, setComps]);
 
 	// show properties

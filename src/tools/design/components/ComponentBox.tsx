@@ -23,11 +23,14 @@ import { DesignComponentSelected } from "../rxjs/DrawState";
 export const ComponentBox: React.FC = (props) => {
 	const [componentLists, setComponentLists] = useState<ComponentList>([]);
 	useEffect(() => {
-		ComponentRegistry.subscribe({
+		const subscription = ComponentRegistry.subscribe({
 			next: (v) => {
 				setComponentLists(v);
 			},
 		});
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [setComponentLists]);
 	return (
 		<div style={{ borderRight: "1px solid black", height: "100%" }}>

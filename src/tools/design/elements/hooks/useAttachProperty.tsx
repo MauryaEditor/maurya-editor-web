@@ -45,8 +45,8 @@ export function useAttachProperty<ReturnType>(
 
 	// subscribe for changes
 	useEffect(() => {
-		if (bus)
-			bus.subscribe({
+		if (bus) {
+			const subscription = bus.subscribe({
 				next: (v) => {
 					if (
 						v["properties"] &&
@@ -56,6 +56,10 @@ export function useAttachProperty<ReturnType>(
 					}
 				},
 			});
+			return () => {
+				subscription.unsubscribe();
+			};
+		}
 	}, [bus, propertyName, setValue]);
 
 	return value;
