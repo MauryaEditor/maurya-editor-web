@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
+import { IDPoolResponse } from "../dto/IDPoolResponse";
 import {
 	WebBus,
 	WebBusEvent,
@@ -50,9 +51,8 @@ const storeIDsAt = (index: number, payload: string[], token: string) => {
 const AccountSize = 20;
 
 const InitRuntime = async () => {
-	let { payload, token }: { payload: string[]; token: string } =
-		await fetchIDs(AccountSize);
-	storeIDsAt(0, payload, token);
+	let { payload, token }: IDPoolResponse = await fetchIDs(AccountSize);
+	storeIDsAt(0, payload.pool, token);
 };
 
 InitRuntime()
@@ -69,15 +69,14 @@ const getID = (): string => {
 			?.payload[RuntimeState.currIndex % AccountSize];
 	RuntimeState.currIndex++;
 	if (RuntimeState.currIndex % AccountSize === 0) {
-		fetchIDs(AccountSize).then(
-			(val: { payload: string[]; token: string }) => {
-				storeIDsAt(
-					Math.floor(RuntimeState.currIndex / AccountSize),
-					val.payload,
-					val.token
-				);
-			}
-		);
+		fetchIDs(AccountSize).then((val: IDPoolResponse) => {
+			console.log(val);
+			storeIDsAt(
+				Math.floor(RuntimeState.currIndex / AccountSize),
+				val.payload.pool,
+				val.token
+			);
+		});
 	}
 	if (ID) {
 		(RuntimeState.IDIssued as any)[ID] = true;
