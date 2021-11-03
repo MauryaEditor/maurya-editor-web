@@ -52,7 +52,28 @@ const storeIDsAt = (index: number, payload: string[], token: string) => {
 
 const AccountSize = 20;
 
+// retrieve events from backend
+async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
+	const { token } = getAuth();
+	const projectID = getProjectID();
+	// TODO: handle what if non-logged in user tries to access this page
+	if (!token || !projectID) {
+		return;
+	}
+	return await fetch(
+		`${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
+	).then((resp) => resp.json());
+}
+
 const InitRuntime = async () => {
+	const events = await retrieveEvents();
+	console.log(events);
+	if (events) {
+		events.forEach((event) => {
+			console.log(event);
+			WebBus.next(event);
+		});
+	}
 	let { payload, token }: IDPoolResponse = await fetchIDs(AccountSize);
 	storeIDsAt(0, payload.pool, token);
 };
