@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 declare interface WebPatchData {
 	ID: string;
 	slice: { [key: string | number]: any };
