@@ -17,7 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
 import { ComponentItem } from "./ComponentRegistry";
 
 export const DesignComponentSelected =
@@ -28,7 +28,7 @@ export type PropertyMap = { [key: string]: { value: any; type: string } };
 // store ID: Bus
 export const DrawRuntimeState: {
 	[ID: string]: { [key: string | number]: any } & {
-		bus: BehaviorSubject<any>;
+		bus: ReplaySubject<any>;
 		style: React.CSSProperties;
 		properties: PropertyMap;
 		renderProps: { [key: string | number]: any };
@@ -39,7 +39,7 @@ export const DrawRuntimeState: {
 export const DrawRuntimeBus = new BehaviorSubject<{
 	ID: string;
 	payload: {
-		bus?: BehaviorSubject<any>;
+		bus?: ReplaySubject<any>;
 		style?: React.CSSProperties;
 		properties?: PropertyMap;
 		renderProps?: { [key: string | number]: any };

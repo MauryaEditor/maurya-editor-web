@@ -38,7 +38,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 		props.ID,
 		"design/text",
 		"Color",
-		props.properties?.color || ""
+		props.properties?.Color || ""
 	);
 
 	// Simplification-10 Dislayproperty sends ID instead of bus

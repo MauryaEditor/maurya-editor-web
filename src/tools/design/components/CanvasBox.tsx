@@ -17,7 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useRef, useState } from "react";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, ReplaySubject, Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import {
 	DesignComponentSelected,
@@ -128,7 +128,7 @@ export const CanvasBox: React.FC = (props) => {
 					}
 					// Simplification-3: Props must take ID and extend style with position, top, left
 					const renderProps = compItem!.renderCompProps!();
-					const bus = new BehaviorSubject<any>({});
+					const bus = new ReplaySubject<any>();
 					const props = {
 						renderProps: renderProps,
 						...webCreateData.state,
