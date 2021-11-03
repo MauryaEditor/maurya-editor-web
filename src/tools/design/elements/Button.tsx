@@ -24,7 +24,7 @@ import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
-const RenderComp: React.FC<RenderProps> = (props) => {
+const Button: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useStyle(props.ID, props.style!);
 	// attach properties
 	const TextValue = useAttachProperty<string>(
@@ -73,7 +73,7 @@ const manifest = {
 	props: { name: "Button" },
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Button" },
-	renderComp: RenderComp,
+	renderComp: Button,
 	renderCompProps: () => {
 		return {
 			style: {} as React.CSSProperties,

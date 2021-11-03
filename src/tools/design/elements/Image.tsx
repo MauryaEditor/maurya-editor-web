@@ -22,7 +22,7 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import { useBus } from "./hooks/useBus";
 import AddImage from "./assets/add-image.png";
-const RenderComp: React.FC<RenderProps> = (props) => {
+const Image: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useState(props.style!);
 	const bus = useBus(props.ID);
 
@@ -54,7 +54,7 @@ const manifest = {
 	props: { name: "Image" },
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Image" },
-	renderComp: RenderComp,
+	renderComp: Image,
 	renderCompProps: () => {
 		return {
 			style: { width: "2em" } as React.CSSProperties,

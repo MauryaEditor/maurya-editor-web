@@ -22,7 +22,7 @@ import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
-const RenderComp: React.FC<RenderProps> = (props) => {
+const Inputbox: React.FC<RenderProps> = (props) => {
 	const [style, setStyle] = useState(props.style!);
 	const bus = useBus(props.ID);
 
@@ -54,7 +54,7 @@ const manifest = {
 	props: { name: "Inputbox" },
 	ondragComp: SimpleDragComponent,
 	ondragProps: { name: "Inputbox" },
-	renderComp: RenderComp,
+	renderComp: Inputbox,
 	renderCompProps: () => {
 		return {
 			style: {} as React.CSSProperties,
