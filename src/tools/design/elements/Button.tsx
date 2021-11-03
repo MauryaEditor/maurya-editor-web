@@ -34,6 +34,13 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 		props.properties?.Value || ""
 	);
 
+	const color = useAttachProperty<string>(
+		props.ID,
+		"design/text",
+		"Color",
+		props.properties?.color || ""
+	);
+
 	// Simplification-10 Dislayproperty sends ID instead of bus
 	// TODO: move this effect to when component is selected
 	useEffect(() => {
@@ -57,7 +64,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 			properties,
 		});
 	}, []);
-	return <button style={{ ...style }}>{TextValue}</button>;
+	return <button style={{ ...style, color }}>{TextValue}</button>;
 };
 
 const manifest = {
