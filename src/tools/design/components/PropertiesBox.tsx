@@ -19,10 +19,25 @@
 import React, { useEffect, useState } from "react";
 import { TextProperty } from "../properties/TextProperty";
 import { DisplayProperty, PropertyMap } from "../rxjs/DrawState";
+import { PropertyItem, PropertyRegistry } from "../rxjs/PropertyRegistry";
 
 export const PropertiesBox: React.FC = (props) => {
+	const [registeredProperties, setRegisteredProperties] = useState<{
+		[pkgSlashKey: string]: PropertyItem;
+	}>({});
+	useEffect(() => {
+		const subscription = PropertyRegistry.subscribe({
+			next: (v) => {
+				setRegisteredProperties(v);
+			},
+		});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [setRegisteredProperties]);
 	const [ID, setID] = useState<string>();
-	const [properties, setProperties] = useState<PropertyMap>();
+	const [properties, setProperties] =
+		useState<{ propertyName: string; value: string; type: string }[]>();
 	const [comps, setComps] = useState<
 		[
 			React.FC<any>,
@@ -50,9 +65,8 @@ export const PropertiesBox: React.FC = (props) => {
 
 	// show properties
 	useEffect(() => {
-		if (properties && ID) {
-			const propertyNames = Object.keys(properties);
-			const comps: [
+		if (properties && ID && registeredProperties) {
+			const newComps: [
 				React.FC<any>,
 				{
 					ID: string;
@@ -60,22 +74,23 @@ export const PropertiesBox: React.FC = (props) => {
 					initialValue: string;
 				}
 			][] = [];
-			for (let i = 0; i < propertyNames.length; i++) {
-				if (properties[propertyNames[i]].type === "TextProperty") {
-					comps.push([
-						TextProperty,
-						// Simplification-9 Send ID instead of bus
+			for (let i = 0; i < properties.length; i++) {
+				const property = properties[i];
+				const type = property.type;
+				if (registeredProperties[type]) {
+					newComps.push([
+						registeredProperties[type].comp,
 						{
 							ID,
-							propertyName: propertyNames[i],
-							initialValue: properties[propertyNames[i]].value,
+							propertyName: property.propertyName,
+							initialValue: property.value,
 						},
 					]);
 				}
 			}
-			setComps(comps);
+			setComps(newComps);
 		}
-	}, [properties, setComps, ID]);
+	}, [properties, setComps, ID, registeredProperties]);
 
 	return (
 		<div style={{ borderLeft: "1px solid black", height: "100%" }}>

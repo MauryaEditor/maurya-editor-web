@@ -32,6 +32,7 @@ export const DrawRuntimeState: {
 		style: React.CSSProperties;
 		properties: PropertyMap;
 		renderProps: { [key: string | number]: any };
+		propertyOrder?: string[];
 	};
 } = {};
 
@@ -42,6 +43,7 @@ export const DrawRuntimeBus = new BehaviorSubject<{
 		style?: React.CSSProperties;
 		properties?: PropertyMap;
 		renderProps?: { [key: string | number]: any };
+		propertyOrder?: string[];
 	};
 } | null>(null);
 
@@ -57,5 +59,5 @@ DrawRuntimeBus.subscribe({
 
 export const DisplayProperty = new BehaviorSubject<{
 	ID: string;
-	properties: PropertyMap;
+	properties: { propertyName: string; value: string; type: string }[];
 } | null>(null);

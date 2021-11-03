@@ -29,7 +29,7 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	// attach properties
 	const TextValue = useAttachProperty<string>(
 		props.ID,
-		"TextProperty",
+		"design/text",
 		"Value",
 		props.properties?.Value || ""
 	);
@@ -37,9 +37,24 @@ const RenderComp: React.FC<RenderProps> = (props) => {
 	// Simplification-10 Dislayproperty sends ID instead of bus
 	// TODO: move this effect to when component is selected
 	useEffect(() => {
+		const propertyNames = DrawRuntimeState[props.ID].propertyOrder;
+		const properties: {
+			propertyName: string;
+			value: string;
+			type: string;
+		}[] = [];
+		for (let i = 0; propertyNames && i < propertyNames?.length; i++) {
+			properties.push({
+				propertyName: propertyNames[i],
+				value: DrawRuntimeState[props.ID].properties[propertyNames[i]]
+					.value,
+				type: DrawRuntimeState[props.ID].properties[propertyNames[i]]
+					.type,
+			});
+		}
 		DisplayProperty.next({
 			ID: props.ID,
-			properties: { ...DrawRuntimeState[props.ID!].properties },
+			properties,
 		});
 	}, []);
 	return <button style={{ ...style }}>{TextValue}</button>;

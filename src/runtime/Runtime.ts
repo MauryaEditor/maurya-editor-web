@@ -67,10 +67,8 @@ async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
 
 const InitRuntime = async () => {
 	const events = await retrieveEvents();
-	console.log(events);
 	if (events) {
 		events.forEach((event) => {
-			console.log(event);
 			WebBus.next(event);
 		});
 	}

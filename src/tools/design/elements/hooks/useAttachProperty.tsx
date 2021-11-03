@@ -39,6 +39,13 @@ export function useAttachProperty<ReturnType>(
 					...DrawRuntimeState[ID].properties!,
 					[propertyName]: { value: value, type: propertyType },
 				},
+				propertyOrder: DrawRuntimeState[ID].propertyOrder
+					? !DrawRuntimeState[ID].propertyOrder?.includes(
+							propertyName
+					  )
+						? [...DrawRuntimeState[ID].propertyOrder!, propertyName]
+						: [...DrawRuntimeState[ID].propertyOrder!]
+					: [propertyName],
 			},
 		});
 	}, [value, ID, propertyName, propertyType]);
