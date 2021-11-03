@@ -17,6 +17,8 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import { IDPoolResponse } from "../dto/IDPoolResponse";
+import { getAuth } from "../lib/getAuth";
+import { getProjectID } from "../lib/getProjectID";
 import {
 	WebBus,
 	WebBusEvent,
@@ -115,12 +117,17 @@ export const PostPatchEvent = (payload: WebPatchData): string => {
 
 // send event
 const sendEvent = (event: WebBusEvent) => {
+	const { token } = getAuth();
+	const projectID = getProjectID();
+	if (!token || !projectID) {
+		return;
+	}
 	const headers = new Headers();
 	headers.append("Content-Type", "application/json");
 	const options = {
 		method: "POST",
 		headers: headers,
-		body: JSON.stringify(event),
+		body: JSON.stringify({ ...event, token, projectID }),
 	};
 	return fetch(
 		`${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
