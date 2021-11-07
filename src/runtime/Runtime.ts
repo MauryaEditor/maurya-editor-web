@@ -65,7 +65,14 @@ async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
 	).then((resp) => resp.json());
 }
 
+/**
+ * It does two things:
+ * 1. Retrieve old events if the project is old
+ * 2. fetch new IDs
+ */
 const InitRuntime = async () => {
+	// TODO: convert all the tasks into a single Promise.all
+
 	const events = await retrieveEvents();
 	if (events) {
 		events.forEach((event) => {
@@ -89,6 +96,8 @@ const getID = (): string => {
 		RuntimeState.IDBank[Math.floor(RuntimeState.currIndex / AccountSize)]
 			?.payload[RuntimeState.currIndex % AccountSize];
 	RuntimeState.currIndex++;
+	// reload the pool if it's depleted
+	// TODO: fetch early i.e. dont let the pool deplete
 	if (RuntimeState.currIndex % AccountSize === 0) {
 		fetchIDs(AccountSize).then((val: IDPoolResponse) => {
 			console.log(val);
