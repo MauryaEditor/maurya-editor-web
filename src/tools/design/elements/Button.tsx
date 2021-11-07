@@ -41,29 +41,6 @@ const Button: React.FC<RenderProps> = (props) => {
 		props.properties?.Color || ""
 	);
 
-	// Simplification-10 Dislayproperty sends ID instead of bus
-	// TODO: move this effect to when component is selected
-	useEffect(() => {
-		const propertyNames = DrawRuntimeState[props.ID].propertyOrder;
-		const properties: {
-			propertyName: string;
-			value: string;
-			type: string;
-		}[] = [];
-		for (let i = 0; propertyNames && i < propertyNames?.length; i++) {
-			properties.push({
-				propertyName: propertyNames[i],
-				value: DrawRuntimeState[props.ID].properties[propertyNames[i]]
-					.value,
-				type: DrawRuntimeState[props.ID].properties[propertyNames[i]]
-					.type,
-			});
-		}
-		DisplayProperty.next({
-			ID: props.ID,
-			properties,
-		});
-	}, []);
 	return <button style={{ ...style, color }}>{TextValue}</button>;
 };
 
