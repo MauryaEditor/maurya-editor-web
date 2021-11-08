@@ -16,35 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useState } from "react";
-import { useBus } from "./hooks/useBus";
+import React from "react";
+import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Checkbox: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useState(props.style!);
-	const bus = useBus(props.ID);
+	const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	// render component again if props changes
-	// can be used from places where acces to component is available
-	useEffect(() => {
-		setStyle(props.style!);
-	}, [props.style, setStyle]);
-
-	// listen to patch events
-	useEffect(() => {
-		if (bus)
-			bus.subscribe({
-				next: (v) => {
-					if (v.style) {
-						setStyle((old: React.CSSProperties | undefined) => {
-							return { ...old!, ...v.style };
-						});
-					}
-				},
-			});
-	}, [setStyle, bus]);
 	return <input type="checkbox" style={{ ...style }} />;
 };
 
