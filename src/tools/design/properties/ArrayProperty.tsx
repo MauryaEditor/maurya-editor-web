@@ -19,11 +19,11 @@
 import React from "react";
 
 export function ArrayProperty<T>(
-	props: React.PropsWithChildren<{
-		ID: string;
-		propertyName: string;
-		initialValue: string;
-	}>
+  props: React.PropsWithChildren<{
+    ID: string;
+    propertyName: string;
+    initialValue: string;
+  }>
 ) {
-	return <div></div>;
+  return <div></div>;
 }

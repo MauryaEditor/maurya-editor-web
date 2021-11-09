@@ -22,81 +22,81 @@ import { DisplayProperty, PropertyMap } from "../rxjs/DrawState";
 import { PropertyItem, PropertyRegistry } from "../rxjs/PropertyRegistry";
 
 export const PropertiesBox: React.FC = (props) => {
-	const [registeredProperties, setRegisteredProperties] = useState<{
-		[pkgSlashKey: string]: PropertyItem;
-	}>({});
-	useEffect(() => {
-		const subscription = PropertyRegistry.subscribe({
-			next: (v) => {
-				setRegisteredProperties(v);
-			},
-		});
-		return () => {
-			subscription.unsubscribe();
-		};
-	}, [setRegisteredProperties]);
-	const [ID, setID] = useState<string>();
-	const [properties, setProperties] =
-		useState<{ propertyName: string; value: string; type: string }[]>();
-	const [comps, setComps] = useState<
-		[
-			React.FC<any>,
-			{
-				ID: string;
-				propertyName: string;
-				initialValue: string;
-			}
-		][]
-	>([]);
-	// listen to DisplayProperty
-	useEffect(() => {
-		// Simplification-6 DisplayProperty should get ID instead of bus
-		const subscription = DisplayProperty.subscribe({
-			next: (v) => {
-				setID(v?.ID);
-				setProperties(v?.properties);
-				setComps([]);
-			},
-		});
-		return () => {
-			subscription.unsubscribe();
-		};
-	}, [setID, setProperties, setComps]);
+  const [registeredProperties, setRegisteredProperties] = useState<{
+    [pkgSlashKey: string]: PropertyItem;
+  }>({});
+  useEffect(() => {
+    const subscription = PropertyRegistry.subscribe({
+      next: (v) => {
+        setRegisteredProperties(v);
+      },
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setRegisteredProperties]);
+  const [ID, setID] = useState<string>();
+  const [properties, setProperties] =
+    useState<{ propertyName: string; value: string; type: string }[]>();
+  const [comps, setComps] = useState<
+    [
+      React.FC<any>,
+      {
+        ID: string;
+        propertyName: string;
+        initialValue: string;
+      }
+    ][]
+  >([]);
+  // listen to DisplayProperty
+  useEffect(() => {
+    // Simplification-6 DisplayProperty should get ID instead of bus
+    const subscription = DisplayProperty.subscribe({
+      next: (v) => {
+        setID(v?.ID);
+        setProperties(v?.properties);
+        setComps([]);
+      },
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setID, setProperties, setComps]);
 
-	// show properties
-	useEffect(() => {
-		if (properties && ID && registeredProperties) {
-			const newComps: [
-				React.FC<any>,
-				{
-					ID: string;
-					propertyName: string;
-					initialValue: string;
-				}
-			][] = [];
-			for (let i = 0; i < properties.length; i++) {
-				const property = properties[i];
-				const type = property.type;
-				if (registeredProperties[type]) {
-					newComps.push([
-						registeredProperties[type].comp,
-						{
-							ID,
-							propertyName: property.propertyName,
-							initialValue: property.value,
-						},
-					]);
-				}
-			}
-			setComps(newComps);
-		}
-	}, [properties, setComps, ID, registeredProperties]);
+  // show properties
+  useEffect(() => {
+    if (properties && ID && registeredProperties) {
+      const newComps: [
+        React.FC<any>,
+        {
+          ID: string;
+          propertyName: string;
+          initialValue: string;
+        }
+      ][] = [];
+      for (let i = 0; i < properties.length; i++) {
+        const property = properties[i];
+        const type = property.type;
+        if (registeredProperties[type]) {
+          newComps.push([
+            registeredProperties[type].comp,
+            {
+              ID,
+              propertyName: property.propertyName,
+              initialValue: property.value,
+            },
+          ]);
+        }
+      }
+      setComps(newComps);
+    }
+  }, [properties, setComps, ID, registeredProperties]);
 
-	return (
-		<div style={{ borderLeft: "1px solid black", height: "100%" }}>
-			{comps.map(([Comp, props]) => {
-				return <Comp {...props} key={props.propertyName} />;
-			})}
-		</div>
-	);
+  return (
+    <div style={{ borderLeft: "1px solid black", height: "100%" }}>
+      {comps.map(([Comp, props]) => {
+        return <Comp {...props} key={props.propertyName} />;
+      })}
+    </div>
+  );
 };

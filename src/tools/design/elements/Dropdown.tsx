@@ -24,31 +24,31 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Dropdown: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	// attach properties
-	const Options = useAttachProperty<string[]>(
-		props.ID,
-		"ArrayProperty",
-		"Options",
-		props.properties?.Options || []
-	);
+  // attach properties
+  const Options = useAttachProperty<string[]>(
+    props.ID,
+    "ArrayProperty",
+    "Options",
+    props.properties?.Options || []
+  );
 
-	return <select style={{ ...style }}>{Options}</select>;
+  return <select style={{ ...style }}>{Options}</select>;
 };
 
 const manifest = {
-	key: "Dropdown",
-	comp: SimpleComponent,
-	props: { name: "Dropdown" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Dropdown" },
-	renderComp: Dropdown,
-	renderCompProps: () => {
-		return {
-			style: {} as React.CSSProperties,
-		};
-	},
+  key: "Dropdown",
+  comp: SimpleComponent,
+  props: { name: "Dropdown" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Dropdown" },
+  renderComp: Dropdown,
+  renderCompProps: () => {
+    return {
+      style: {} as React.CSSProperties,
+    };
+  },
 };
 
 export default manifest;

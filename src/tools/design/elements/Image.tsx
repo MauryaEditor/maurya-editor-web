@@ -24,23 +24,23 @@ import AddImage from "./assets/add-image.png";
 import { useStyle } from "./hooks/useStyle";
 
 const Image: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	return <img style={{ ...style }} alt={""} src={AddImage} width="100px" />;
+  return <img style={{ ...style }} alt={""} src={AddImage} width="100px" />;
 };
 
 const manifest = {
-	key: "Image",
-	comp: SimpleComponent,
-	props: { name: "Image" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Image" },
-	renderComp: Image,
-	renderCompProps: () => {
-		return {
-			style: { width: "2em" } as React.CSSProperties,
-		};
-	},
+  key: "Image",
+  comp: SimpleComponent,
+  props: { name: "Image" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Image" },
+  renderComp: Image,
+  renderCompProps: () => {
+    return {
+      style: { width: "2em" } as React.CSSProperties,
+    };
+  },
 };
 
 export default manifest;

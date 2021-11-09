@@ -28,37 +28,37 @@ import { RenderProps } from "../elements/types/RenderProps";
 
 // TODO: write a better type
 export type ComponentItem = {
-	key: string;
-	comp: React.FC<object>;
-	props: object;
-	ondragComp: React.FC<object>;
-	ondragProps: object;
-	renderComp: React.FC<any>;
-	renderCompProps: () => { [key: string | number]: any } & Omit<
-		RenderProps,
-		"ID"
-	>;
+  key: string;
+  comp: React.FC<object>;
+  props: object;
+  ondragComp: React.FC<object>;
+  ondragProps: object;
+  renderComp: React.FC<any>;
+  renderCompProps: () => { [key: string | number]: any } & Omit<
+    RenderProps,
+    "ID"
+  >;
 };
 
 export type ComponentList = [string, ComponentItem[]][];
 
 const InputList: [string, ComponentItem[]] = [
-	"Input",
-	[
-		InputboxManifest,
-		CheckboxManifest,
-		DropdownManifest,
-		ButtonManifest,
-		ImageManifest,
-	],
+  "Input",
+  [
+    InputboxManifest,
+    CheckboxManifest,
+    DropdownManifest,
+    ButtonManifest,
+    ImageManifest,
+  ],
 ];
 
 const OutputList: [string, ComponentItem[]] = [
-	"Output",
-	[TextBoxManifest as ComponentItem],
+  "Output",
+  [TextBoxManifest as ComponentItem],
 ];
 
 export const ComponentRegistry = new BehaviorSubject<ComponentList>([
-	InputList,
-	OutputList,
+  InputList,
+  OutputList,
 ]);

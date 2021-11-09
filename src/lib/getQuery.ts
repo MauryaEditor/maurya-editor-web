@@ -1,3 +1,3 @@
 export const getQuery = () => {
-	return new URLSearchParams(window.location.search);
+  return new URLSearchParams(window.location.search);
 };

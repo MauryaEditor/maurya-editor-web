@@ -20,49 +20,49 @@ import { IDPoolResponse } from "../dto/IDPoolResponse";
 import { getAuth } from "../lib/getAuth";
 import { getProjectID } from "../lib/getProjectID";
 import {
-	WebBus,
-	WebBusEvent,
-	WebCreateData,
-	WebPatchData,
+  WebBus,
+  WebBusEvent,
+  WebCreateData,
+  WebPatchData,
 } from "../rxjs/EditorConfig";
 
 export const RuntimeState: {
-	IDIssued: any;
-	tempEvents: WebBusEvent[];
-	currIndex: number;
-	IDBank: { payload: string[]; token: string }[];
-	currSyncIndex: number;
+  IDIssued: any;
+  tempEvents: WebBusEvent[];
+  currIndex: number;
+  IDBank: { payload: string[]; token: string }[];
+  currSyncIndex: number;
 } = {
-	IDIssued: {},
-	tempEvents: [],
-	currIndex: 0,
-	IDBank: [],
-	currSyncIndex: 0,
+  IDIssued: {},
+  tempEvents: [],
+  currIndex: 0,
+  IDBank: [],
+  currSyncIndex: 0,
 };
 
 const fetchIDs = async (size: number) => {
-	const uri = `${process.env.REACT_APP_BACKEND_ORIGIN}/uuid?size=${size}`;
-	const uris = await fetch(uri).then((resp) => resp.json());
-	return uris;
+  const uri = `${process.env.REACT_APP_BACKEND_ORIGIN}/uuid?size=${size}`;
+  const uris = await fetch(uri).then((resp) => resp.json());
+  return uris;
 };
 
 const storeIDsAt = (index: number, payload: string[], token: string) => {
-	RuntimeState.IDBank[index] = { payload, token };
+  RuntimeState.IDBank[index] = { payload, token };
 };
 
 const AccountSize = 20;
 
 // retrieve events from backend
 async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
-	const { token } = getAuth();
-	const projectID = getProjectID();
-	// TODO: handle what if non-logged in user tries to access this page
-	if (!token || !projectID) {
-		return;
-	}
-	return await fetch(
-		`${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
-	).then((resp) => resp.json());
+  const { token } = getAuth();
+  const projectID = getProjectID();
+  // TODO: handle what if non-logged in user tries to access this page
+  if (!token || !projectID) {
+    return;
+  }
+  return await fetch(
+    `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
+  ).then((resp) => resp.json());
 }
 
 /**
@@ -71,113 +71,111 @@ async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
  * 2. fetch new IDs
  */
 const InitRuntime = async () => {
-	// TODO: convert all the tasks into a single Promise.all
+  // TODO: convert all the tasks into a single Promise.all
 
-	const events = await retrieveEvents();
-	if (events) {
-		events.forEach((event) => {
-			WebBus.next(event);
-		});
-	}
-	let { payload, token }: IDPoolResponse = await fetchIDs(AccountSize);
-	storeIDsAt(0, payload.pool, token);
+  const events = await retrieveEvents();
+  if (events) {
+    events.forEach((event) => {
+      WebBus.next(event);
+    });
+  }
+  let { payload, token }: IDPoolResponse = await fetchIDs(AccountSize);
+  storeIDsAt(0, payload.pool, token);
 };
 
 InitRuntime()
-	.then(() => {
-		console.log("Runtime Init success", RuntimeState);
-	})
-	.catch((err) => {
-		console.error("Runtime Init failed", err);
-	});
+  .then(() => {
+    console.log("Runtime Init success", RuntimeState);
+  })
+  .catch((err) => {
+    console.error("Runtime Init failed", err);
+  });
 
 const getID = (): string => {
-	const ID =
-		RuntimeState.IDBank[Math.floor(RuntimeState.currIndex / AccountSize)]
-			?.payload[RuntimeState.currIndex % AccountSize];
-	RuntimeState.currIndex++;
-	// reload the pool if it's depleted
-	// TODO: fetch early i.e. dont let the pool deplete
-	if (RuntimeState.currIndex % AccountSize === 0) {
-		fetchIDs(AccountSize).then((val: IDPoolResponse) => {
-			console.log(val);
-			storeIDsAt(
-				Math.floor(RuntimeState.currIndex / AccountSize),
-				val.payload.pool,
-				val.token
-			);
-		});
-	}
-	if (ID) {
-		(RuntimeState.IDIssued as any)[ID] = true;
-		return ID;
-	} else {
-		throw new Error("ID Bank is bankrupt");
-	}
+  const ID =
+    RuntimeState.IDBank[Math.floor(RuntimeState.currIndex / AccountSize)]
+      ?.payload[RuntimeState.currIndex % AccountSize];
+  RuntimeState.currIndex++;
+  // reload the pool if it's depleted
+  // TODO: fetch early i.e. dont let the pool deplete
+  if (RuntimeState.currIndex % AccountSize === 0) {
+    fetchIDs(AccountSize).then((val: IDPoolResponse) => {
+      console.log(val);
+      storeIDsAt(
+        Math.floor(RuntimeState.currIndex / AccountSize),
+        val.payload.pool,
+        val.token
+      );
+    });
+  }
+  if (ID) {
+    (RuntimeState.IDIssued as any)[ID] = true;
+    return ID;
+  } else {
+    throw new Error("ID Bank is bankrupt");
+  }
 };
 
 export const PostCreateEvent = (
-	payload: Omit<WebCreateData, "tempID">
+  payload: Omit<WebCreateData, "tempID">
 ): string => {
-	const ID = getID();
-	const webEvent: WebBusEvent = {
-		payload: { ...payload, ID },
-		type: "CREATE",
-	};
-	RuntimeState.tempEvents.push({ ...webEvent });
-	WebBus.next({ ...webEvent });
-	return ID;
+  const ID = getID();
+  const webEvent: WebBusEvent = {
+    payload: { ...payload, ID },
+    type: "CREATE",
+  };
+  RuntimeState.tempEvents.push({ ...webEvent });
+  WebBus.next({ ...webEvent });
+  return ID;
 };
 
 (window as any).PostCreateEvent = PostCreateEvent;
 
 export const PostPatchEvent = (payload: WebPatchData): string => {
-	const webEvent: WebBusEvent = {
-		payload: { ...payload },
-		type: "PATCH",
-	};
-	RuntimeState.tempEvents.push({ ...webEvent });
-	WebBus.next({ ...webEvent });
-	return payload.ID;
+  const webEvent: WebBusEvent = {
+    payload: { ...payload },
+    type: "PATCH",
+  };
+  RuntimeState.tempEvents.push({ ...webEvent });
+  WebBus.next({ ...webEvent });
+  return payload.ID;
 };
 
 (window as any).PostPatchEvent = PostPatchEvent;
 
 // send event
 const sendEvent = (event: WebBusEvent) => {
-	const { token } = getAuth();
-	const projectID = getProjectID();
-	if (!token || !projectID) {
-		return;
-	}
-	const headers = new Headers();
-	headers.append("Content-Type", "application/json");
-	const options = {
-		method: "POST",
-		headers: headers,
-		body: JSON.stringify({ ...event, token, projectID }),
-	};
-	return fetch(
-		`${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
-		options
-	).then((resp) => resp.json());
+  const { token } = getAuth();
+  const projectID = getProjectID();
+  if (!token || !projectID) {
+    return;
+  }
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  const options = {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({ ...event, token, projectID }),
+  };
+  return fetch(
+    `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
+    options
+  ).then((resp) => resp.json());
 };
 
 // send events to backend
 function syncEngine() {
-	setTimeout(async () => {
-		for (
-			let i = RuntimeState.currSyncIndex;
-			i < RuntimeState.tempEvents.length;
-			i++
-		) {
-			await sendEvent(
-				RuntimeState.tempEvents[RuntimeState.currSyncIndex]
-			);
-			RuntimeState.currSyncIndex++;
-		}
-		syncEngine();
-	}, 5000);
+  setTimeout(async () => {
+    for (
+      let i = RuntimeState.currSyncIndex;
+      i < RuntimeState.tempEvents.length;
+      i++
+    ) {
+      await sendEvent(RuntimeState.tempEvents[RuntimeState.currSyncIndex]);
+      RuntimeState.currSyncIndex++;
+    }
+    syncEngine();
+  }, 5000);
 }
 
 syncEngine();

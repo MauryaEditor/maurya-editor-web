@@ -21,11 +21,11 @@ import { ReplaySubject } from "rxjs";
 import { DrawRuntimeState } from "../../rxjs/DrawState";
 
 export const useBus = (ID: string) => {
-	const [bus, setBus] = useState<ReplaySubject<any>>();
-	useEffect(() => {
-		if (DrawRuntimeState[ID].bus) {
-			setBus(DrawRuntimeState[ID].bus);
-		}
-	}, [DrawRuntimeState[ID].bus, setBus]);
-	return bus;
+  const [bus, setBus] = useState<ReplaySubject<any>>();
+  useEffect(() => {
+    if (DrawRuntimeState[ID].bus) {
+      setBus(DrawRuntimeState[ID].bus);
+    }
+  }, [DrawRuntimeState[ID].bus, setBus]);
+  return bus;
 };

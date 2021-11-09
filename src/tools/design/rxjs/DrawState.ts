@@ -21,43 +21,43 @@ import { BehaviorSubject, ReplaySubject } from "rxjs";
 import { ComponentItem } from "./ComponentRegistry";
 
 export const DesignComponentSelected =
-	new BehaviorSubject<ComponentItem | null>(null);
+  new BehaviorSubject<ComponentItem | null>(null);
 
 export type PropertyMap = { [key: string]: { value: any; type: string } };
 
 // store ID: Bus
 export const DrawRuntimeState: {
-	[ID: string]: { [key: string | number]: any } & {
-		bus: ReplaySubject<any>;
-		style: React.CSSProperties;
-		properties: PropertyMap;
-		renderProps: { [key: string | number]: any };
-		propertyOrder?: string[];
-	};
+  [ID: string]: { [key: string | number]: any } & {
+    bus: ReplaySubject<any>;
+    style: React.CSSProperties;
+    properties: PropertyMap;
+    renderProps: { [key: string | number]: any };
+    propertyOrder?: string[];
+  };
 } = {};
 
 export const DrawRuntimeBus = new BehaviorSubject<{
-	ID: string;
-	payload: {
-		bus?: ReplaySubject<any>;
-		style?: React.CSSProperties;
-		properties?: PropertyMap;
-		renderProps?: { [key: string | number]: any };
-		propertyOrder?: string[];
-	};
+  ID: string;
+  payload: {
+    bus?: ReplaySubject<any>;
+    style?: React.CSSProperties;
+    properties?: PropertyMap;
+    renderProps?: { [key: string | number]: any };
+    propertyOrder?: string[];
+  };
 } | null>(null);
 
 DrawRuntimeBus.subscribe({
-	next: (v) => {
-		if (v)
-			DrawRuntimeState[v.ID] = {
-				...DrawRuntimeState[v.ID],
-				...v.payload,
-			};
-	},
+  next: (v) => {
+    if (v)
+      DrawRuntimeState[v.ID] = {
+        ...DrawRuntimeState[v.ID],
+        ...v.payload,
+      };
+  },
 });
 
 export const DisplayProperty = new BehaviorSubject<{
-	ID: string;
-	properties: { propertyName: string; value: string; type: string }[];
+  ID: string;
+  properties: { propertyName: string; value: string; type: string }[];
 } | null>(null);

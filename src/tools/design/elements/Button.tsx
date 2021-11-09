@@ -25,38 +25,38 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Button: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
-	// attach properties
-	const TextValue = useAttachProperty<string>(
-		props.ID,
-		"design/text",
-		"Value",
-		props.properties?.Value || ""
-	);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  // attach properties
+  const TextValue = useAttachProperty<string>(
+    props.ID,
+    "design/text",
+    "Value",
+    props.properties?.Value || ""
+  );
 
-	const color = useAttachProperty<string>(
-		props.ID,
-		"design/text",
-		"Color",
-		props.properties?.Color || ""
-	);
+  const color = useAttachProperty<string>(
+    props.ID,
+    "design/text",
+    "Color",
+    props.properties?.Color || ""
+  );
 
-	return <button style={{ ...style, color }}>{TextValue}</button>;
+  return <button style={{ ...style, color }}>{TextValue}</button>;
 };
 
 const manifest = {
-	key: "Button",
-	comp: SimpleComponent,
-	props: { name: "Button" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Button" },
-	renderComp: Button,
-	renderCompProps: () => {
-		return {
-			style: {} as React.CSSProperties,
-			children: "Button",
-		};
-	},
+  key: "Button",
+  comp: SimpleComponent,
+  props: { name: "Button" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Button" },
+  renderComp: Button,
+  renderCompProps: () => {
+    return {
+      style: {} as React.CSSProperties,
+      children: "Button",
+    };
+  },
 };
 
 export default manifest;

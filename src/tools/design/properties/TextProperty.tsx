@@ -18,38 +18,38 @@
  */
 import { useState } from "react";
 declare interface WebPatchData {
-	ID: string;
-	slice: { [key: string | number]: any };
+  ID: string;
+  slice: { [key: string | number]: any };
 }
 declare const PostPatchEvent: (payload: WebPatchData) => string;
 
 // Simplification-7 Take ID as props rather than bus
 export const TextProperty: React.FC<{
-	ID: string;
-	propertyName: string;
-	initialValue: string;
+  ID: string;
+  propertyName: string;
+  initialValue: string;
 }> = (props) => {
-	// Publish to bus on value change
-	const [value, setValue] = useState<string>(props.initialValue);
+  // Publish to bus on value change
+  const [value, setValue] = useState<string>(props.initialValue);
 
-	return (
-		<div>
-			<span>{props.propertyName}</span>
-			<input
-				type="text"
-				onChange={(event) => {
-					PostPatchEvent({
-						ID: props.ID,
-						slice: {
-							properties: {
-								[props.propertyName]: event.target.value,
-							},
-						},
-					});
-					setValue(event.target.value);
-				}}
-				value={value}
-			/>
-		</div>
-	);
+  return (
+    <div>
+      <span>{props.propertyName}</span>
+      <input
+        type="text"
+        onChange={(event) => {
+          PostPatchEvent({
+            ID: props.ID,
+            slice: {
+              properties: {
+                [props.propertyName]: event.target.value,
+              },
+            },
+          });
+          setValue(event.target.value);
+        }}
+        value={value}
+      />
+    </div>
+  );
 };

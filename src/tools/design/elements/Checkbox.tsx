@@ -23,23 +23,23 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Checkbox: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	return <input type="checkbox" style={{ ...style }} />;
+  return <input type="checkbox" style={{ ...style }} />;
 };
 
 const manifest = {
-	key: "Checkbox",
-	comp: SimpleComponent,
-	props: { name: "Checkbox" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Checkbox" },
-	renderComp: Checkbox,
-	renderCompProps: () => {
-		return {
-			style: {} as React.CSSProperties,
-		};
-	},
+  key: "Checkbox",
+  comp: SimpleComponent,
+  props: { name: "Checkbox" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Checkbox" },
+  renderComp: Checkbox,
+  renderCompProps: () => {
+    return {
+      style: {} as React.CSSProperties,
+    };
+  },
 };
 
 export default manifest;

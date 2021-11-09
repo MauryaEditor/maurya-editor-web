@@ -34,7 +34,7 @@ export const WindowMouseUp = new BehaviorSubject<MouseEvent | null>(null);
 (globalThis as any).WindowMouseUp = WindowMouseUp;
 
 window.addEventListener("mouseup", (event) => {
-	WindowMouseUp.next(event);
+  WindowMouseUp.next(event);
 });
 
 export const WindowMouseDown = new BehaviorSubject<MouseEvent | null>(null);

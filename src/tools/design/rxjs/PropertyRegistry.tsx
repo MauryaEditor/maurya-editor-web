@@ -21,13 +21,13 @@ import { BehaviorSubject } from "rxjs";
 import { TextProperty } from "../properties/TextProperty";
 
 export type PropertyItem = {
-	comp: React.FC<{ ID: string; propertyName: string; initialValue: string }>;
+  comp: React.FC<{ ID: string; propertyName: string; initialValue: string }>;
 };
 
 export const PropertyRegistry = new BehaviorSubject<{
-	[pkgSlashKey: string]: PropertyItem;
+  [pkgSlashKey: string]: PropertyItem;
 }>({
-	"design/text": {
-		comp: TextProperty,
-	},
+  "design/text": {
+    comp: TextProperty,
+  },
 });

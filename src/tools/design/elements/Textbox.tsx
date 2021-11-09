@@ -23,23 +23,23 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Textbox: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	return <div style={{ ...style }}>Put some text here</div>;
+  return <div style={{ ...style }}>Put some text here</div>;
 };
 
 const manifest = {
-	key: "Textbox",
-	comp: SimpleComponent,
-	props: { name: "Textbox" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Textbox" },
-	renderComp: Textbox,
-	renderCompProps: () => {
-		return {
-			style: {} as React.CSSProperties,
-		};
-	},
+  key: "Textbox",
+  comp: SimpleComponent,
+  props: { name: "Textbox" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Textbox" },
+  renderComp: Textbox,
+  renderCompProps: () => {
+    return {
+      style: {} as React.CSSProperties,
+    };
+  },
 };
 
 export default manifest;

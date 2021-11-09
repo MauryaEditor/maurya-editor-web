@@ -23,23 +23,23 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Inputbox: React.FC<RenderProps> = (props) => {
-	const [style, setStyle] = useStyle(props.ID, props.style!);
+  const [style, setStyle] = useStyle(props.ID, props.style!);
 
-	return <input type="text" style={{ ...style }} />;
+  return <input type="text" style={{ ...style }} />;
 };
 
 const manifest = {
-	key: "Inputbox",
-	comp: SimpleComponent,
-	props: { name: "Inputbox" },
-	ondragComp: SimpleDragComponent,
-	ondragProps: { name: "Inputbox" },
-	renderComp: Inputbox,
-	renderCompProps: () => {
-		return {
-			style: {} as React.CSSProperties,
-		};
-	},
+  key: "Inputbox",
+  comp: SimpleComponent,
+  props: { name: "Inputbox" },
+  ondragComp: SimpleDragComponent,
+  ondragProps: { name: "Inputbox" },
+  renderComp: Inputbox,
+  renderCompProps: () => {
+    return {
+      style: {} as React.CSSProperties,
+    };
+  },
 };
 
 export default manifest;

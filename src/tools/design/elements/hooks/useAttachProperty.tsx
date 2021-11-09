@@ -22,52 +22,47 @@ import { useBus } from "./useBus";
 
 // TODO: Make the
 export function useAttachProperty<ReturnType>(
-	ID: string,
-	propertyType: string,
-	propertyName: string,
-	initialValue: any
+  ID: string,
+  propertyType: string,
+  propertyName: string,
+  initialValue: any
 ) {
-	const [value, setValue] = useState<ReturnType>(initialValue);
-	const bus = useBus(ID);
+  const [value, setValue] = useState<ReturnType>(initialValue);
+  const bus = useBus(ID);
 
-	// attach property
-	useEffect(() => {
-		DrawRuntimeBus.next({
-			ID: ID,
-			payload: {
-				properties: {
-					...DrawRuntimeState[ID].properties!,
-					[propertyName]: { value: value, type: propertyType },
-				},
-				propertyOrder: DrawRuntimeState[ID].propertyOrder
-					? !DrawRuntimeState[ID].propertyOrder?.includes(
-							propertyName
-					  )
-						? [...DrawRuntimeState[ID].propertyOrder!, propertyName]
-						: [...DrawRuntimeState[ID].propertyOrder!]
-					: [propertyName],
-			},
-		});
-	}, [value, ID, propertyName, propertyType]);
+  // attach property
+  useEffect(() => {
+    DrawRuntimeBus.next({
+      ID: ID,
+      payload: {
+        properties: {
+          ...DrawRuntimeState[ID].properties!,
+          [propertyName]: { value: value, type: propertyType },
+        },
+        propertyOrder: DrawRuntimeState[ID].propertyOrder
+          ? !DrawRuntimeState[ID].propertyOrder?.includes(propertyName)
+            ? [...DrawRuntimeState[ID].propertyOrder!, propertyName]
+            : [...DrawRuntimeState[ID].propertyOrder!]
+          : [propertyName],
+      },
+    });
+  }, [value, ID, propertyName, propertyType]);
 
-	// subscribe for changes
-	useEffect(() => {
-		if (bus) {
-			const subscription = bus.subscribe({
-				next: (v) => {
-					if (
-						v["properties"] &&
-						v["properties"][propertyName] !== undefined
-					) {
-						setValue(v["properties"][propertyName]);
-					}
-				},
-			});
-			return () => {
-				subscription.unsubscribe();
-			};
-		}
-	}, [bus, propertyName, setValue]);
+  // subscribe for changes
+  useEffect(() => {
+    if (bus) {
+      const subscription = bus.subscribe({
+        next: (v) => {
+          if (v["properties"] && v["properties"][propertyName] !== undefined) {
+            setValue(v["properties"][propertyName]);
+          }
+        },
+      });
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [bus, propertyName, setValue]);
 
-	return value;
+  return value;
 }
