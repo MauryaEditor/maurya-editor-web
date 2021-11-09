@@ -17,8 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { TextProperty } from "../properties/TextProperty";
-import { DisplayProperty, PropertyMap } from "../rxjs/DrawState";
+import { DisplayProperty } from "../rxjs/DrawState";
 import { PropertyItem, PropertyRegistry } from "../rxjs/PropertyRegistry";
 
 export const PropertiesBox: React.FC = (props) => {
