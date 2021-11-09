@@ -34,9 +34,13 @@ export const PropertiesBox: React.FC = (props) => {
       subscription.unsubscribe();
     };
   }, [setRegisteredProperties]);
+
   const [ID, setID] = useState<string>();
   const [properties, setProperties] =
     useState<{ propertyName: string; value: string; type: string }[]>();
+  const [appearance, setAppearance] =
+    useState<{ propertyName: string; value: string; type: string }[]>();
+  useState<{ propertyName: string; value: string; type: string }[]>();
   const [comps, setComps] = useState<
     [
       React.FC<any>,
@@ -47,14 +51,19 @@ export const PropertiesBox: React.FC = (props) => {
       }
     ][]
   >([]);
+  const [activeHeader, setActiveHeader] = useState<string>("");
   // listen to DisplayProperty
   useEffect(() => {
     // Simplification-6 DisplayProperty should get ID instead of bus
     const subscription = DisplayProperty.subscribe({
       next: (v) => {
-        setID(v?.ID);
-        setProperties(v?.properties);
-        setComps([]);
+        if (v) {
+          setID(v.ID);
+          setProperties(v.Properties);
+          setAppearance(v.Appearance);
+          setActiveHeader(v.activeHeader);
+        }
+        setComps([]); // remove existing visible components
       },
     });
     return () => {
@@ -93,6 +102,23 @@ export const PropertiesBox: React.FC = (props) => {
 
   return (
     <div style={{ borderLeft: "1px solid black", height: "100%" }}>
+      <div style={{ borderBottom: activeHeader ? "1px solid gray" : "" }}>
+        {activeHeader && activeHeader === "Properties" ? (
+          <span>
+            <b>Properties</b>
+          </span>
+        ) : (
+          <span>Properties</span>
+        )}
+        {activeHeader && activeHeader === "Appearance" ? (
+          <span>
+            <b>Appearance</b>
+          </span>
+        ) : (
+          <span>Appearance</span>
+        )}
+      </div>
+
       {comps.map(([Comp, props]) => {
         return <Comp {...props} key={props.propertyName} />;
       })}

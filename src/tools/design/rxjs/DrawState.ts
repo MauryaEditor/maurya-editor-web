@@ -57,7 +57,10 @@ DrawRuntimeBus.subscribe({
   },
 });
 
+export type PropertyType = "Properties" | "Appearance";
 export const DisplayProperty = new BehaviorSubject<{
   ID: string;
-  properties: { propertyName: string; value: string; type: string }[];
+  Properties: { propertyName: string; value: string; type: string }[];
+  Appearance: { propertyName: string; value: string; type: string }[];
+  activeHeader: PropertyType;
 } | null>(null);
