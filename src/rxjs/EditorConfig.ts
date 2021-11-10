@@ -107,7 +107,7 @@ export const WebDevBus = new Subject<WebDevBusEvent>();
 (window as any).SubscribeWebDevBus = (
   next: (v: WebDevBusEvent) => {}
 ): Subscription => {
-  return WebBus.subscribe({ next });
+  return WebDevBus.subscribe({ next });
 };
 
 export function PostWebDevBusEvent(event: WebDevBusEvent) {
