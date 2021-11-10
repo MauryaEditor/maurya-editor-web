@@ -33,8 +33,8 @@ export const DrawRuntimeState: {
     properties: PropertyMap;
     renderProps: { [key: string | number]: any };
     propertyOrder: string[];
-    appearance?: PropertyMap;
-    appearanceOrder?: string[];
+    appearance: PropertyMap;
+    appearanceOrder: string[];
   };
 } = {};
 

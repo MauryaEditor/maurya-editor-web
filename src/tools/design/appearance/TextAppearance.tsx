@@ -24,7 +24,7 @@ declare interface WebPatchData {
 declare const PostPatchEvent: (payload: WebPatchData) => string;
 
 // Simplification-7 Take ID as props rather than bus
-export const TextProperty: React.FC<{
+export const TextAppearance: React.FC<{
   ID: string;
   propertyName: string;
   initialValue: string;

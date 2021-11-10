@@ -65,7 +65,10 @@ export const useShowProperty = () => {
               state.properties,
               state.propertyOrder
             ),
-            Appearance: [],
+            Appearance: propertyFromPropertyMap(
+              state.appearance,
+              state.appearanceOrder
+            ),
             activeHeader: "Properties",
           });
         }

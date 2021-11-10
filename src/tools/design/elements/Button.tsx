@@ -18,6 +18,7 @@
  */
 import React, { useEffect } from "react";
 import { DisplayProperty, DrawRuntimeState } from "../rxjs/DrawState";
+import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
@@ -34,7 +35,7 @@ const Button: React.FC<RenderProps> = (props) => {
     props.properties?.Value || ""
   );
 
-  const color = useAttachProperty<string>(
+  const color = useAttachAppearance<string>(
     props.ID,
     "design/text",
     "Color",

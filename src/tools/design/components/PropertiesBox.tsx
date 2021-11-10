@@ -17,7 +17,8 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { DisplayProperty } from "../rxjs/DrawState";
+import { AppearanceRegistry } from "../rxjs/AppearanceRegistry";
+import { DisplayProperty, PropertyType } from "../rxjs/DrawState";
 import { PropertyItem, PropertyRegistry } from "../rxjs/PropertyRegistry";
 
 export const PropertiesBox: React.FC = (props) => {
@@ -34,6 +35,20 @@ export const PropertiesBox: React.FC = (props) => {
       subscription.unsubscribe();
     };
   }, [setRegisteredProperties]);
+
+  const [registeredAppearance, setRegisteredAppearance] = useState<{
+    [pkgSlashKey: string]: PropertyItem;
+  }>({});
+  useEffect(() => {
+    const subscription = AppearanceRegistry.subscribe({
+      next: (v) => {
+        setRegisteredAppearance(v);
+      },
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setRegisteredAppearance]);
 
   const [ID, setID] = useState<string>();
   const [properties, setProperties] =
@@ -73,32 +88,72 @@ export const PropertiesBox: React.FC = (props) => {
 
   // show properties
   useEffect(() => {
-    if (properties && ID && registeredProperties) {
-      const newComps: [
-        React.FC<any>,
-        {
-          ID: string;
-          propertyName: string;
-          initialValue: string;
+    if (activeHeader === "Properties")
+      if (properties && ID && registeredProperties) {
+        const newComps: [
+          React.FC<any>,
+          {
+            ID: string;
+            propertyName: string;
+            initialValue: string;
+          }
+        ][] = [];
+        for (let i = 0; i < properties.length; i++) {
+          const property = properties[i];
+          const type = property.type;
+          if (registeredProperties[type]) {
+            newComps.push([
+              registeredProperties[type].comp,
+              {
+                ID,
+                propertyName: property.propertyName,
+                initialValue: property.value,
+              },
+            ]);
+          }
         }
-      ][] = [];
-      for (let i = 0; i < properties.length; i++) {
-        const property = properties[i];
-        const type = property.type;
-        if (registeredProperties[type]) {
-          newComps.push([
-            registeredProperties[type].comp,
-            {
-              ID,
-              propertyName: property.propertyName,
-              initialValue: property.value,
-            },
-          ]);
-        }
+        setComps(newComps);
       }
-      setComps(newComps);
-    }
-  }, [properties, setComps, ID, registeredProperties]);
+  }, [properties, setComps, ID, registeredProperties, activeHeader]);
+
+  // show properties
+  useEffect(() => {
+    if (activeHeader === "Appearance")
+      if (appearance && ID && registeredAppearance) {
+        const newComps: [
+          React.FC<any>,
+          {
+            ID: string;
+            propertyName: string;
+            initialValue: string;
+          }
+        ][] = [];
+        for (let i = 0; i < appearance.length; i++) {
+          const property = appearance[i];
+          const type = property.type;
+          if (registeredProperties[type]) {
+            newComps.push([
+              registeredAppearance[type].comp,
+              {
+                ID,
+                propertyName: property.propertyName,
+                initialValue: property.value,
+              },
+            ]);
+          }
+        }
+        setComps(newComps);
+      }
+  }, [appearance, setComps, ID, registeredAppearance, activeHeader]);
+
+  // send displayProperty
+  const sendDisplayProperty = (header: PropertyType) => {
+    console.log(DisplayProperty.value);
+    DisplayProperty.next({
+      ...DisplayProperty.value!,
+      activeHeader: header,
+    });
+  };
 
   return (
     <div style={{ borderLeft: "1px solid black", height: "100%" }}>
@@ -108,14 +163,26 @@ export const PropertiesBox: React.FC = (props) => {
             <b>Properties</b>
           </span>
         ) : (
-          <span>Properties</span>
+          <span
+            onClick={() => {
+              sendDisplayProperty("Properties");
+            }}
+          >
+            Properties
+          </span>
         )}
         {activeHeader && activeHeader === "Appearance" ? (
           <span>
             <b>Appearance</b>
           </span>
         ) : (
-          <span>Appearance</span>
+          <span
+            onClick={() => {
+              sendDisplayProperty("Appearance");
+            }}
+          >
+            Appearance
+          </span>
         )}
       </div>
 
