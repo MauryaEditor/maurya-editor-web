@@ -20,6 +20,7 @@ import { IDPoolResponse } from "../dto/IDPoolResponse";
 import { getAuth } from "../lib/getAuth";
 import { getProjectID } from "../lib/getProjectID";
 import {
+  SessionWebBus,
   WebBus,
   WebBusEvent,
   WebCreateData,
@@ -28,7 +29,7 @@ import {
 
 export const RuntimeState: {
   IDIssued: any;
-  tempEvents: WebBusEvent[];
+  tempEvents: WebBusEvent[]; // stores the events in this user session
   currIndex: number;
   IDBank: { payload: string[]; token: string }[];
   currSyncIndex: number;
@@ -125,6 +126,7 @@ export const PostCreateEvent = (
     type: "CREATE",
   };
   RuntimeState.tempEvents.push({ ...webEvent });
+  SessionWebBus.next(webEvent);
   WebBus.next({ ...webEvent });
   return ID;
 };
@@ -137,6 +139,7 @@ export const PostPatchEvent = (payload: WebPatchData): string => {
     type: "PATCH",
   };
   RuntimeState.tempEvents.push({ ...webEvent });
+  SessionWebBus.next(webEvent);
   WebBus.next({ ...webEvent });
   return payload.ID;
 };

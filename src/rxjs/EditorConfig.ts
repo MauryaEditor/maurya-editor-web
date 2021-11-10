@@ -113,3 +113,11 @@ export const WebDevBus = new Subject<WebDevBusEvent>();
 export function PostWebDevBusEvent(event: WebDevBusEvent) {
   WebDevBus.next(event);
 }
+
+export const SessionWebBus = new Subject<WebBusEvent | null>();
+
+(window as any).SubscribeSessionWebBus = (
+  next: (v: WebBusEvent | null) => {}
+): Subscription => {
+  return SessionWebBus.subscribe({ next });
+};

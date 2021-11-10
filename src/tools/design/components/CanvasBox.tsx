@@ -51,6 +51,13 @@ declare const SubscribeWebBus: (
 
 declare const PostCreateEvent: (payload: Omit<WebCreateData, "ID">) => string;
 
+declare interface WebDevBusEvent {
+  type: string;
+  payload: any;
+}
+
+declare function PostWebDevBusEvent(event: WebDevBusEvent): void;
+
 export const CanvasBox: React.FC = (props) => {
   const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLDivElement>(null);
@@ -100,6 +107,7 @@ export const CanvasBox: React.FC = (props) => {
               },
             },
           });
+          PostWebDevBusEvent;
           // Simplification-2: Remove Patch Event
         }
       };
