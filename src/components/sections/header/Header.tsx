@@ -35,8 +35,8 @@ export const Header: React.FC = (props) => {
         width: "100%",
         height: height,
         boxSizing: "border-box",
-        background: "#C4C4C4",
-        borderBottom: "1px solid black",
+        background: "#EFF6FF",
+        borderBottom: "1px solid #BFDBFE",
         position: "relative",
       }}
     >

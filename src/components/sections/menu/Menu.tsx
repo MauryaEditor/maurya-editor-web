@@ -60,8 +60,8 @@ export const Menu: React.FC = (props) => {
         height: `calc(100% - ${headerHeight})`,
         width: `${menuWidth}`,
         boxSizing: "border-box",
-        background: "#C4C4C4",
-        borderRight: "1px solid black",
+        background: "#EFF6FF",
+        borderRight: "1px solid #BFDBFE",
         cursor: "pointer",
       }}
     >
@@ -69,15 +69,18 @@ export const Menu: React.FC = (props) => {
         const commonStyle: React.CSSProperties = {
           textAlign: "left",
           width: "100%",
-          paddingTop: "1em",
-          paddingLeft: "0.5em",
+          paddingTop: "2em",
+          paddingLeft: "0.8em",
+          fontSize: "0.8em",
+          boxSizing: "border-box",
+          color: activeMenu === key ? "#1E40AF" : "#94A3B8",
+          fontWeight: "bolder",
         };
         if (key === activeMenu) {
           return (
             <div
               style={{
                 ...commonStyle,
-                fontWeight: "bold",
               }}
               onClick={() => {
                 ActiveMenu.next(key);

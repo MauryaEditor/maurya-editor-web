@@ -156,8 +156,14 @@ export const PropertiesBox: React.FC = (props) => {
   };
 
   return (
-    <div style={{ borderLeft: "1px solid black", height: "100%" }}>
-      <div style={{ borderBottom: activeHeader ? "1px solid gray" : "" }}>
+    <div
+      style={{
+        borderLeft: "1px solid #BFDBFE",
+        height: "100%",
+        background: "#EFF6FF",
+      }}
+    >
+      <div style={{ borderBottom: activeHeader ? "1px solid #BFDBFE" : "" }}>
         {activeHeader && activeHeader === "Properties" ? (
           <span>
             <b>Properties</b>

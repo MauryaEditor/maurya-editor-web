@@ -33,7 +33,13 @@ export const ComponentBox: React.FC = (props) => {
     };
   }, [setComponentLists]);
   return (
-    <div style={{ borderRight: "1px solid black", height: "100%" }}>
+    <div
+      style={{
+        borderRight: "1px solid #BFDBFE",
+        height: "100%",
+        background: "#EFF6FF",
+      }}
+    >
       {componentLists.map((componentList) => {
         const category = componentList[0];
         const list = componentList[1];
@@ -43,7 +49,7 @@ export const ComponentBox: React.FC = (props) => {
               style={{
                 position: "relative",
                 height: "2em",
-                borderBottom: "1px solid black",
+                borderBottom: "1px solid #BFDBFE",
               }}
             >
               <span

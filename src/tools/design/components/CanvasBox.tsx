@@ -168,7 +168,7 @@ export const CanvasBox: React.FC = (props) => {
   return (
     <div
       style={{
-        background: "#C4C4C4",
+        background: "#E5E5E5",
         height: "100%",
         width: "100%",
         position: "relative",
@@ -187,6 +187,7 @@ export const CanvasBox: React.FC = (props) => {
           transform: "translate(-50%, -50%)",
           overflow: "hidden",
           boxSizing: "border-box",
+          border: "1px solid #BFDBFE",
         }}
       >
         <div
