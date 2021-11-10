@@ -109,3 +109,7 @@ export const WebDevBus = new Subject<WebDevBusEvent>();
 ): Subscription => {
   return WebBus.subscribe({ next });
 };
+
+export function PostWebDevBusEvent(event: WebDevBusEvent) {
+  WebDevBus.next(event);
+}
