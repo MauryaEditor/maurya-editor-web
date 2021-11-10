@@ -21,7 +21,7 @@ import { DrawRuntimeBus, DrawRuntimeState } from "../../rxjs/DrawState";
 import { useBus } from "./useBus";
 
 // TODO: Make the
-export function useAttachProperty<ReturnType>(
+export function useAttachAppearance<ReturnType>(
   ID: string,
   propertyType: string,
   propertyName: string,
