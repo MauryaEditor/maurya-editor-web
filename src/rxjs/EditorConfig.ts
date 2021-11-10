@@ -114,6 +114,8 @@ export function PostWebDevBusEvent(event: WebDevBusEvent) {
   WebDevBus.next(event);
 }
 
+(window as any).PostWebDevBusEvent = PostWebDevBusEvent;
+
 export const SessionWebBus = new Subject<WebBusEvent | null>();
 
 (window as any).SubscribeSessionWebBus = (
