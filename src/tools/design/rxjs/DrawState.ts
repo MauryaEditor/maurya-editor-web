@@ -32,7 +32,7 @@ export const DrawRuntimeState: {
     style: React.CSSProperties;
     properties: PropertyMap;
     renderProps: { [key: string | number]: any };
-    propertyOrder?: string[];
+    propertyOrder: string[];
   };
 } = {};
 
@@ -64,3 +64,21 @@ export const DisplayProperty = new BehaviorSubject<{
   Appearance: { propertyName: string; value: string; type: string }[];
   activeHeader: PropertyType;
 } | null>(null);
+
+export function propertyFromPropertyMap(
+  propertyMap: PropertyMap,
+  propertyOrder: string[]
+) {
+  const properties: { propertyName: string; value: string; type: string }[] =
+    [];
+  for (let i = 0; i < propertyOrder.length; i++) {
+    if (propertyMap[propertyOrder[i]]) {
+      properties.push({
+        propertyName: propertyOrder[i],
+        value: propertyMap[propertyOrder[i]].value,
+        type: propertyMap[propertyOrder[i]].type,
+      });
+    }
+  }
+  return properties;
+}

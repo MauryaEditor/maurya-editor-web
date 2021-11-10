@@ -36,7 +36,7 @@ declare interface WebCreateData {
   state?: { [key: string | number]: any };
 }
 
-export interface WebPatchData {
+declare interface WebPatchData {
   ID: string;
   slice: { [key: string | number]: any };
 }

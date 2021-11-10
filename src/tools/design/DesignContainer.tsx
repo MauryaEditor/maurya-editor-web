@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CanvasBox } from "./components/CanvasBox";
 import { ComponentBox } from "./components/ComponentBox";
 import { PropertiesBox } from "./components/PropertiesBox";
+import { useShowProperty } from "./hooks/useShowProperty";
 import { ComponentItem } from "./rxjs/ComponentRegistry";
 import { DesignComponentSelected } from "./rxjs/DrawState";
 import getCoords from "./utils/getCoords";
@@ -123,6 +124,7 @@ export const DesignContainer: React.FC = (props) => {
       };
     }
   }, [combinedContainer]);
+  useShowProperty();
   return (
     <div style={{ display: "flex", height: "100%", userSelect: "none" }}>
       <div
