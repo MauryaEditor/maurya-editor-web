@@ -43,7 +43,6 @@ export const useShowProperty = () => {
   }>({});
   useEffect(() => {
     SubscribeSessionWebBus((v) => {
-      console.log("SessionWebBus", v);
       if (v && v.type === "CREATE") {
         setSessionElements((curr) => {
           return { ...curr, [v.payload.ID]: true };
@@ -54,7 +53,6 @@ export const useShowProperty = () => {
   }, [setSessionElements]);
   useEffect(() => {
     SubscribeWebDevBus((v) => {
-      console.log("WebDevBus", v);
       if (v.type === DEV_ELEMENT_RENDERED) {
         // check if the rendered element was created by this user session
         if (sessionElements[v.payload]) {

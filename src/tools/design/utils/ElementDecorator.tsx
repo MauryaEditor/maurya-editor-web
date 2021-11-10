@@ -15,7 +15,6 @@ export const DEV_ELEMENT_RENDERED = "ELEMENT_RENDERED";
 
 export const ElementDecorator: React.FC<ElementDecoratorProps> = (props) => {
   useEffect(() => {
-    console.log("element decorator useEffect called");
     PostWebDevBusEvent({ type: DEV_ELEMENT_RENDERED, payload: props.ID });
   }, []);
   return <>{props.children}</>;

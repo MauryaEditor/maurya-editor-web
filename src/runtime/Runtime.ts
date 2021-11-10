@@ -101,7 +101,6 @@ const getID = (): string => {
   // TODO: fetch early i.e. dont let the pool deplete
   if (RuntimeState.currIndex % AccountSize === 0) {
     fetchIDs(AccountSize).then((val: IDPoolResponse) => {
-      console.log(val);
       storeIDsAt(
         Math.floor(RuntimeState.currIndex / AccountSize),
         val.payload.pool,
