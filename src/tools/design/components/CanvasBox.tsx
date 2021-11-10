@@ -24,6 +24,7 @@ import {
   DrawRuntimeBus,
   DrawRuntimeState,
 } from "../rxjs/DrawState";
+import { ElementDecorator } from "../utils/ElementDecorator";
 import getCoords from "../utils/getCoords";
 const BaseWidth = 1440;
 const BaseHeight = 900;
@@ -50,13 +51,6 @@ declare const SubscribeWebBus: (
 ) => Subscription;
 
 declare const PostCreateEvent: (payload: Omit<WebCreateData, "ID">) => string;
-
-declare interface WebDevBusEvent {
-  type: string;
-  payload: any;
-}
-
-declare function PostWebDevBusEvent(event: WebDevBusEvent): void;
 
 export const CanvasBox: React.FC = (props) => {
   const box = useRef<HTMLDivElement>(null);
@@ -107,7 +101,6 @@ export const CanvasBox: React.FC = (props) => {
               },
             },
           });
-          PostWebDevBusEvent;
           // Simplification-2: Remove Patch Event
         }
       };
@@ -208,7 +201,11 @@ export const CanvasBox: React.FC = (props) => {
           ref={root}
         >
           {renderedComps.map(([Comp, props, key]) => {
-            return <Comp {...props} key={key} data-id={key} />;
+            return (
+              <ElementDecorator ID={key} key={key}>
+                <Comp {...props} key={key} data-id={key} />
+              </ElementDecorator>
+            );
           })}
         </div>
       </div>
