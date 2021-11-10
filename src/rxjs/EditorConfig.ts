@@ -96,3 +96,16 @@ export const WebBus = new ReplaySubject<WebBusEvent>();
 ): Subscription => {
   return WebBus.subscribe({ next });
 };
+
+export interface WebDevBusEvent {
+  type: string;
+  payload: any;
+}
+
+export const WebDevBus = new Subject<WebDevBusEvent>();
+
+(window as any).SubscribeWebDevBus = (
+  next: (v: WebDevBusEvent) => {}
+): Subscription => {
+  return WebBus.subscribe({ next });
+};
