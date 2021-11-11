@@ -40,40 +40,22 @@ export const ComponentBox: React.FC = (props) => {
         background: "#EFF6FF",
       }}
     >
-      {componentLists.map((componentList) => {
+      {componentLists.map((componentList, index) => {
         const category = componentList[0];
         const list = componentList[1];
         return (
           <div key={category}>
             <div
               style={{
-                position: "relative",
-                height: "2em",
-                borderBottom: "1px solid #BFDBFE",
+                paddingTop: index === 0 ? "2rem" : "1rem",
+                paddingBottom: "0.4rem",
+                paddingLeft: "1.2rem",
+                fontSize: "0.8rem",
+                color: "#94A3B8",
+                fontWeight: "bolder",
               }}
             >
-              <span
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "0.5em",
-                  transform: "translate(0, -50%)",
-                  fontWeight: "bold",
-                }}
-              >
-                {category}
-              </span>
-
-              <span
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "0.5em",
-                  transform: "translate(0, -50%)",
-                }}
-              >
-                Arrow
-              </span>
+              {category}
             </div>
             {list.map((item) => {
               const Comp = item.comp;

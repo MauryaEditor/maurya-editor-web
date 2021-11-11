@@ -138,7 +138,7 @@ export const DesignContainer: React.FC = (props) => {
       >
         <div
           style={{
-            width: "14em",
+            width: "10em",
             overflow: "hidden",
             cursor: compCursor,
           }}

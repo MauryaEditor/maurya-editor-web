@@ -69,9 +69,9 @@ export const Menu: React.FC = (props) => {
         const commonStyle: React.CSSProperties = {
           textAlign: "left",
           width: "100%",
-          paddingTop: "2em",
-          paddingLeft: "0.8em",
-          fontSize: "0.8em",
+          paddingTop: "2rem",
+          paddingLeft: "0.8rem",
+          fontSize: "0.8rem",
           boxSizing: "border-box",
           color: activeMenu === key ? "#1E40AF" : "#94A3B8",
           fontWeight: "bolder",

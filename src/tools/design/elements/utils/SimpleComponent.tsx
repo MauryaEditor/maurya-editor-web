@@ -16,19 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+import "./SimpleComponent.css";
+
 export const SimpleComponent: React.FC<object> = (props: any) => {
   return (
-    <div style={{ height: "2em", position: "relative" }}>
-      <span
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "0.5em",
-          transform: "translate(0, -50%)",
-        }}
-      >
-        {props.name}
-      </span>
+    <div
+      className="simple-component"
+      style={{
+        paddingLeft: "1.2rem",
+        fontSize: "0.8rem",
+        lineHeight: "1.8rem",
+        fontWeight: 600,
+      }}
+    >
+      {props.name}
     </div>
   );
 };
