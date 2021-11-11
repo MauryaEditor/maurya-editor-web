@@ -47,7 +47,7 @@ export const ComponentBox: React.FC = (props) => {
           <div key={category}>
             <div
               style={{
-                paddingTop: index === 0 ? "2rem" : "1rem",
+                paddingTop: index === 0 ? "2rem" : "1.2rem",
                 paddingBottom: "0.4rem",
                 paddingLeft: "1.2rem",
                 fontSize: "0.8rem",
