@@ -19,7 +19,7 @@ export const Options: React.FC = (props) => {
           display: "flex",
           alignItems: "center",
           height: "100%",
-          gap: "1rem",
+          gap: "2rem",
         }}
       >
         <IconTextOption img={ShareImage} text={"Share"} />
