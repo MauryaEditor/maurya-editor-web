@@ -204,7 +204,7 @@ export const PropertiesBox: React.FC = (props) => {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "1em",
+          gap: "1.2em",
           padding: "1.2em",
         }}
       >
