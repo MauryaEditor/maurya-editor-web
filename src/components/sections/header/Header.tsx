@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import { HeaderHeight } from "../../../rxjs/styles";
 import MauryaImage from "../../../assets/images/Maurya.png";
 import FeatherImage from "../../../assets/images/Feather.png";
+import { Options } from "./components/Options";
 export const Header: React.FC = (props) => {
   const [height, setHeight] = useState<string>("");
   useEffect(() => {
@@ -53,16 +54,16 @@ export const Header: React.FC = (props) => {
             left: "1em",
             top: "50%",
             transform: "translate(0, -50%)",
-            height: "2em",
+            height: "1em",
           }}
           src={FeatherImage}
         />
         <img
           style={{
             position: "absolute",
-            left: "50px",
+            left: "35px",
             top: "50%",
-            height: "1.5em",
+            height: "0.8em",
             transform: "translate(0, -50%)",
           }}
           src={MauryaImage}
@@ -71,12 +72,14 @@ export const Header: React.FC = (props) => {
       <div
         style={{
           position: "absolute",
-          marginTop: "0.5em",
           left: "50%",
-          transform: "translate(-50%, 0)",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          fontWeight: 600,
+          fontSize: "0.8rem",
         }}
       >
-        app / page
+        <span style={{ color: "#94A3B8" }}>App / </span>Page
       </div>
       <div
         style={{
@@ -85,12 +88,8 @@ export const Header: React.FC = (props) => {
           right: 0,
           marginRight: "1em",
         }}
-      >
-        <div style={{ marginLeft: "1em", marginTop: "0.5em" }}>Share</div>
-        <div style={{ marginLeft: "1em", marginTop: "0.5em" }}>Preview</div>
-        <div style={{ marginLeft: "1em", marginTop: "0.5em" }}>Deploy</div>
-        <div style={{ marginLeft: "1em", marginTop: "0.5em" }}>Account</div>
-      </div>
+      ></div>
+      <Options />
     </div>
   );
 };
