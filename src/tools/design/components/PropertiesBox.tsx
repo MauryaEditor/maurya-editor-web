@@ -175,7 +175,7 @@ export const PropertiesBox: React.FC = (props) => {
           color: "#1E40AF",
         }}
       >
-        {activeHeader && activeHeader === "Properties" ? (
+        {activeHeader && activeHeader === "Properties" && properties ? (
           <span>Properties</span>
         ) : (
           <span
@@ -187,7 +187,7 @@ export const PropertiesBox: React.FC = (props) => {
             Properties
           </span>
         )}
-        {activeHeader && activeHeader === "Appearance" ? (
+        {activeHeader && activeHeader === "Appearance" && appearance ? (
           <span>Appearance</span>
         ) : (
           <span
