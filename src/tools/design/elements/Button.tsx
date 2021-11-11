@@ -30,8 +30,15 @@ const Button: React.FC<RenderProps> = (props) => {
   // attach properties
   const TextValue = useAttachProperty<string>(
     props.ID,
-    "design/text",
+    "design/text-required",
     "Value",
+    props.properties?.Value || ""
+  );
+
+  const ToolTipValue = useAttachProperty<string>(
+    props.ID,
+    "design/text",
+    "Tooltip",
     props.properties?.Value || ""
   );
 

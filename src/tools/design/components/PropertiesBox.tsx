@@ -200,10 +200,18 @@ export const PropertiesBox: React.FC = (props) => {
           </span>
         )}
       </div>
-
-      {comps.map(([Comp, props]) => {
-        return <Comp {...props} key={props.propertyName} />;
-      })}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1em",
+          padding: "1.2em",
+        }}
+      >
+        {comps.map(([Comp, props]) => {
+          return <Comp {...props} key={props.propertyName} />;
+        })}
+      </div>
     </div>
   );
 };
