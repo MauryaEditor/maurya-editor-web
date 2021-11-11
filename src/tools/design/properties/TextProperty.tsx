@@ -58,6 +58,7 @@ export const TextProperty: React.FC<{
           lineHeight: "2.5em",
           border: "1px solid #CBD5E1",
           backgroundColor: "transparent",
+          borderRadius: "4px",
         }}
       />
     </div>
