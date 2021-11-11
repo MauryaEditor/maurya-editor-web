@@ -42,6 +42,13 @@ const Button: React.FC<RenderProps> = (props) => {
     props.properties?.Value || ""
   );
 
+  const Disabled = useAttachProperty<string>(
+    props.ID,
+    "design/boolean",
+    "Disabled",
+    props.properties?.Value || ""
+  );
+
   const color = useAttachAppearance<string>(
     props.ID,
     "design/text",

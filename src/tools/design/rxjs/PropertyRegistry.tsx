@@ -18,6 +18,7 @@
  */
 
 import { BehaviorSubject } from "rxjs";
+import { BooleanProperty } from "../properties/BooleanProperty";
 import { TextProperty } from "../properties/TextProperty";
 import { TextRequiredProperty } from "../properties/TextRequiredProperty";
 
@@ -33,5 +34,8 @@ export const PropertyRegistry = new BehaviorSubject<{
   },
   "design/text-required": {
     comp: TextRequiredProperty,
+  },
+  "design/boolean": {
+    comp: BooleanProperty,
   },
 });
