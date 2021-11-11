@@ -163,29 +163,38 @@ export const PropertiesBox: React.FC = (props) => {
         background: "#EFF6FF",
       }}
     >
-      <div style={{ borderBottom: activeHeader ? "1px solid #BFDBFE" : "" }}>
+      <div
+        style={{
+          borderBottom: "1px solid #BFDBFE",
+          fontWeight: "bold",
+          fontSize: "0.8em",
+          display: "flex",
+          justifyContent: "space-around",
+          paddingTop: "1em",
+          paddingBottom: "1em",
+          color: "#1E40AF",
+        }}
+      >
         {activeHeader && activeHeader === "Properties" ? (
-          <span>
-            <b>Properties</b>
-          </span>
+          <span>Properties</span>
         ) : (
           <span
             onClick={() => {
               sendDisplayProperty("Properties");
             }}
+            style={{ color: "#94A3B8" }}
           >
             Properties
           </span>
         )}
         {activeHeader && activeHeader === "Appearance" ? (
-          <span>
-            <b>Appearance</b>
-          </span>
+          <span>Appearance</span>
         ) : (
           <span
             onClick={() => {
               sendDisplayProperty("Appearance");
             }}
+            style={{ color: "#94A3B8" }}
           >
             Appearance
           </span>
