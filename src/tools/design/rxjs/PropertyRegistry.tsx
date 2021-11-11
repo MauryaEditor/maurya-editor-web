@@ -19,6 +19,7 @@
 
 import { BehaviorSubject } from "rxjs";
 import { TextProperty } from "../properties/TextProperty";
+import { TextRequiredProperty } from "../properties/TextRequiredProperty";
 
 export type PropertyItem = {
   comp: React.FC<{ ID: string; propertyName: string; initialValue: string }>;
@@ -29,5 +30,8 @@ export const PropertyRegistry = new BehaviorSubject<{
 }>({
   "design/text": {
     comp: TextProperty,
+  },
+  "design/text-required": {
+    comp: TextRequiredProperty,
   },
 });

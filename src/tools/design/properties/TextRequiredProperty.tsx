@@ -24,7 +24,7 @@ declare interface WebPatchData {
 declare const PostPatchEvent: (payload: WebPatchData) => string;
 
 // Simplification-7 Take ID as props rather than bus
-export const TextProperty: React.FC<{
+export const TextRequiredProperty: React.FC<{
   ID: string;
   propertyName: string;
   initialValue: string;
@@ -36,6 +36,7 @@ export const TextProperty: React.FC<{
     <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
       <div style={{ color: "#1E40AF", fontWeight: 600, fontSize: "0.8em" }}>
         {props.propertyName}
+        <span style={{ color: "#A42862" }}>&nbsp;*</span>
       </div>
       <input
         type="text"
