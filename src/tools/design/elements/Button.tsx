@@ -56,7 +56,22 @@ const Button: React.FC<RenderProps> = (props) => {
     props.properties?.Color || ""
   );
 
-  return <button style={{ ...style, color }}>{TextValue}</button>;
+  return (
+    <button
+      style={{
+        ...style,
+        color: color || "white",
+        backgroundColor: "#2185D0",
+        borderRadius: "6px",
+        padding: "0.5rem 0.75rem 0.5rem 0.75rem",
+        outline: "none",
+        border: "none",
+        fontSize: "0.75rem",
+      }}
+    >
+      {TextValue}
+    </button>
+  );
 };
 
 const manifest = {
