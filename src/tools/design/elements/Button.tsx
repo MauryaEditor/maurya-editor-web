@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useEffect } from "react";
-import { DisplayProperty, DrawRuntimeState } from "../rxjs/DrawState";
+import React from "react";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 import { useStyle } from "./hooks/useStyle";
