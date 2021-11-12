@@ -23,6 +23,7 @@ import {
   DesignComponentSelected,
   DrawRuntimeBus,
   DrawRuntimeState,
+  InitDrawRuntimeState,
 } from "../rxjs/DrawState";
 import { ElementDecorator } from "../utils/ElementDecorator";
 import getCoords from "../utils/getCoords";
@@ -137,7 +138,7 @@ export const CanvasBox: React.FC = (props) => {
           };
           DrawRuntimeBus.next({
             ID: webCreateData.ID,
-            payload: { bus: bus, ...props },
+            payload: InitDrawRuntimeState({ bus: bus, ...props }),
           });
           if (compItem!) {
             setRenderedComps((val) => [

@@ -26,16 +26,18 @@ export const DesignComponentSelected =
 export type PropertyMap = { [key: string]: { value: any; type: string } };
 
 // store ID: Bus
+export type DrawRuntimeValue = { [key: string | number]: any } & {
+  bus: ReplaySubject<any>;
+  style: React.CSSProperties;
+  properties: PropertyMap;
+  renderProps: { [key: string | number]: any };
+  propertyOrder: string[];
+  appearance: PropertyMap;
+  appearanceOrder: string[];
+};
+
 export const DrawRuntimeState: {
-  [ID: string]: { [key: string | number]: any } & {
-    bus: ReplaySubject<any>;
-    style: React.CSSProperties;
-    properties: PropertyMap;
-    renderProps: { [key: string | number]: any };
-    propertyOrder: string[];
-    appearance: PropertyMap;
-    appearanceOrder: string[];
-  };
+  [ID: string]: DrawRuntimeValue;
 } = {};
 
 export const DrawRuntimeBus = new BehaviorSubject<{
@@ -85,4 +87,19 @@ export function propertyFromPropertyMap(
     }
   }
   return properties;
+}
+
+export function InitDrawRuntimeState(
+  init: Partial<DrawRuntimeValue>
+): DrawRuntimeValue {
+  const value: DrawRuntimeValue = {
+    bus: init.bus || new ReplaySubject<any>(),
+    style: init.style || {},
+    properties: init.properties || {},
+    propertyOrder: init.propertyOrder || [],
+    appearance: init.appearance || {},
+    appearanceOrder: init.appearanceOrder || [],
+    renderProps: init.renderProps || {},
+  };
+  return value;
 }
