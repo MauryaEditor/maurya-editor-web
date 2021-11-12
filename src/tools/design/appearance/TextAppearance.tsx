@@ -33,8 +33,10 @@ export const TextAppearance: React.FC<{
   const [value, setValue] = useState<string>(props.initialValue);
 
   return (
-    <div>
-      <span>{props.propertyName}</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
+      <div style={{ color: "#1E40AF", fontWeight: 600, fontSize: "0.8em" }}>
+        {props.propertyName}
+      </div>
       <input
         type="text"
         onChange={(event) => {
@@ -49,6 +51,15 @@ export const TextAppearance: React.FC<{
           setValue(event.target.value);
         }}
         value={value}
+        style={{
+          outline: "none",
+          paddingLeft: "1em",
+          paddingRight: "1em",
+          lineHeight: "2.5em",
+          border: "1px solid #CBD5E1",
+          backgroundColor: "transparent",
+          borderRadius: "4px",
+        }}
       />
     </div>
   );
