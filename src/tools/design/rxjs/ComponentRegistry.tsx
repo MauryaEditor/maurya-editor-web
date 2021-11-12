@@ -46,18 +46,17 @@ export type ComponentList = [string, ComponentItem[]][];
 const InputList: [string, ComponentItem[]] = [
   "Input",
   [
-    InputboxManifest,
+    ButtonManifest,
     CheckboxManifest,
     DropdownManifest,
-    ButtonManifest,
-    ImageManifest,
+    InputboxManifest,
     SearchboxManifest,
   ],
 ];
 
 const OutputList: [string, ComponentItem[]] = [
   "Output",
-  [TextBoxManifest as ComponentItem],
+  [ImageManifest, TextBoxManifest],
 ];
 
 export const ComponentRegistry = new BehaviorSubject<ComponentList>([
