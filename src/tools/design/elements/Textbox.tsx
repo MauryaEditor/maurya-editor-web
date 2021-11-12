@@ -29,7 +29,7 @@ const Textbox: React.FC<RenderProps> = (props) => {
     props.ID,
     "design/text",
     "Value",
-    ""
+    props.properties?.Value || ""
   );
   return <div style={{ ...style }}>{TextValue || "Text here"}</div>;
 };

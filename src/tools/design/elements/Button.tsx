@@ -34,7 +34,7 @@ const Button: React.FC<RenderProps> = (props) => {
     props.properties?.Value || ""
   );
 
-  const ToolTipValue = useAttachProperty<string>(
+  const Tooltip = useAttachProperty<string>(
     props.ID,
     "design/text",
     "Tooltip",
@@ -48,18 +48,18 @@ const Button: React.FC<RenderProps> = (props) => {
     props.properties?.Value || ""
   );
 
-  const color = useAttachAppearance<string>(
+  const Color = useAttachAppearance<string>(
     props.ID,
     "design/text",
     "Color",
-    props.properties?.Color || ""
+    props.appearance?.Color || ""
   );
 
   return (
     <button
       style={{
         ...style,
-        color: color || "white",
+        color: Color || "white",
         backgroundColor: "#2185D0",
         borderRadius: "6px",
         padding: "0.5rem 0.75rem 0.5rem 0.75rem",

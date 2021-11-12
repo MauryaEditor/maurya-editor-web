@@ -31,14 +31,14 @@ const Image: React.FC<RenderProps> = (props) => {
     props.ID,
     "design/text",
     "Width",
-    "256px"
+    props.properties?.Width || "256px"
   );
 
   const Height = useAttachAppearance<string>(
     props.ID,
     "design/text",
     "Height",
-    "256px"
+    props.properties?.Height || "256px"
   );
 
   return (
