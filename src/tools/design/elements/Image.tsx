@@ -20,13 +20,36 @@ import React from "react";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
-import AddImage from "./assets/add-image.png";
+import AddImage from "./assets/add-image.svg";
 import { useStyle } from "./hooks/useStyle";
+import { useAttachAppearance } from "./hooks/useAttachAppearance";
 
 const Image: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
 
-  return <img style={{ ...style }} alt={""} src={AddImage} width="100px" />;
+  const Width = useAttachAppearance<string>(
+    props.ID,
+    "design/text",
+    "Width",
+    "256px"
+  );
+
+  const Height = useAttachAppearance<string>(
+    props.ID,
+    "design/text",
+    "Height",
+    "256px"
+  );
+
+  return (
+    <img
+      height={Height}
+      style={{ ...style, objectFit: "cover" }}
+      alt={""}
+      src={AddImage}
+      width={Width}
+    />
+  );
 };
 
 const manifest = {
