@@ -21,7 +21,7 @@ import { BehaviorSubject } from "rxjs";
 
 export const HeaderHeight = new BehaviorSubject<string>("3em");
 
-export const MenuWidth = new BehaviorSubject<string>("5em");
+export const MenuWidth = new BehaviorSubject<string>("6em");
 
 export const WindowContainerStack = new BehaviorSubject<React.FC[]>([]);
 
