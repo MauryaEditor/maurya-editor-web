@@ -17,6 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { useAttachProperty } from "./hooks/useAttachProperty";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
@@ -24,8 +25,13 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Textbox: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-
-  return <div style={{ ...style }}>Put some text here</div>;
+  const TextValue = useAttachProperty<string>(
+    props.ID,
+    "design/text",
+    "Value",
+    ""
+  );
+  return <div style={{ ...style }}>{TextValue || "Text here"}</div>;
 };
 
 const manifest = {
