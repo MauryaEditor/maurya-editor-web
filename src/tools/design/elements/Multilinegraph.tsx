@@ -23,7 +23,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import AddImage from "./assets/add-image.svg";
 import { useStyle } from "./hooks/useStyle";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
-import { Chart } from "chart.js";
+import Chart from "chart.js/auto";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 
 export const Multilinegraph: React.FC<RenderProps> = (props) => {
