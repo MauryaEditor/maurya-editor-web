@@ -25,6 +25,7 @@ import CheckboxManifest from "../elements/Checkbox";
 import InputboxManifest from "../elements/Inputbox";
 import DropdownManifest from "../elements/Dropdown";
 import SearchboxManifest from "../elements/Searchbox";
+import MultilinegraphManifest from "../elements/Multilinegraph";
 import { RenderProps } from "../elements/types/RenderProps";
 
 // TODO: write a better type
@@ -56,7 +57,7 @@ const InputList: [string, ComponentItem[]] = [
 
 const OutputList: [string, ComponentItem[]] = [
   "Output",
-  [ImageManifest, TextBoxManifest],
+  [ImageManifest, TextBoxManifest, MultilinegraphManifest],
 ];
 
 export const ComponentRegistry = new BehaviorSubject<ComponentList>([
