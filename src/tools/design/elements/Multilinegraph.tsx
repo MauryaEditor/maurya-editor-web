@@ -26,7 +26,7 @@ import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { Chart } from "chart.js";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 
-const Multilinegraph: React.FC<RenderProps> = (props) => {
+export const Multilinegraph: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -92,10 +92,19 @@ const Multilinegraph: React.FC<RenderProps> = (props) => {
     }
   }, [canvasRef, X, Y, Labels]);
 
+  console.log(Width, Height);
   return (
     <>
       {X && Y && X.length && Y.length ? (
-        <canvas width={Width} height={Height} ref={canvasRef} />
+        <div
+          style={{
+            ...style,
+            width: Width,
+            height: Height,
+          }}
+        >
+          <canvas ref={canvasRef} width={Width} height={Height} />
+        </div>
       ) : (
         <img
           height={Height}
