@@ -38,14 +38,14 @@ const Button: React.FC<RenderProps> = (props) => {
     props.ID,
     "design/text",
     "Tooltip",
-    props.properties?.Value || ""
+    props.properties?.Tooltip || ""
   );
 
   const Disabled = useAttachProperty<string>(
     props.ID,
     "design/boolean",
     "Disabled",
-    props.properties?.Value || ""
+    props.properties?.Disabled || ""
   );
 
   const Color = useAttachAppearance<string>(
