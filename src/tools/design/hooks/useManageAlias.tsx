@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import { DrawRuntimeState } from "../rxjs/DrawState";
+import { DrawRuntimeBus, DrawRuntimeState } from "../rxjs/DrawState";
 import { DEV_ELEMENT_RENDERED } from "../utils/ElementDecorator";
 
 declare interface WebCreateData {
@@ -40,6 +40,10 @@ declare function SubscribeWebDevBus(
   next: (v: WebDevBusEvent) => {}
 ): Subscription;
 
+declare function SubscribeSessionWebBus(
+  next: (v: WebBusEvent | null) => {}
+): Subscription;
+
 export type ElementCountRegistry = { [compKey: string]: number };
 
 export type AliasRegistry = { [ID: string]: string };
@@ -47,13 +51,25 @@ export type AliasRegistry = { [ID: string]: string };
 export const useManageAlias = () => {
   const countRegistryRef = useRef<ElementCountRegistry>({});
   const aliasRegistryRef = useRef<AliasRegistry>({});
-
+  const [sessionElements, setSessionElements] = useState<{
+    [ID: string]: true;
+  }>({});
+  useEffect(() => {
+    SubscribeSessionWebBus((v) => {
+      if (v && v.type === "CREATE") {
+        setSessionElements((curr) => {
+          return { ...curr, [v.payload.ID]: true };
+        });
+      }
+      return {};
+    });
+  }, [setSessionElements]);
   // read registry to create new alias
   // whenever a new element is created
   // use PostLinkEvent on WebBus
   useEffect(() => {
     SubscribeWebDevBus((v) => {
-      if (v.type === DEV_ELEMENT_RENDERED) {
+      if (sessionElements[v.payload] && v.type === DEV_ELEMENT_RENDERED) {
         const state = DrawRuntimeState[v.payload];
         countRegistryRef.current[state.compKey] = countRegistryRef.current[
           state.compKey
@@ -74,11 +90,12 @@ export const useManageAlias = () => {
   useEffect(() => {
     SubscribeWebBus((v) => {
       if (v && v.type === "LINK") {
-        aliasRegistryRef.current[v.payload.ID] = (
-          v.payload as WebLinkData
-        ).alias;
+        const payload = v.payload as WebLinkData;
+        aliasRegistryRef.current[v.payload.ID] = payload.alias;
         DrawRuntimeState[v.payload.ID].bus.next({
-          properties: { alias: (v.payload as WebLinkData).alias },
+          properties: {
+            Alias: payload.alias,
+          },
         });
       }
       return {};

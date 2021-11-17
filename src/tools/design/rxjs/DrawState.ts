@@ -17,8 +17,9 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { BehaviorSubject, ReplaySubject } from "rxjs";
+import { BehaviorSubject, ReplaySubject, Subscription } from "rxjs";
 import { ComponentItem } from "./ComponentRegistry";
+import { SliceableReplaySubject } from "./SliceableReplaySubject";
 
 export const DesignComponentSelected =
   new BehaviorSubject<ComponentItem | null>(null);
@@ -27,7 +28,7 @@ export type PropertyMap = { [key: string]: { value: any; type: string } };
 
 // store ID: Bus
 export type DrawRuntimeValue = { [key: string | number]: any } & {
-  bus: ReplaySubject<any>;
+  bus: SliceableReplaySubject<any>;
   style: React.CSSProperties;
   properties: PropertyMap;
   renderProps: { [key: string | number]: any };
@@ -44,7 +45,7 @@ export const DrawRuntimeState: {
 export const DrawRuntimeBus = new BehaviorSubject<{
   ID: string;
   payload: {
-    bus?: ReplaySubject<any>;
+    bus?: SliceableReplaySubject<any>;
     style?: React.CSSProperties;
     properties?: PropertyMap;
     renderProps?: { [key: string | number]: any };
@@ -66,14 +67,17 @@ DrawRuntimeBus.subscribe({
 });
 
 export type PropertyType = "Properties" | "Appearance";
-export const DisplayProperty = new BehaviorSubject<{
+
+export type DisplayPropertyValue = {
   ID: string;
   Properties: { propertyName: string; value: string; type: string }[];
   Appearance: { propertyName: string; value: string; type: string }[];
   activeHeader: PropertyType;
-} | null>(null);
+};
 
-export function propertyFromPropertyMap(
+const DisplayProperty = new BehaviorSubject<DisplayPropertyValue | null>(null);
+
+function propertyFromPropertyMap(
   propertyMap: PropertyMap,
   propertyOrder: string[]
 ) {
@@ -91,11 +95,25 @@ export function propertyFromPropertyMap(
   return properties;
 }
 
+function displayPropertyFromState(
+  ID: string
+): Omit<DisplayPropertyValue, "activeHeader"> {
+  const state = DrawRuntimeState[ID];
+  return {
+    ID,
+    Properties: propertyFromPropertyMap(state.properties, state.propertyOrder),
+    Appearance: propertyFromPropertyMap(
+      state.appearance,
+      state.appearanceOrder
+    ),
+  };
+}
+
 export function InitDrawRuntimeState(
   init: Partial<DrawRuntimeValue>
 ): DrawRuntimeValue {
   const value: DrawRuntimeValue = {
-    bus: init.bus || new ReplaySubject<any>(),
+    bus: init.bus || new SliceableReplaySubject<any>(),
     style: init.style || {},
     properties: init.properties || {},
     propertyOrder: init.propertyOrder || [],
@@ -105,4 +123,48 @@ export function InitDrawRuntimeState(
     compKey: init.compKey || "",
   };
   return value;
+}
+
+export const SubscribeDisplayProperty = (subscriber: {
+  next: (value: DisplayPropertyValue | null) => void;
+}): Subscription => {
+  return DisplayProperty.subscribe(subscriber);
+};
+
+// map of element ids and subscription to their bus
+let currentDisplayPropertyElements: { [ID: string]: Subscription } = {};
+
+/**
+ * This function must be called to
+ * @param ID string
+ */
+export function PostDisplayPropertyByID(
+  ID: string,
+  activeHeader: PropertyType
+) {
+  // // unsubscribe existing subscriptions
+  // const currentSubscriptions = Object.values(currentDisplayPropertyElements);
+  // for (let i = 0; i < currentSubscriptions.length; i++) {
+  //   if (currentSubscriptions[i] && !currentSubscriptions[i].closed)
+  //     currentSubscriptions[i].unsubscribe();
+  // }
+
+  // // reset map to empty
+  // currentDisplayPropertyElements = {};
+
+  // // subscribe to element bus
+  // const bus = DrawRuntimeState[ID].bus;
+  // const newSubscription = bus.subscribe(() => {
+  //   // DisplayProperty.next({ ...displayPropertyFromState(ID), activeHeader });
+  // });
+
+  // // add subscription to map
+  // currentDisplayPropertyElements = { ID: newSubscription };
+
+  DisplayProperty.next({ ...displayPropertyFromState(ID), activeHeader });
+}
+
+// Get Display Property Value
+export function GetDisplayPropertyValue() {
+  return DisplayProperty.value;
 }

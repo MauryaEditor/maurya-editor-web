@@ -16,7 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DrawRuntimeState } from "../rxjs/DrawState";
 declare interface WebPatchData {
   ID: string;
   slice: { [key: string | number]: any };
@@ -31,7 +32,17 @@ export const TextRequiredProperty: React.FC<{
 }> = (props) => {
   // Publish to bus on value change
   const [value, setValue] = useState<string>(props.initialValue);
-
+  useEffect(() => {
+    const unsub = DrawRuntimeState[props.ID].bus.subscribeSlice(
+      ["properties", props.propertyName],
+      (value) => {
+        setValue(value);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }, [setValue]);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
       <div style={{ color: "#1E40AF", fontWeight: 600, fontSize: "0.8em" }}>
@@ -49,7 +60,6 @@ export const TextRequiredProperty: React.FC<{
               },
             },
           });
-          setValue(event.target.value);
         }}
         value={value}
         style={{

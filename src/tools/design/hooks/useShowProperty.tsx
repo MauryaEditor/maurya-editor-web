@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import {
-  DisplayProperty,
-  DrawRuntimeState,
-  propertyFromPropertyMap,
+  GetDisplayPropertyValue,
+  PostDisplayPropertyByID,
 } from "../rxjs/DrawState";
 import { DEV_ELEMENT_RENDERED } from "../utils/ElementDecorator";
 
@@ -56,19 +55,10 @@ export const useShowProperty = () => {
       if (v.type === DEV_ELEMENT_RENDERED) {
         // check if the rendered element was created by this user session
         if (sessionElements[v.payload]) {
-          const state = DrawRuntimeState[v.payload];
-          DisplayProperty.next({
-            ID: v.payload,
-            Properties: propertyFromPropertyMap(
-              state.properties,
-              state.propertyOrder
-            ),
-            Appearance: propertyFromPropertyMap(
-              state.appearance,
-              state.appearanceOrder
-            ),
-            activeHeader: "Properties",
-          });
+          PostDisplayPropertyByID(
+            v.payload,
+            GetDisplayPropertyValue()?.activeHeader || "Properties" // show last active header or Properties
+          );
         }
       }
       return {};

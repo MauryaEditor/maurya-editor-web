@@ -16,7 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { DrawRuntimeState } from "../rxjs/DrawState";
 
 export function ArrayProperty<T>(
   props: React.PropsWithChildren<{
@@ -25,5 +26,17 @@ export function ArrayProperty<T>(
     initialValue: string;
   }>
 ) {
+  const [value, setValue] = useState<any[]>();
+  useEffect(() => {
+    const unsub = DrawRuntimeState[props.ID].bus.subscribeSlice(
+      ["properties", props.propertyName],
+      (value) => {
+        setValue(value);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }, [setValue]);
   return <div></div>;
 }

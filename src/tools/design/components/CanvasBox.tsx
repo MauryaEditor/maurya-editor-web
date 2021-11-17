@@ -25,6 +25,7 @@ import {
   DrawRuntimeState,
   InitDrawRuntimeState,
 } from "../rxjs/DrawState";
+import { SliceableReplaySubject } from "../rxjs/SliceableReplaySubject";
 import { ElementDecorator } from "../utils/ElementDecorator";
 import getCoords from "../utils/getCoords";
 const BaseWidth = 1440;
@@ -117,7 +118,6 @@ export const CanvasBox: React.FC = (props) => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
       if (v) {
         if (v.type === "CREATE") {
-          console.log("CREATE handle");
           let compItem: ComponentItem;
           const webCreateData = v.payload as WebCreateData;
           for (let i = 0; i < ComponentRegistry.value.length; i++) {
@@ -131,7 +131,7 @@ export const CanvasBox: React.FC = (props) => {
           }
           // Simplification-3: Props must take ID and extend style with position, top, left
           const renderProps = compItem!.renderCompProps!();
-          const bus = new ReplaySubject<any>();
+          const bus = new SliceableReplaySubject<any>();
           const props = {
             renderProps: renderProps,
             ...webCreateData.state,

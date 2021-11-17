@@ -18,7 +18,11 @@
  */
 import React, { useEffect, useState } from "react";
 import { AppearanceRegistry } from "../rxjs/AppearanceRegistry";
-import { DisplayProperty, PropertyType } from "../rxjs/DrawState";
+import {
+  PostDisplayPropertyByID,
+  PropertyType,
+  SubscribeDisplayProperty,
+} from "../rxjs/DrawState";
 import { PropertyItem, PropertyRegistry } from "../rxjs/PropertyRegistry";
 
 export const PropertiesBox: React.FC = (props) => {
@@ -70,7 +74,7 @@ export const PropertiesBox: React.FC = (props) => {
   // listen to DisplayProperty
   useEffect(() => {
     // Simplification-6 DisplayProperty should get ID instead of bus
-    const subscription = DisplayProperty.subscribe({
+    const subscription = SubscribeDisplayProperty({
       next: (v) => {
         if (v) {
           setID(v.ID);
@@ -84,7 +88,7 @@ export const PropertiesBox: React.FC = (props) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setID, setProperties, setComps]);
+  }, [setID, setProperties, setComps, setActiveHeader]);
 
   // show properties
   useEffect(() => {
@@ -148,11 +152,7 @@ export const PropertiesBox: React.FC = (props) => {
 
   // send displayProperty
   const sendDisplayProperty = (header: PropertyType) => {
-    console.log(DisplayProperty.value);
-    DisplayProperty.next({
-      ...DisplayProperty.value!,
-      activeHeader: header,
-    });
+    if (ID) PostDisplayPropertyByID(ID, header);
   };
 
   return (

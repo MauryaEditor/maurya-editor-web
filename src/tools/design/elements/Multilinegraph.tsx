@@ -99,7 +99,6 @@ export const Multilinegraph: React.FC<RenderProps> = (props) => {
     }
   }, [canvasRef, X, Y, Labels]);
 
-  console.log(Width, Height);
   return (
     <>
       {X && Y && X.length && Y.length ? (
