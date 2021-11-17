@@ -24,6 +24,7 @@ import {
   WebBus,
   WebBusEvent,
   WebCreateData,
+  WebLinkData,
   WebPatchData,
 } from "../rxjs/EditorConfig";
 
@@ -136,6 +137,19 @@ export const PostPatchEvent = (payload: WebPatchData): string => {
   const webEvent: WebBusEvent = {
     payload: { ...payload },
     type: "PATCH",
+  };
+  RuntimeState.tempEvents.push({ ...webEvent });
+  SessionWebBus.next(webEvent);
+  WebBus.next({ ...webEvent });
+  return payload.ID;
+};
+
+(window as any).PostPatchEvent = PostPatchEvent;
+
+export const PostLinkEvent = (payload: WebLinkData): string => {
+  const webEvent: WebBusEvent = {
+    payload: { ...payload },
+    type: "LINK",
   };
   RuntimeState.tempEvents.push({ ...webEvent });
   SessionWebBus.next(webEvent);

@@ -84,9 +84,14 @@ export interface WebPatchData {
   slice: { [key: string | number]: any };
 }
 
+export interface WebLinkData {
+  ID: string;
+  alias: string;
+}
+
 export interface WebBusEvent {
-  type: "CREATE" | "UPDATE" | "PATCH" | "DELETE"; // types of event
-  payload: WebCreateData | WebPatchData; // payload
+  type: "CREATE" | "UPDATE" | "PATCH" | "DELETE" | "LINK"; // types of event
+  payload: WebCreateData | WebPatchData | WebLinkData; // payload
 }
 
 export const WebBus = new ReplaySubject<WebBusEvent>();
