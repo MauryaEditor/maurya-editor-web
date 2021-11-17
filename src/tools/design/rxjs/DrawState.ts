@@ -34,6 +34,7 @@ export type DrawRuntimeValue = { [key: string | number]: any } & {
   propertyOrder: string[];
   appearance: PropertyMap;
   appearanceOrder: string[];
+  compKey: string;
 };
 
 export const DrawRuntimeState: {
@@ -50,6 +51,7 @@ export const DrawRuntimeBus = new BehaviorSubject<{
     propertyOrder?: string[];
     appearance?: PropertyMap;
     appearanceOrder?: string[];
+    compKey?: string;
   };
 } | null>(null);
 
@@ -100,6 +102,7 @@ export function InitDrawRuntimeState(
     appearance: init.appearance || {},
     appearanceOrder: init.appearanceOrder || [],
     renderProps: init.renderProps || {},
+    compKey: init.compKey || "",
   };
   return value;
 }

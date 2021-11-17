@@ -117,6 +117,7 @@ export const CanvasBox: React.FC = (props) => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
       if (v) {
         if (v.type === "CREATE") {
+          console.log("CREATE handle");
           let compItem: ComponentItem;
           const webCreateData = v.payload as WebCreateData;
           for (let i = 0; i < ComponentRegistry.value.length; i++) {
@@ -138,7 +139,11 @@ export const CanvasBox: React.FC = (props) => {
           };
           DrawRuntimeBus.next({
             ID: webCreateData.ID,
-            payload: InitDrawRuntimeState({ bus: bus, ...props }),
+            payload: InitDrawRuntimeState({
+              bus: bus,
+              compKey: webCreateData.compKey,
+              ...props,
+            }),
           });
           if (compItem!) {
             setRenderedComps((val) => [
