@@ -157,7 +157,7 @@ export const PostLinkEvent = (payload: WebLinkData): string => {
   return payload.ID;
 };
 
-(window as any).PostPatchEvent = PostPatchEvent;
+(window as any).PostLinkEvent = PostLinkEvent;
 
 // send event
 const sendEvent = (event: WebBusEvent) => {

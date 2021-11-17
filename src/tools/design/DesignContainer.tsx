@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CanvasBox } from "./components/CanvasBox";
 import { ComponentBox } from "./components/ComponentBox";
 import { PropertiesBox } from "./components/PropertiesBox";
+import { useManageAlias } from "./hooks/useManageAlias";
 import { useShowProperty } from "./hooks/useShowProperty";
 import { ComponentItem } from "./rxjs/ComponentRegistry";
 import { DesignComponentSelected } from "./rxjs/DrawState";
@@ -125,6 +126,7 @@ export const DesignContainer: React.FC = (props) => {
     }
   }, [combinedContainer]);
   useShowProperty();
+  useManageAlias();
   return (
     <div style={{ display: "flex", height: "100%", userSelect: "none" }}>
       <div
