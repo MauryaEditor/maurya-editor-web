@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import { DrawRuntimeState } from "../rxjs/DrawState";
+import { DEV_ELEMENT_RENDERED } from "../utils/ElementDecorator";
 
 declare interface WebCreateData {
   compKey: string;
@@ -24,15 +25,20 @@ declare interface WebBusEvent {
   payload: WebCreateData | WebPatchData | WebLinkData; // payload
 }
 
-declare function SubscribeSessionWebBus(
-  next: (v: WebBusEvent | null) => {}
-): Subscription;
-
 declare function SubscribeWebBus(
   next: (v: WebBusEvent | null) => {}
 ): Subscription;
 
 declare const PostLinkEvent: (payload: WebLinkData) => string;
+
+export interface WebDevBusEvent {
+  type: string;
+  payload: any;
+}
+
+declare function SubscribeWebDevBus(
+  next: (v: WebDevBusEvent) => {}
+): Subscription;
 
 export type ElementCountRegistry = { [compKey: string]: number };
 
@@ -46,18 +52,17 @@ export const useManageAlias = () => {
   // whenever a new element is created
   // use PostLinkEvent on WebBus
   useEffect(() => {
-    SubscribeSessionWebBus((v) => {
-      if (v && v.type === "CREATE") {
-        const payload = v.payload as WebCreateData;
-        countRegistryRef.current[payload.compKey] = countRegistryRef.current[
-          payload.compKey
+    SubscribeWebDevBus((v) => {
+      if (v.type === DEV_ELEMENT_RENDERED) {
+        const state = DrawRuntimeState[v.payload];
+        countRegistryRef.current[state.compKey] = countRegistryRef.current[
+          state.compKey
         ]
-          ? countRegistryRef.current[payload.compKey]++
+          ? countRegistryRef.current[state.compKey]++
           : 1;
         PostLinkEvent({
-          ID: payload.ID,
-          alias:
-            payload.compKey + "_" + countRegistryRef.current[payload.compKey],
+          ID: v.payload,
+          alias: state.compKey + "_" + countRegistryRef.current[state.compKey],
         });
       }
       return {};
