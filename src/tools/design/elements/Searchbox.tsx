@@ -3,7 +3,14 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import SearchImage from "./assets/search.svg";
 import { RenderProps } from "./types/RenderProps";
 import "./css/elements.css";
+import { useAttachProperty } from "./hooks/useAttachProperty";
 export const Searchbox: React.FC<RenderProps> = (props) => {
+  const Alias = useAttachProperty<string>(
+    props.ID,
+    "design/alias",
+    "Alias",
+    props.properties?.Alias || ""
+  );
   return (
     <div
       style={{

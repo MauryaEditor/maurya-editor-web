@@ -27,6 +27,13 @@ const Dropdown: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
 
   // attach properties
+  const Alias = useAttachProperty<string>(
+    props.ID,
+    "design/alias",
+    "Alias",
+    props.properties?.Alias || ""
+  );
+
   const Options = useAttachProperty<string[]>(
     props.ID,
     "ArrayProperty",

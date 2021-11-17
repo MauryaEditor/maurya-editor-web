@@ -23,9 +23,17 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 import AddImage from "./assets/add-image.svg";
 import { useStyle } from "./hooks/useStyle";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
+import { useAttachProperty } from "./hooks/useAttachProperty";
 
 const Image: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
+
+  const Alias = useAttachProperty<string>(
+    props.ID,
+    "design/alias",
+    "Alias",
+    props.properties?.Alias || ""
+  );
 
   const Width = useAttachAppearance<string>(
     props.ID,

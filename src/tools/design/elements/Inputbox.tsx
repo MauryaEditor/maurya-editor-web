@@ -17,6 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { useAttachProperty } from "./hooks/useAttachProperty";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
@@ -24,7 +25,12 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Inputbox: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-
+  const Alias = useAttachProperty<string>(
+    props.ID,
+    "design/alias",
+    "Alias",
+    props.properties?.Alias || ""
+  );
   return <input type="text" style={{ ...style }} />;
 };
 
