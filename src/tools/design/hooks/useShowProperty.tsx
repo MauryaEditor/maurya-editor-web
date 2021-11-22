@@ -55,6 +55,7 @@ export const useShowProperty = () => {
       if (v.type === DEV_ELEMENT_RENDERED) {
         // check if the rendered element was created by this user session
         if (sessionElements[v.payload]) {
+          console.log("[useShowProperty] PostDisplayPropertyByID called");
           PostDisplayPropertyByID(
             v.payload,
             GetDisplayPropertyValue()?.activeHeader || "Properties" // show last active header or Properties

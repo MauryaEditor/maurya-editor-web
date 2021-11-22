@@ -76,6 +76,7 @@ export const useManageAlias = () => {
         ]
           ? countRegistryRef.current[state.compKey]++
           : 1;
+        console.log("[useManageAlias] PostLinkEvent called");
         PostLinkEvent({
           ID: v.payload,
           alias: state.compKey + "_" + countRegistryRef.current[state.compKey],
@@ -83,13 +84,14 @@ export const useManageAlias = () => {
       }
       return {};
     });
-  }, [aliasRegistryRef, countRegistryRef]);
+  }, [aliasRegistryRef, countRegistryRef, sessionElements]);
 
   // write to registry on LINK web event
   // post on bus of the element
   useEffect(() => {
     SubscribeWebBus((v) => {
       if (v && v.type === "LINK") {
+        console.log("[useManageAlias] Sending change to bus");
         const payload = v.payload as WebLinkData;
         aliasRegistryRef.current[v.payload.ID] = payload.alias;
         DrawRuntimeState[v.payload.ID].bus.next({

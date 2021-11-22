@@ -37,6 +37,7 @@ export const AliasProperty: React.FC<{
     const unsub = DrawRuntimeState[props.ID].bus.subscribeSlice(
       ["properties", props.propertyName],
       (value) => {
+        console.log("[AliasProperty] Received a new alias");
         setValue(value);
       }
     );

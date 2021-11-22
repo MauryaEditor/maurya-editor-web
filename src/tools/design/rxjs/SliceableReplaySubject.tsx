@@ -1,4 +1,5 @@
 import { ReplaySubject } from "rxjs";
+import { first } from "rxjs/operators";
 
 export class SliceableReplaySubject<
   T extends { [key: string | number]: {} }
@@ -8,7 +9,7 @@ export class SliceableReplaySubject<
     super();
     this.subscribe({
       next: (v) => {
-        this.traverseObject(v, this.slices);
+        this.sendSliceToSubscribers(v);
       },
     });
   }
@@ -27,6 +28,23 @@ export class SliceableReplaySubject<
         }
       }
     }
+    // call next with current value
+    const obervable = this.asObservable().pipe(first());
+    obervable.subscribe({
+      next: (v) => {
+        let curr = v;
+        for (let i = 0; i < slice.length; i++) {
+          curr = curr[slice[i]] as any;
+          if (!curr) {
+            break;
+          }
+          if (i === slice.length - 1) {
+            next(curr as any);
+          }
+        }
+      },
+    });
+
     return () => {
       this.unsubscribeSlice(slice, next);
     };
@@ -66,5 +84,8 @@ export class SliceableReplaySubject<
         this.traverseObject(pathObj[keys[i]], baseObj[keys[i]]);
       }
     }
+  }
+  sendSliceToSubscribers(v: any) {
+    this.traverseObject(v, this.slices);
   }
 }
