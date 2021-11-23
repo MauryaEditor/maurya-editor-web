@@ -22,8 +22,11 @@ export class Bus<T, U> {
   }
   accept() {
     if (this.postOptions?.onAccept) this.postOptions.onAccept();
+    // accept/reject can be called only by one subscriber
+    this.postOptions = {};
   }
   reject() {
     if (this.postOptions?.onReject) this.postOptions.onReject();
+    this.postOptions = {};
   }
 }
