@@ -140,5 +140,3 @@ export class Runtime {
   }
 }
 const runtime = Runtime.getRuntime();
-
-(window as any).Runtime = Runtime;
