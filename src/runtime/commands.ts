@@ -21,7 +21,7 @@ export const PostCreateEvent = (
     type: "CREATE",
   };
   Runtime.addEvent({ ...webEvent });
-  SessionWebBus.next(webEvent);
+  SessionWebBus.post({ ...webEvent }, busOptions);
   WebBus.post({ ...webEvent }, busOptions);
   return ID;
 };
@@ -37,7 +37,7 @@ export const PostPatchEvent = (
     type: "PATCH",
   };
   Runtime.addEvent({ ...webEvent });
-  SessionWebBus.next(webEvent);
+  SessionWebBus.post({ ...webEvent }, busOptions);
   WebBus.post({ ...webEvent }, busOptions);
   return payload.ID;
 };
@@ -53,7 +53,7 @@ export const PostLinkEvent = (
     type: "LINK",
   };
   Runtime.addEvent({ ...webEvent });
-  SessionWebBus.next(webEvent);
+  SessionWebBus.post({ ...webEvent }, busOptions);
   WebBus.post({ ...webEvent }, busOptions);
   return payload.ID;
 };

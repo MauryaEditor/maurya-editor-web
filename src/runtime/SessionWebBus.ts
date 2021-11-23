@@ -1,11 +1,12 @@
-import { Subscription } from "rxjs";
+import { Observer, Subscription } from "rxjs";
+import { Bus } from "./Bus";
 import { SubjectWrapper } from "./SubjectWrapper";
 import { WebBusEvent } from "./WebBusEvent";
 
-export const SessionWebBus = new SubjectWrapper<WebBusEvent>();
+export const SessionWebBus = new Bus<WebBusEvent>(new SubjectWrapper());
 
 (window as any).SubscribeSessionWebBus = (
-  next: (v: WebBusEvent | null) => {}
+  observer: Observer<WebBusEvent>
 ): Subscription => {
-  return SessionWebBus.subscribe({ next });
+  return SessionWebBus.subscribe(observer);
 };
