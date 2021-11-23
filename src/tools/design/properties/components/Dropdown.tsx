@@ -102,6 +102,7 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
                   setSelected(option);
                   setShowOptions(false);
                 }}
+                key={option}
               >
                 <div style={{ flex: 1 }}>{option}</div>
               </div>
