@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { BehaviorSubject, ReplaySubject, Subject, Subscription } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 export interface MenuItem {
   name: string;
@@ -70,61 +70,4 @@ export const ToolRegistry = new BehaviorSubject<{ [key: string]: any }>({});
 // needed so that tools can find one another
 export const RegisterTool = (pkg: string, value: any) => {
   ToolRegistry.next({ ...ToolRegistry.value, [pkg]: value });
-};
-
-export interface WebCreateData {
-  compKey: string;
-  pkg: string;
-  ID: string;
-  state?: { [key: string | number]: any };
-}
-
-export interface WebPatchData {
-  ID: string;
-  slice: { [key: string | number]: any };
-}
-
-export interface WebLinkData {
-  ID: string;
-  alias: string;
-}
-
-export interface WebBusEvent {
-  type: "CREATE" | "UPDATE" | "PATCH" | "DELETE" | "LINK"; // types of event
-  payload: WebCreateData | WebPatchData | WebLinkData; // payload
-}
-
-export const WebBus = new ReplaySubject<WebBusEvent>();
-
-(window as any).SubscribeWebBus = (
-  next: (v: WebBusEvent | null) => {}
-): Subscription => {
-  return WebBus.subscribe({ next });
-};
-
-export interface WebDevBusEvent {
-  type: string;
-  payload: any;
-}
-
-export const WebDevBus = new Subject<WebDevBusEvent>();
-
-(window as any).SubscribeWebDevBus = (
-  next: (v: WebDevBusEvent) => {}
-): Subscription => {
-  return WebDevBus.subscribe({ next });
-};
-
-export function PostWebDevBusEvent(event: WebDevBusEvent) {
-  WebDevBus.next(event);
-}
-
-(window as any).PostWebDevBusEvent = PostWebDevBusEvent;
-
-export const SessionWebBus = new Subject<WebBusEvent | null>();
-
-(window as any).SubscribeSessionWebBus = (
-  next: (v: WebBusEvent | null) => {}
-): Subscription => {
-  return SessionWebBus.subscribe({ next });
 };

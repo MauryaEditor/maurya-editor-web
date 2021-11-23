@@ -1,24 +1,36 @@
 import { ReplaySubjectWrapper } from "./ReplaySubjectWrapper";
 import { Observer } from "rxjs";
+import { SubjectWrapper } from "./SubjectWrapper";
+import { BehaviorSubjectWrapper } from "./BehaviorSubjectWrapper";
 
 export interface BusPostOptions {
   onAccept?: () => void;
   onReject?: () => {};
 }
 
-export class Bus<T, U> {
+export class Bus<T> {
   protected postOptions?: BusPostOptions = {};
-  private subject: ReplaySubjectWrapper<T> = new ReplaySubjectWrapper<T>();
-  constructor() {}
+  private subject:
+    | SubjectWrapper<T>
+    | ReplaySubjectWrapper<T>
+    | BehaviorSubjectWrapper<T>;
+  constructor(
+    subject:
+      | SubjectWrapper<T>
+      | ReplaySubjectWrapper<T>
+      | BehaviorSubjectWrapper<T>
+  ) {
+    this.subject = subject;
+  }
   subscribe(observer: Observer<T>) {
     return this.subject.subscribe(observer);
   }
   subscribeSlice(slice: (string | number)[], observer: Observer<T>) {
     return this.subject.subscribeSlice(slice, observer.next);
   }
-  post(type: U, data: T, options?: BusPostOptions) {
+  post(event: T, options?: BusPostOptions) {
     this.postOptions = options;
-    this.subject.next(data);
+    this.subject.next(event);
   }
   accept() {
     if (this.postOptions?.onAccept) this.postOptions.onAccept();

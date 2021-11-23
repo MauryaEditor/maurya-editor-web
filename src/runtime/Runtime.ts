@@ -19,14 +19,11 @@
 import { IDPoolResponse } from "../dto/IDPoolResponse";
 import { getAuth } from "../lib/getAuth";
 import { getProjectID } from "../lib/getProjectID";
-import {
-  SessionWebBus,
-  WebBus,
-  WebBusEvent,
-  WebCreateData,
-  WebLinkData,
-  WebPatchData,
-} from "../rxjs/EditorConfig";
+import { WebBus } from "./WebBus";
+import "./SessionWebBus";
+import "./WebDevBus";
+import "./commands";
+import { WebBusEvent } from "./WebBusEvent";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -42,156 +39,106 @@ export const RuntimeState: {
   currSyncIndex: 0,
 };
 
-const fetchIDs = async (size: number) => {
-  const uri = `${process.env.REACT_APP_BACKEND_ORIGIN}/uuid?size=${size}`;
-  const uris = await fetch(uri).then((resp) => resp.json());
-  return uris;
-};
-
-const storeIDsAt = (index: number, payload: string[], token: string) => {
-  RuntimeState.IDBank[index] = { payload, token };
-};
-
 const AccountSize = 20;
 
-// retrieve events from backend
-async function retrieveEvents(): Promise<WebBusEvent[] | undefined> {
-  const { token } = getAuth();
-  const projectID = getProjectID();
-  // TODO: handle what if non-logged in user tries to access this page
-  if (!token || !projectID) {
-    return;
-  }
-  return await fetch(
-    `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
-  ).then((resp) => resp.json());
-}
-
-/**
- * It does two things:
- * 1. Retrieve old events if the project is old
- * 2. fetch new IDs
- */
-const InitRuntime = async () => {
-  // TODO: convert all the tasks into a single Promise.all
-
-  const events = await retrieveEvents();
-  if (events) {
-    events.forEach((event) => {
-      WebBus.next(event);
+export class Runtime {
+  static instance: Runtime;
+  private static IDIssued: any = {};
+  private static tempEvents: WebBusEvent[] = [];
+  private static currIndex: number = 0;
+  private static IDBank: { payload: string[]; token: string }[] = [];
+  private static currSyncIndex: number = 0;
+  private constructor() {
+    Runtime.retrieveEvents().then((events) => {
+      if (events) {
+        events.forEach((event) => {
+          WebBus.post(event);
+        });
+      }
     });
-  }
-  let { payload, token }: IDPoolResponse = await fetchIDs(AccountSize);
-  storeIDsAt(0, payload.pool, token);
-};
-
-InitRuntime()
-  .then(() => {
-    console.log("Runtime Init success", RuntimeState);
-  })
-  .catch((err) => {
-    console.error("Runtime Init failed", err);
-  });
-
-const getID = (): string => {
-  const ID =
-    RuntimeState.IDBank[Math.floor(RuntimeState.currIndex / AccountSize)]
-      ?.payload[RuntimeState.currIndex % AccountSize];
-  RuntimeState.currIndex++;
-  // reload the pool if it's depleted
-  // TODO: fetch early i.e. dont let the pool deplete
-  if (RuntimeState.currIndex % AccountSize === 0) {
-    fetchIDs(AccountSize).then((val: IDPoolResponse) => {
-      storeIDsAt(
-        Math.floor(RuntimeState.currIndex / AccountSize),
-        val.payload.pool,
-        val.token
-      );
+    Runtime.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
+      Runtime.storeIDsAt(0, payload.pool, token);
     });
+    Runtime.syncEvents();
   }
-  if (ID) {
-    (RuntimeState.IDIssued as any)[ID] = true;
-    return ID;
-  } else {
-    throw new Error("ID Bank is bankrupt");
+  public static getRuntime() {
+    if (!Runtime.instance) Runtime.instance = new Runtime();
+    return Runtime.instance;
   }
-};
-
-export const PostCreateEvent = (
-  payload: Omit<WebCreateData, "tempID">
-): string => {
-  const ID = getID();
-  const webEvent: WebBusEvent = {
-    payload: { ...payload, ID },
-    type: "CREATE",
-  };
-  RuntimeState.tempEvents.push({ ...webEvent });
-  SessionWebBus.next(webEvent);
-  WebBus.next({ ...webEvent });
-  return ID;
-};
-
-(window as any).PostCreateEvent = PostCreateEvent;
-
-export const PostPatchEvent = (payload: WebPatchData): string => {
-  const webEvent: WebBusEvent = {
-    payload: { ...payload },
-    type: "PATCH",
-  };
-  RuntimeState.tempEvents.push({ ...webEvent });
-  SessionWebBus.next(webEvent);
-  WebBus.next({ ...webEvent });
-  return payload.ID;
-};
-
-(window as any).PostPatchEvent = PostPatchEvent;
-
-export const PostLinkEvent = (payload: WebLinkData): string => {
-  const webEvent: WebBusEvent = {
-    payload: { ...payload },
-    type: "LINK",
-  };
-  RuntimeState.tempEvents.push({ ...webEvent });
-  SessionWebBus.next(webEvent);
-  WebBus.next({ ...webEvent });
-  return payload.ID;
-};
-
-(window as any).PostLinkEvent = PostLinkEvent;
-
-// send event
-const sendEvent = (event: WebBusEvent) => {
-  const { token } = getAuth();
-  const projectID = getProjectID();
-  if (!token || !projectID) {
-    return;
-  }
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  const options = {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify({ ...event, token, projectID }),
-  };
-  return fetch(
-    `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
-    options
-  ).then((resp) => resp.json());
-};
-
-// send events to backend
-function syncEngine() {
-  setTimeout(async () => {
-    for (
-      let i = RuntimeState.currSyncIndex;
-      i < RuntimeState.tempEvents.length;
-      i++
-    ) {
-      await sendEvent(RuntimeState.tempEvents[RuntimeState.currSyncIndex]);
-      RuntimeState.currSyncIndex++;
+  private static async retrieveEvents(): Promise<WebBusEvent[] | undefined> {
+    const { token } = getAuth();
+    const projectID = getProjectID();
+    // TODO: handle what if non-logged in user tries to access this page
+    if (!token || !projectID) {
+      return;
     }
-    syncEngine();
-  }, 5000);
+    return await fetch(
+      `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
+    ).then((resp) => resp.json());
+  }
+  private static async fetchIDs(size: number) {
+    const uri = `${process.env.REACT_APP_BACKEND_ORIGIN}/uuid?size=${size}`;
+    const uris = await fetch(uri).then((resp) => resp.json());
+    return uris;
+  }
+  private static storeIDsAt(index: number, payload: string[], token: string) {
+    Runtime.IDBank[index] = { payload, token };
+  }
+  public static getID() {
+    const ID =
+      Runtime.IDBank[Math.floor(Runtime.currIndex / AccountSize)]?.payload[
+        Runtime.currIndex % AccountSize
+      ];
+    Runtime.currIndex++;
+    // reload the pool if it's depleted
+    // TODO: fetch early i.e. dont let the pool deplete
+    if (Runtime.currIndex % AccountSize === 0) {
+      Runtime.fetchIDs(AccountSize).then((val: IDPoolResponse) => {
+        Runtime.storeIDsAt(
+          Math.floor(Runtime.currIndex / AccountSize),
+          val.payload.pool,
+          val.token
+        );
+      });
+    }
+    if (ID) {
+      (Runtime.IDIssued as any)[ID] = true;
+      return ID;
+    } else {
+      throw new Error("ID Bank is bankrupt");
+    }
+  }
+  private static sendEvent(event: WebBusEvent) {
+    const { token } = getAuth();
+    const projectID = getProjectID();
+    if (!token || !projectID) {
+      return;
+    }
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    const options = {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ ...event, token, projectID }),
+    };
+    return fetch(
+      `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
+      options
+    ).then((resp) => resp.json());
+  }
+  private static syncEvents() {
+    setTimeout(async () => {
+      for (let i = Runtime.currSyncIndex; i < Runtime.tempEvents.length; i++) {
+        await Runtime.sendEvent(Runtime.tempEvents[Runtime.currSyncIndex]);
+        Runtime.currSyncIndex++;
+      }
+      Runtime.syncEvents();
+    }, 5000);
+  }
+  public static addEvent(event: WebBusEvent) {
+    this.tempEvents.push(event);
+  }
 }
+const runtime = Runtime.getRuntime();
 
-syncEngine();
+(window as any).Runtime = Runtime;

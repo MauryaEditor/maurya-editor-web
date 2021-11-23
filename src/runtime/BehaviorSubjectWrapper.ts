@@ -1,20 +1,16 @@
-import { ReplaySubject, TimestampProvider } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { first } from "rxjs/operators";
 import { createPathIfNotExists } from "../lib/createPathIfNotExists";
 import { ObjectVisitor } from "../lib/ObjectVisitor";
 import { VisitableObject } from "../lib/VisitableObject";
 
-export class ReplaySubjectWrapper<
+export class BehaviorSubjectWrapper<
   T extends { [key: string | number]: any }
-> extends ReplaySubject<T> {
+> extends BehaviorSubject<T> {
   slices: { [key: string | number]: any } = {};
   private SubscriberField = "__sliceSubscribers";
-  constructor(
-    _bufferSize?: number | undefined,
-    _windowTime?: number | undefined,
-    _timestampProvider?: TimestampProvider | undefined
-  ) {
-    super(_bufferSize, _windowTime, _timestampProvider);
+  constructor(v: T) {
+    super(v);
     // subscribe to itself to send updates to subscribers of a slice
     this.subscribe((v) => {
       this.sendSliceToSubscribers(v);
