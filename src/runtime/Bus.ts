@@ -20,10 +20,10 @@ export class Bus<T, U> {
     this.postOptions = options;
     this.subject.next(data);
   }
-  protected accept() {
+  accept() {
     if (this.postOptions?.onAccept) this.postOptions.onAccept();
   }
-  protected reject() {
+  reject() {
     if (this.postOptions?.onReject) this.postOptions.onReject();
   }
 }
