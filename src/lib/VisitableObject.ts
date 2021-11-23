@@ -55,8 +55,8 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
         } else {
           visitor.enterTerminal(path[i], curr[path[i]], curr);
         }
+        curr = curr[path[i]];
       }
-      curr = curr[path[i]];
     }
   }
 }
