@@ -61,7 +61,7 @@ export const PostLinkEvent = (
 (window as any).PostLinkEvent = PostLinkEvent;
 
 export function PostWebDevBusEvent(event: WebDevBusEvent) {
-  WebDevBus.next(event);
+  WebDevBus.post(event);
 }
 
 (window as any).PostWebDevBusEvent = PostWebDevBusEvent;
