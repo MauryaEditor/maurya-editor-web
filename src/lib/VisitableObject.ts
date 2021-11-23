@@ -1,5 +1,9 @@
 import { ObjectVisitor } from "./ObjectVisitor";
 
+/**
+ * The VisitableObject class wraps an object with methods that can be used to
+ * traverse the object in a tree like fashion.
+ */
 export class VisitableObject<T extends { [key: string | number]: any }> {
   constructor(private obj: T) {}
   visit(visitor: ObjectVisitor) {
@@ -23,6 +27,11 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
           visitor.enterTerminal(key, curr[key], curr);
         }
         this.traverse(curr[key], visitor);
+        if (typeof curr[key] === "object" && !Array.isArray(curr)) {
+          visitor.enterNonTerminal(key, curr[key], curr);
+        } else {
+          visitor.enterTerminal(key, curr[key], curr);
+        }
       }
     }
   }
