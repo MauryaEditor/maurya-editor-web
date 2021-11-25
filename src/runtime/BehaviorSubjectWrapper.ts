@@ -22,7 +22,7 @@ export class BehaviorSubjectWrapper<
     // add listener to the slice
     const visitable = new VisitableObject(this.slices);
     visitable.visitPath(
-      slice,
+      [...slice, this.SubscriberField],
       new ObjectVisitor({
         terminal: (key, value, parentObj) => {
           if (value === undefined) {
