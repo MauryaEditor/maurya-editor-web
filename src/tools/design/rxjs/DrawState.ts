@@ -36,6 +36,7 @@ export type DrawRuntimeValue = { [key: string | number]: any } & {
   appearance: PropertyMap;
   appearanceOrder: string[];
   compKey: string;
+  ref?: React.RefObject<HTMLElement>;
 };
 
 export const DrawRuntimeState: {
@@ -53,6 +54,7 @@ export const DrawRuntimeBus = new BehaviorSubject<{
     appearance?: PropertyMap;
     appearanceOrder?: string[];
     compKey?: string;
+    ref?: React.RefObject<HTMLElement>;
   };
 } | null>(null);
 

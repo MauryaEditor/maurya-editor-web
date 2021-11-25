@@ -97,7 +97,10 @@ export const CanvasBox: React.FC = (props) => {
           // Simplification-1: Send style in PostCreateEvent
           const parent =
             DragOverElement.value[DragOverElement.value.length - 1];
-          const { top, left } = getCoords(root.current!);
+          let { top, left } = getCoords(root.current!);
+          if (parent !== "root") {
+            ({ top, left } = getCoords(DrawRuntimeState[parent].ref?.current!));
+          }
           PostCreateEvent({
             compKey: DesignComponentSelected.value.key,
             pkg: "design",
