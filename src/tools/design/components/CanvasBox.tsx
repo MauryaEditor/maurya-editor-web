@@ -28,6 +28,8 @@ import {
 import { SliceableReplaySubject } from "../rxjs/SliceableReplaySubject";
 import { ElementDecorator } from "../decorators/ElementDecorator";
 import getCoords from "../utils/getCoords";
+import { DecoratorCreator } from "../decorators/DecoratorCreator";
+import { DraggableDecorator } from "../decorators/DraggableDecorator";
 const BaseWidth = 1440;
 const BaseHeight = 900;
 
@@ -112,9 +114,9 @@ export const CanvasBox: React.FC = (props) => {
 
   // add component
   const [renderedComps, setRenderedComps] = useState<
-    [React.FC, object, string, React.FC<any>][]
+    [React.FC, object, string, React.FC<any>[]][]
   >([]);
-  const DefualtDecoratorElement = ElementDecorator;
+  const DefualtDecoratorElements = [DraggableDecorator, ElementDecorator];
   useEffect(() => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
       if (v) {
@@ -153,9 +155,9 @@ export const CanvasBox: React.FC = (props) => {
                 compItem.renderComp,
                 { ...props },
                 v.payload.ID,
-                compItem.decorator
-                  ? compItem.decorator
-                  : DefualtDecoratorElement,
+                compItem.decorators
+                  ? compItem.decorators
+                  : DefualtDecoratorElements,
               ],
             ]);
           }
@@ -215,11 +217,11 @@ export const CanvasBox: React.FC = (props) => {
           }}
           ref={root}
         >
-          {renderedComps.map(([Comp, props, key, Decorator]) => {
+          {renderedComps.map(([Comp, props, key, decorators]) => {
             return (
-              <Decorator ID={key} key={key}>
+              <DecoratorCreator decorators={decorators} ID={key} key={key}>
                 <Comp {...props} key={key} data-id={key} />
-              </Decorator>
+              </DecoratorCreator>
             );
           })}
         </div>
