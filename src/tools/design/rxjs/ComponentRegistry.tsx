@@ -40,6 +40,7 @@ export type ComponentItem = {
     RenderProps,
     "ID"
   >;
+  decorator?: React.FC;
 };
 
 export type ComponentList = [string, ComponentItem[]][];

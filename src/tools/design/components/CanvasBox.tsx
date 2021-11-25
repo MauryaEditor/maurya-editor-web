@@ -112,8 +112,9 @@ export const CanvasBox: React.FC = (props) => {
 
   // add component
   const [renderedComps, setRenderedComps] = useState<
-    [React.FC, object, string][]
+    [React.FC, object, string, React.FC<any>][]
   >([]);
+  const DefualtDecoratorElement = ElementDecorator;
   useEffect(() => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
       if (v) {
@@ -148,7 +149,14 @@ export const CanvasBox: React.FC = (props) => {
           if (compItem!) {
             setRenderedComps((val) => [
               ...val,
-              [compItem.renderComp, { ...props }, v.payload.ID],
+              [
+                compItem.renderComp,
+                { ...props },
+                v.payload.ID,
+                compItem.decorator
+                  ? compItem.decorator
+                  : DefualtDecoratorElement,
+              ],
             ]);
           }
         }
@@ -207,11 +215,11 @@ export const CanvasBox: React.FC = (props) => {
           }}
           ref={root}
         >
-          {renderedComps.map(([Comp, props, key]) => {
+          {renderedComps.map(([Comp, props, key, Decorator]) => {
             return (
-              <ElementDecorator ID={key} key={key}>
+              <Decorator ID={key} key={key}>
                 <Comp {...props} key={key} data-id={key} />
-              </ElementDecorator>
+              </Decorator>
             );
           })}
         </div>
