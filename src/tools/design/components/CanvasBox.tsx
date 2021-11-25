@@ -219,7 +219,12 @@ export const CanvasBox: React.FC = (props) => {
         >
           {renderedComps.map(([Comp, props, key, decorators]) => {
             return (
-              <DecoratorCreator decorators={decorators} ID={key} key={key}>
+              <DecoratorCreator
+                decorators={decorators}
+                ID={key}
+                key={key}
+                style={(props as any).style}
+              >
                 <Comp {...props} key={key} data-id={key} />
               </DecoratorCreator>
             );

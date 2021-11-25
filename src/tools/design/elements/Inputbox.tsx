@@ -24,14 +24,13 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Inputbox: React.FC<RenderProps> = (props) => {
-  const [style, setStyle] = useStyle(props.ID, props.style!);
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
     "Alias",
     props.properties?.Alias || ""
   );
-  return <input type="text" style={{ ...style }} />;
+  return <input type="text" />;
 };
 
 const manifest = {

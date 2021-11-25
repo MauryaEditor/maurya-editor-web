@@ -24,8 +24,6 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Dropdown: React.FC<RenderProps> = (props) => {
-  const [style, setStyle] = useStyle(props.ID, props.style!);
-
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,
@@ -41,7 +39,7 @@ const Dropdown: React.FC<RenderProps> = (props) => {
     props.properties?.Options || []
   );
 
-  return <select style={{ ...style }}>{Options}</select>;
+  return <select>{Options}</select>;
 };
 
 const manifest = {

@@ -14,7 +14,6 @@ export const Searchbox: React.FC<RenderProps> = (props) => {
   return (
     <div
       style={{
-        ...props.style,
         display: "flex",
         border: "1px solid #CBD5E1",
         padding: "0.5rem 0.75rem 0.5rem 0.75rem",

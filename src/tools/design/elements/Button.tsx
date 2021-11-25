@@ -25,7 +25,6 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Button: React.FC<RenderProps> = (props) => {
-  const [style, setStyle] = useStyle(props.ID, props.style!);
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,
@@ -65,7 +64,6 @@ const Button: React.FC<RenderProps> = (props) => {
   return (
     <button
       style={{
-        ...style,
         color: Color || "white",
         backgroundColor: "#2185D0",
         borderRadius: "6px",

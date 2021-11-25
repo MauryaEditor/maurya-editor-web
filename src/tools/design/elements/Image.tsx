@@ -26,8 +26,6 @@ import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 
 const Image: React.FC<RenderProps> = (props) => {
-  const [style, setStyle] = useStyle(props.ID, props.style!);
-
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
@@ -52,7 +50,7 @@ const Image: React.FC<RenderProps> = (props) => {
   return (
     <img
       height={Height}
-      style={{ ...style, objectFit: "cover" }}
+      style={{ objectFit: "cover" }}
       alt={""}
       src={AddImage}
       width={Width}

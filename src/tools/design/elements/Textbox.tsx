@@ -24,8 +24,6 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Textbox: React.FC<RenderProps> = (props) => {
-  const [style, setStyle] = useStyle(props.ID, props.style!);
-
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
@@ -39,7 +37,7 @@ const Textbox: React.FC<RenderProps> = (props) => {
     "Value",
     props.properties?.Value || ""
   );
-  return <div style={{ ...style }}>{TextValue || "Text here"}</div>;
+  return <div>{TextValue || "Text here"}</div>;
 };
 
 const manifest = {
