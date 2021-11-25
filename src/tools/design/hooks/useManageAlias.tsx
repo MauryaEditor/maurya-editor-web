@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import { DrawRuntimeBus, DrawRuntimeState } from "../rxjs/DrawState";
-import { DEV_ELEMENT_RENDERED } from "../utils/ElementDecorator";
+import { DrawRuntimeState } from "../rxjs/DrawState";
+import { DEV_ELEMENT_RENDERED } from "../decorators/ElementDecorator";
 
 declare interface WebCreateData {
   compKey: string;

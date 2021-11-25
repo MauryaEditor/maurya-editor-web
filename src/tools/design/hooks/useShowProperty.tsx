@@ -4,7 +4,7 @@ import {
   GetDisplayPropertyValue,
   PostDisplayPropertyByID,
 } from "../rxjs/DrawState";
-import { DEV_ELEMENT_RENDERED } from "../utils/ElementDecorator";
+import { DEV_ELEMENT_RENDERED } from "../decorators/ElementDecorator";
 
 declare interface WebCreateData {
   compKey: string;

@@ -17,7 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useRef, useState } from "react";
-import { BehaviorSubject, ReplaySubject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import {
   DesignComponentSelected,
@@ -26,7 +26,7 @@ import {
   InitDrawRuntimeState,
 } from "../rxjs/DrawState";
 import { SliceableReplaySubject } from "../rxjs/SliceableReplaySubject";
-import { ElementDecorator } from "../utils/ElementDecorator";
+import { ElementDecorator } from "../decorators/ElementDecorator";
 import getCoords from "../utils/getCoords";
 const BaseWidth = 1440;
 const BaseHeight = 900;
