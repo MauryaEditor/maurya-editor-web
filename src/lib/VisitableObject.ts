@@ -28,9 +28,9 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
         }
         this.traverse(curr[key], visitor);
         if (typeof curr[key] === "object" && !Array.isArray(curr)) {
-          visitor.enterNonTerminal(key, curr[key], curr);
+          visitor.exitNonTerminal(key, curr[key], curr);
         } else {
-          visitor.enterTerminal(key, curr[key], curr);
+          visitor.exitTerminal(key, curr[key], curr);
         }
       }
     }
