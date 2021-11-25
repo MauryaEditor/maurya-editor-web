@@ -168,3 +168,5 @@ export function PostDisplayPropertyByID(
 export function GetDisplayPropertyValue() {
   return DisplayProperty.value;
 }
+
+export const DragOverElement = new BehaviorSubject<string[]>([]);

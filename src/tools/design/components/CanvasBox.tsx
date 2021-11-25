@@ -21,6 +21,7 @@ import { Subscription } from "rxjs";
 import { ComponentItem, ComponentRegistry } from "../rxjs/ComponentRegistry";
 import {
   DesignComponentSelected,
+  DragOverElement,
   DrawRuntimeBus,
   DrawRuntimeState,
   InitDrawRuntimeState,
@@ -30,6 +31,7 @@ import { ElementDecorator } from "../decorators/ElementDecorator";
 import getCoords from "../utils/getCoords";
 import { DecoratorCreator } from "../decorators/DecoratorCreator";
 import { DraggableDecorator } from "../decorators/DraggableDecorator";
+import { useDrop } from "./hooks/useDrop";
 const BaseWidth = 1440;
 const BaseHeight = 900;
 
@@ -91,7 +93,7 @@ export const CanvasBox: React.FC = (props) => {
   useEffect(() => {
     if (canvas.current && root.current) {
       const mouseUpListener = (ev: MouseEvent) => {
-        if (DesignComponentSelected.value) {
+        if (DesignComponentSelected.value && DragOverElement.value.length > 0) {
           // Simplification-1: Send style in PostCreateEvent
           const { top, left } = getCoords(root.current!);
           PostCreateEvent({
@@ -103,6 +105,7 @@ export const CanvasBox: React.FC = (props) => {
                 top: `${ev.clientY - top + 10}px`,
                 left: `${ev.clientX - left + 10}px`,
               },
+              parent: DragOverElement.value[DragOverElement.value.length - 1],
             },
           });
           // Simplification-2: Remove Patch Event
@@ -111,6 +114,9 @@ export const CanvasBox: React.FC = (props) => {
       canvas.current.addEventListener("mouseup", mouseUpListener);
     }
   }, [canvas, root]);
+
+  // make canvas dropzone
+  useDrop(canvas);
 
   // add component
   const [renderedComps, setRenderedComps] = useState<
@@ -148,7 +154,26 @@ export const CanvasBox: React.FC = (props) => {
               ...props,
             }),
           });
-          if (compItem!) {
+          if (
+            webCreateData.state &&
+            webCreateData.state.parent &&
+            webCreateData.state.parent !== "root" &&
+            compItem!
+          ) {
+            const parent = webCreateData.state.parent;
+            if (typeof parent === "string") {
+              DrawRuntimeState[parent].bus.next({
+                addchild: [
+                  compItem.renderComp,
+                  { ...props },
+                  v.payload.ID,
+                  compItem.decorators
+                    ? compItem.decorators
+                    : DefualtDecoratorElements,
+                ],
+              });
+            }
+          } else if (compItem!) {
             setRenderedComps((val) => [
               ...val,
               [
