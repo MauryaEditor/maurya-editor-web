@@ -95,6 +95,8 @@ export const CanvasBox: React.FC = (props) => {
       const mouseUpListener = (ev: MouseEvent) => {
         if (DesignComponentSelected.value && DragOverElement.value.length > 0) {
           // Simplification-1: Send style in PostCreateEvent
+          const parent =
+            DragOverElement.value[DragOverElement.value.length - 1];
           const { top, left } = getCoords(root.current!);
           PostCreateEvent({
             compKey: DesignComponentSelected.value.key,
@@ -105,7 +107,7 @@ export const CanvasBox: React.FC = (props) => {
                 top: `${ev.clientY - top + 10}px`,
                 left: `${ev.clientX - left + 10}px`,
               },
-              parent: DragOverElement.value[DragOverElement.value.length - 1],
+              parent: parent,
             },
           });
           // Simplification-2: Remove Patch Event
