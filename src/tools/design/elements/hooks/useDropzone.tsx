@@ -15,7 +15,9 @@ export const useDropzone = (props: DropzoneProps) => {
       };
       const onmouseleave = (event: MouseEvent) => {
         console.log("mouseleave in section");
-        DragOverElement.value.slice(0, DragOverElement.value.length - 1);
+        DragOverElement.next(
+          DragOverElement.value.slice(0, DragOverElement.value.length - 1)
+        );
       };
       props.ref.current.addEventListener("mouseenter", onmouseenter);
       props.ref.current.addEventListener("mouseleave", onmouseleave);

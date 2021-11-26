@@ -240,7 +240,7 @@ export const CanvasBox: React.FC = (props) => {
           style={{
             overflow: "auto",
             width: canvasWidth,
-            height: "auto",
+            height: canvasHeight,
             scrollbarWidth: "thin",
             boxSizing: "border-box",
           }}

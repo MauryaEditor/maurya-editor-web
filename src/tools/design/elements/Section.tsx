@@ -1,6 +1,8 @@
-import React, { useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useAcceptChild } from "./hooks/useAcceptChild";
 import { useDevAttributes } from "./hooks/useDevAttributes";
+import { useDropzone } from "./hooks/useDropzone";
+import { useModifyStyle } from "./hooks/useModifyStyle";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
@@ -9,7 +11,21 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 export const Section: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
   const devAttrs = useDevAttributes();
+  const modifyStyleCallback = useCallback(
+    (currentStyle: React.CSSProperties) => {
+      const newStyle = { ...currentStyle };
+      if (currentStyle.position === "absolute") {
+        newStyle.position = "relative";
+        newStyle.left = undefined;
+        newStyle.top = undefined;
+      }
+      return newStyle;
+    },
+    []
+  );
+  useModifyStyle(setStyle, modifyStyleCallback);
   const ref = useRef<HTMLDivElement>(null);
+  useDropzone({ ref, ID: props.ID });
   const children = useAcceptChild(props.ID, ref);
   return (
     <div
@@ -20,6 +36,7 @@ export const Section: React.FC<RenderProps> = (props) => {
         width: "100%",
         height: "200px",
         border: "1px solid black",
+        boxSizing: "border-box",
       }}
     >
       {children}
