@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React from "react";
+import React, { useRef } from "react";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
 import { useDevAttributes } from "./hooks/useDevAttributes";
@@ -26,8 +26,9 @@ import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Button: React.FC<RenderProps> = (props) => {
+  const ref = useRef<HTMLElement>(null);
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes();
+  const devAttrs = useDevAttributes<HTMLButtonElement>();
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,

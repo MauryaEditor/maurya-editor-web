@@ -26,7 +26,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Textbox: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes();
+  const devAttrs = useDevAttributes<HTMLDivElement>();
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",

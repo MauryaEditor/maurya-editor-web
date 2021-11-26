@@ -8,7 +8,7 @@ import { useStyle } from "./hooks/useStyle";
 import { useDevAttributes } from "./hooks/useDevAttributes";
 export const Searchbox: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes();
+  const devAttrs = useDevAttributes<HTMLDivElement>();
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",

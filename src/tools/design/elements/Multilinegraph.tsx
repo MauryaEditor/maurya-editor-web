@@ -29,7 +29,7 @@ import { useDevAttributes } from "./hooks/useDevAttributes";
 
 export const Multilinegraph: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes();
+  const devAttrs = useDevAttributes<HTMLImageElement>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const Alias = useAttachProperty<string>(
@@ -105,7 +105,6 @@ export const Multilinegraph: React.FC<RenderProps> = (props) => {
     <>
       {X && Y && X.length && Y.length ? (
         <div
-          {...devAttrs}
           style={{
             ...style,
             width: Width,
