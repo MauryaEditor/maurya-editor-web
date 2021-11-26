@@ -21,6 +21,6 @@ export function useDevAttributes<T extends HTMLElement>(
         element.removeEventListener("mousedown", onmousedown, false);
       };
     }
-  }, [attributes.ref, ID]);
+  }, [attributes, attributes.ref, ID]);
   return attributes;
 }

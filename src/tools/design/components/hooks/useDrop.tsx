@@ -121,12 +121,86 @@ export const useDrop = (
     // send it to new parent
     const onmouseup = () => {
       if (DragElement.value) {
+        const ID = DragElement.value.ID;
         DragElement.next(null);
+        /**
+         * DragOverElement looks like this ["root", "id1", "id2", "root"]
+         * this happens because the new element gets created in canvas root
+         * and hence mouseenter gets evoked on root
+         * */
+        let parent = DragOverElement.value[DragOverElement.value.length - 1];
+        if (DragOverElement.value.length > 1) {
+          if (
+            DragOverElement.value[DragOverElement.value.length - 1] === "root"
+          ) {
+            parent = DragOverElement.value[DragOverElement.value.length - 2];
+          }
+        } else {
+          // do nothing because the child is in root already
+          // expected state of DragOverElement is ["root"]
+          return;
+        }
+        if (
+          DrawRuntimeState[parent] &&
+          DrawRuntimeState[parent].ref &&
+          DrawRuntimeState[parent].ref!.current &&
+          ref.current
+        ) {
+          const elementTop =
+            DrawRuntimeState[parent].ref!.current!.getBoundingClientRect().top!;
+          const elementLeft =
+            DrawRuntimeState[parent].ref!.current?.getBoundingClientRect()
+              .left!;
+          const canvasTop = ref.current.getBoundingClientRect().top;
+          const canvasleft = ref.current.getBoundingClientRect().left;
+          const top = elementTop - canvasTop;
+          const left = elementLeft - canvasleft;
+          let compItem: ComponentItem;
+          for (let i = 0; i < ComponentRegistry.value.length; i++) {
+            const compItems = ComponentRegistry.value[i][1];
+            for (let j = 0; j < compItems.length; j++) {
+              if (compItems[j].key === DrawRuntimeState[ID].compKey) {
+                compItem = compItems[j];
+                break;
+              }
+            }
+          }
+          if (!compItem!) {
+            throw new Error("compItem not in registry");
+          }
+          const newRenderComp: [React.FC, object, string, React.FC<any>[]] = [
+            compItem!.renderComp,
+            {
+              renderProps: DrawRuntimeState[ID].renderProps,
+              ...DrawRuntimeState[ID].state,
+              style: {
+                position: "absolute",
+                top: top + "px",
+                left: left + "px",
+              },
+              parent: parent,
+              ID,
+            },
+            ID,
+            compItem.decorators || [ElementDecorator],
+          ];
+          DrawRuntimeState[parent].bus.next({ addchild: newRenderComp });
+          // TODO: post path event for style and parent
+        } else {
+          throw new Error(
+            "DrawruntimeState[parent].ref.current should be defined for elements which can accept children"
+          );
+        }
+        setRenderComps((renderComps) => {
+          return renderComps.filter((renderComp) => {
+            return renderComp[2] !== ID;
+          });
+        });
       }
     };
     ref.current?.addEventListener("mouseup", onmouseup, false);
     return () => {
       ref.current?.removeEventListener("mouseup", onmouseup, false);
     };
-  }, [ref]);
+  }, [ref, setRenderComps]);
 };

@@ -17,7 +17,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { DrawRuntimeBus, DrawRuntimeState } from "../../rxjs/DrawState";
+import { DrawRuntimeBus } from "../../rxjs/DrawState";
 import { useBus } from "./useBus";
 
 export const useStyle = (ID: string, initialStyle: React.CSSProperties) => {
@@ -41,7 +41,6 @@ export const useStyle = (ID: string, initialStyle: React.CSSProperties) => {
       const subscription = bus.subscribe({
         next: (v) => {
           if (v.style) {
-            console.log("new style received", v.style);
             setStyle((old: React.CSSProperties | undefined) => {
               return { ...old!, ...v.style };
             });
