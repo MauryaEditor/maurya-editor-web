@@ -41,6 +41,7 @@ export const useStyle = (ID: string, initialStyle: React.CSSProperties) => {
       const subscription = bus.subscribe({
         next: (v) => {
           if (v.style) {
+            console.log("new style received", v.style);
             setStyle((old: React.CSSProperties | undefined) => {
               return { ...old!, ...v.style };
             });

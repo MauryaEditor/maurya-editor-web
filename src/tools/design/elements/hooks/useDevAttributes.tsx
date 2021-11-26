@@ -8,7 +8,7 @@ export function useDevAttributes<T extends HTMLElement>(
   const [attributes, setAttributes] = useState<{
     ref?: React.RefObject<T>;
     draggable: boolean;
-  }>({ draggable: true, ref: ref || createRef<T>() });
+  }>({ draggable: false, ref: ref || createRef<T>() });
   useEffect(() => {
     if (attributes.ref?.current) {
       const element = attributes.ref.current;

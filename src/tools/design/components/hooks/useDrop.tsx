@@ -6,6 +6,7 @@ import {
   DragOverElement,
   DrawRuntimeState,
 } from "../../rxjs/DrawState";
+import getCoords from "../../utils/getCoords";
 
 export const useDrop = (
   ref: React.RefObject<HTMLElement>,
@@ -94,5 +95,38 @@ export const useDrop = (
         }
       },
     });
+  }, [ref]);
+  useEffect(() => {
+    // change style to move element on mousemove
+    const onmousemove = (event: MouseEvent) => {
+      if (DragElement.value) {
+        console.log("mouse is moving for drags");
+        const ID = DragElement.value.ID;
+        const currentStyle = DrawRuntimeState[ID].style;
+        const top =
+          parseFloat(currentStyle.top?.toString()!) + event.movementY + "px";
+        const left =
+          parseFloat(currentStyle.left?.toString()!) + event.movementX + "px";
+        DrawRuntimeState[ID].bus.next({
+          style: { ...currentStyle, top: top, left: left },
+        });
+      }
+    };
+    ref.current?.addEventListener("mousemove", onmousemove, false);
+    return () => {
+      ref.current?.removeEventListener("mousemove", onmousemove, false);
+    };
+  }, [ref]);
+  useEffect(() => {
+    // send it to new parent
+    const onmouseup = () => {
+      if (DragElement.value) {
+        DragElement.next(null);
+      }
+    };
+    ref.current?.addEventListener("mouseup", onmouseup, false);
+    return () => {
+      ref.current?.removeEventListener("mouseup", onmouseup, false);
+    };
   }, [ref]);
 };
