@@ -34,6 +34,17 @@ export const useAcceptChild = (
               return [...children, v["addchild"]];
             });
           }
+          if (v && v["removechild"]) {
+            if (typeof v["removechild"] === "string") {
+              const ID = v["removechild"];
+              setChildren((children) => {
+                const newChildren = children.filter((child) => {
+                  return child[2] !== ID;
+                });
+                return newChildren;
+              });
+            }
+          }
         },
       });
       return () => {

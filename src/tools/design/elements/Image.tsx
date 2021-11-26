@@ -28,7 +28,7 @@ import { useDevAttributes } from "./hooks/useDevAttributes";
 
 const Image: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes<HTMLImageElement>();
+  const devAttrs = useDevAttributes<HTMLImageElement>(props.ID);
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",

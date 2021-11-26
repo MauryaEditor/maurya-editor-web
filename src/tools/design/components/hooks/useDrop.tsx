@@ -1,7 +1,18 @@
 import { useEffect } from "react";
-import { DragOverElement } from "../../rxjs/DrawState";
+import { ElementDecorator } from "../../decorators/ElementDecorator";
+import { ComponentItem, ComponentRegistry } from "../../rxjs/ComponentRegistry";
+import {
+  DragElement,
+  DragOverElement,
+  DrawRuntimeState,
+} from "../../rxjs/DrawState";
 
-export const useDrop = (ref: React.RefObject<HTMLElement>) => {
+export const useDrop = (
+  ref: React.RefObject<HTMLElement>,
+  setRenderComps: React.Dispatch<
+    React.SetStateAction<[React.FC<{}>, object, string, React.FC<any>[]][]>
+  >
+) => {
   useEffect(() => {
     if (ref.current) {
       // TODO: set a subject that says over me being dragged
@@ -22,5 +33,66 @@ export const useDrop = (ref: React.RefObject<HTMLElement>) => {
         ref.current?.removeEventListener("mouseleave", onmouseleave, false);
       };
     }
+  }, [ref]);
+  // when an already existing element is dragged
+  useEffect(() => {
+    DragElement.subscribe({
+      next: (v) => {
+        if (v) {
+          const draggedElementRef = v.ref;
+          const ID = v.ID;
+          // get current position
+          const elementTop =
+            draggedElementRef.current?.getBoundingClientRect().top!;
+          const elementLeft =
+            draggedElementRef.current?.getBoundingClientRect().left!;
+          const canvasTop = ref.current?.getBoundingClientRect().top!;
+          const canvasLeft = ref.current?.getBoundingClientRect().left!;
+          const top = elementTop - canvasTop;
+          const left = elementLeft - canvasLeft;
+          console.log("top", top, "left", left);
+          // send removechild to parent
+          const parentID = DrawRuntimeState[ID].parent;
+          console.log(parentID);
+          if (parentID !== "root") {
+            DrawRuntimeState[parentID].bus.next({ removechild: ID });
+          }
+          // send add child to canvas
+          setRenderComps((renderComps) => {
+            let compItem: ComponentItem;
+            for (let i = 0; i < ComponentRegistry.value.length; i++) {
+              const compItems = ComponentRegistry.value[i][1];
+              for (let j = 0; j < compItems.length; j++) {
+                if (compItems[j].key === DrawRuntimeState[ID].compKey) {
+                  compItem = compItems[j];
+                  break;
+                }
+              }
+            }
+            if (compItem!) {
+              const newRenderComp: [React.FC, object, string, React.FC<any>[]] =
+                [
+                  compItem!.renderComp,
+                  {
+                    renderProps: DrawRuntimeState[ID].renderProps,
+                    ...DrawRuntimeState[ID].state,
+                    style: {
+                      position: "absolute",
+                      top: top + "px",
+                      left: left + "px",
+                    },
+                    ID: ID,
+                  },
+                  ID,
+                  compItem.decorators || [ElementDecorator],
+                ];
+              return [...renderComps, newRenderComp];
+            }
+
+            return [...renderComps];
+          });
+        }
+      },
+    });
   }, [ref]);
 };

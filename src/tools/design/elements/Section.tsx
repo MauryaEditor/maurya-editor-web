@@ -10,7 +10,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 export const Section: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes();
+  const devAttrs = useDevAttributes(props.ID);
   const modifyStyleCallback = useCallback(
     (currentStyle: React.CSSProperties) => {
       const newStyle = { ...currentStyle };

@@ -26,7 +26,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Inputbox: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes<HTMLInputElement>();
+  const devAttrs = useDevAttributes<HTMLInputElement>(props.ID);
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",

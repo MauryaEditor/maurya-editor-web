@@ -28,7 +28,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 const Button: React.FC<RenderProps> = (props) => {
   const ref = useRef<HTMLElement>(null);
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes<HTMLButtonElement>();
+  const devAttrs = useDevAttributes<HTMLButtonElement>(props.ID);
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,

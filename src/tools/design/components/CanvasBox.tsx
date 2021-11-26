@@ -119,9 +119,6 @@ export const CanvasBox: React.FC = (props) => {
     }
   }, [canvas, root]);
 
-  // make canvas dropzone
-  useDrop(canvas);
-
   // add component
   const [renderedComps, setRenderedComps] = useState<
     [React.FC, object, string, React.FC<any>[]][]
@@ -197,6 +194,9 @@ export const CanvasBox: React.FC = (props) => {
       subscription.unsubscribe();
     };
   }, [setRenderedComps]);
+
+  // make canvas dropzone
+  useDrop(canvas, setRenderedComps);
 
   useEffect(() => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {

@@ -17,10 +17,13 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { BehaviorSubject, ReplaySubject, Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ComponentItem } from "./ComponentRegistry";
 import { SliceableReplaySubject } from "./SliceableReplaySubject";
 
+/**
+ * currently selected element from the component box
+ */
 export const DesignComponentSelected =
   new BehaviorSubject<ComponentItem | null>(null);
 
@@ -36,6 +39,7 @@ export type DrawRuntimeValue = { [key: string | number]: any } & {
   appearance: PropertyMap;
   appearanceOrder: string[];
   compKey: string;
+  parent: string;
   ref?: React.RefObject<HTMLElement>;
 };
 
@@ -54,6 +58,7 @@ export const DrawRuntimeBus = new BehaviorSubject<{
     appearance?: PropertyMap;
     appearanceOrder?: string[];
     compKey?: string;
+    parent?: string;
     ref?: React.RefObject<HTMLElement>;
   };
 } | null>(null);
@@ -123,6 +128,7 @@ export function InitDrawRuntimeState(
     appearanceOrder: init.appearanceOrder || [],
     renderProps: init.renderProps || {},
     compKey: init.compKey || "",
+    parent: init.parent || "root",
   };
   return value;
 }
@@ -171,4 +177,15 @@ export function GetDisplayPropertyValue() {
   return DisplayProperty.value;
 }
 
+/**
+ * keeps record of elements which can contain child element
+ */
 export const DragOverElement = new BehaviorSubject<string[]>([]);
+
+/**
+ * currently dragged element
+ */
+export const DragElement = new BehaviorSubject<{
+  ID: string;
+  ref: React.RefObject<HTMLElement>;
+} | null>(null);

@@ -1,6 +1,8 @@
 import { createRef, useEffect, useState } from "react";
+import { DragElement } from "../../rxjs/DrawState";
 
 export function useDevAttributes<T extends HTMLElement>(
+  ID: string,
   ref?: React.RefObject<T>
 ) {
   const [attributes, setAttributes] = useState<{
@@ -10,22 +12,15 @@ export function useDevAttributes<T extends HTMLElement>(
   useEffect(() => {
     if (attributes.ref?.current) {
       const element = attributes.ref.current;
-      const ondragstart = (event: DragEvent) => {
-        console.log("drag started");
-        // remove from current element
-        // stick it to canvasRoot
+      const onmousedown = (event: MouseEvent) => {
+        console.log("drag element selected", ID);
+        DragElement.next({ ID, ref: attributes.ref! });
       };
-      const ondragend = (event: DragEvent) => {
-        console.log("drag ended");
-        // add as child to last dragover element
-      };
-      element.addEventListener("dragstart", ondragstart, false);
-      element.addEventListener("dragend", ondragend, false);
+      element.addEventListener("mousedown", onmousedown, false);
       return () => {
-        element.removeEventListener("dragstart", ondragstart, false);
-        element.removeEventListener("dragend", ondragend, false);
+        element.removeEventListener("mousedown", onmousedown, false);
       };
     }
-  }, [attributes.ref]);
+  }, [attributes.ref, ID]);
   return attributes;
 }

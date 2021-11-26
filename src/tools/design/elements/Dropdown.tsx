@@ -26,7 +26,7 @@ import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Dropdown: React.FC<RenderProps> = (props) => {
   const [style, setStyle] = useStyle(props.ID, props.style!);
-  const devAttrs = useDevAttributes<HTMLSelectElement>();
+  const devAttrs = useDevAttributes<HTMLSelectElement>(props.ID);
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,
