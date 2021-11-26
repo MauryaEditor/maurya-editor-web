@@ -19,12 +19,15 @@
 import React from "react";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useDevAttributes } from "./hooks/useDevAttributes";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Button: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,
@@ -63,7 +66,9 @@ const Button: React.FC<RenderProps> = (props) => {
 
   return (
     <button
+      {...devAttrs}
       style={{
+        ...style,
         color: Color || "white",
         backgroundColor: "#2185D0",
         borderRadius: "6px",

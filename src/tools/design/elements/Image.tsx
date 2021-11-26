@@ -24,8 +24,11 @@ import AddImage from "./assets/add-image.svg";
 import { useStyle } from "./hooks/useStyle";
 import { useAttachAppearance } from "./hooks/useAttachAppearance";
 import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useDevAttributes } from "./hooks/useDevAttributes";
 
 const Image: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
@@ -49,8 +52,9 @@ const Image: React.FC<RenderProps> = (props) => {
 
   return (
     <img
+      {...devAttrs}
       height={Height}
-      style={{ objectFit: "cover" }}
+      style={{ ...style, objectFit: "cover" }}
       alt={""}
       src={AddImage}
       width={Width}

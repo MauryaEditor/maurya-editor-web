@@ -30,7 +30,6 @@ import { SliceableReplaySubject } from "../rxjs/SliceableReplaySubject";
 import { ElementDecorator } from "../decorators/ElementDecorator";
 import getCoords from "../utils/getCoords";
 import { DecoratorCreator } from "../decorators/DecoratorCreator";
-import { DraggableDecorator } from "../decorators/DraggableDecorator";
 import { useDrop } from "./hooks/useDrop";
 const BaseWidth = 1440;
 const BaseHeight = 900;
@@ -127,7 +126,7 @@ export const CanvasBox: React.FC = (props) => {
   const [renderedComps, setRenderedComps] = useState<
     [React.FC, object, string, React.FC<any>[]][]
   >([]);
-  const DefualtDecoratorElements = [DraggableDecorator, ElementDecorator];
+  const DefualtDecoratorElements = [ElementDecorator];
   useEffect(() => {
     const subscription = SubscribeWebBus((v: WebBusEvent | null) => {
       if (v) {

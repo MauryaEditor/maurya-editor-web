@@ -18,12 +18,15 @@
  */
 import React from "react";
 import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useDevAttributes } from "./hooks/useDevAttributes";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Dropdown: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   // attach properties
   const Alias = useAttachProperty<string>(
     props.ID,
@@ -39,7 +42,11 @@ const Dropdown: React.FC<RenderProps> = (props) => {
     props.properties?.Options || []
   );
 
-  return <select>{Options}</select>;
+  return (
+    <select {...devAttrs} style={{ ...style }}>
+      {Options}
+    </select>
+  );
 };
 
 const manifest = {

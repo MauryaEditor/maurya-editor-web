@@ -1,19 +1,26 @@
-import React, { useEffect, useRef } from "react";
-import { DraggableDecorator } from "../decorators/DraggableDecorator";
-import { DropzoneDecorator } from "../decorators/DropzoneDecorator";
-import { ElementDecorator } from "../decorators/ElementDecorator";
+import React, { useRef } from "react";
 import { useAcceptChild } from "./hooks/useAcceptChild";
+import { useDevAttributes } from "./hooks/useDevAttributes";
+import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 export const Section: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   const ref = useRef<HTMLDivElement>(null);
   const children = useAcceptChild(props.ID, ref);
   return (
     <div
+      {...devAttrs}
       ref={ref}
-      style={{ width: "200px", height: "200px", border: "1px solid black" }}
+      style={{
+        ...style,
+        width: "100%",
+        height: "200px",
+        border: "1px solid black",
+      }}
     >
       {children}
     </div>
@@ -33,7 +40,6 @@ const manifest = {
       children: "Section",
     };
   },
-  decorators: [DraggableDecorator, DropzoneDecorator, ElementDecorator],
 };
 
 export default manifest;

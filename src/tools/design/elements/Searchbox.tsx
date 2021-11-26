@@ -4,7 +4,11 @@ import SearchImage from "./assets/search.svg";
 import { RenderProps } from "./types/RenderProps";
 import "./css/elements.css";
 import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useStyle } from "./hooks/useStyle";
+import { useDevAttributes } from "./hooks/useDevAttributes";
 export const Searchbox: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
@@ -13,7 +17,9 @@ export const Searchbox: React.FC<RenderProps> = (props) => {
   );
   return (
     <div
+      {...devAttrs}
       style={{
+        ...style,
         display: "flex",
         border: "1px solid #CBD5E1",
         padding: "0.5rem 0.75rem 0.5rem 0.75rem",

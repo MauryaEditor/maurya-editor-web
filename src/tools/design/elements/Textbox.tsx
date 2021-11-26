@@ -18,12 +18,15 @@
  */
 import React from "react";
 import { useAttachProperty } from "./hooks/useAttachProperty";
+import { useDevAttributes } from "./hooks/useDevAttributes";
 import { useStyle } from "./hooks/useStyle";
 import { RenderProps } from "./types/RenderProps";
 import { SimpleComponent } from "./utils/SimpleComponent";
 import { SimpleDragComponent } from "./utils/SimpleDragComponent";
 
 const Textbox: React.FC<RenderProps> = (props) => {
+  const [style, setStyle] = useStyle(props.ID, props.style!);
+  const devAttrs = useDevAttributes();
   const Alias = useAttachProperty<string>(
     props.ID,
     "design/alias",
@@ -37,7 +40,11 @@ const Textbox: React.FC<RenderProps> = (props) => {
     "Value",
     props.properties?.Value || ""
   );
-  return <div>{TextValue || "Text here"}</div>;
+  return (
+    <div {...devAttrs} style={{ ...style }}>
+      {TextValue || "Text here"}
+    </div>
+  );
 };
 
 const manifest = {
