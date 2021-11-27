@@ -13,10 +13,12 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { DesignElement } from "../../types/DesignElement";
 
 /**
  * This state stores the currently selected design element from the ElementSelectionPanel
  */
-export const SelectedDesignElement = new Subject<DesignElement | null>();
+export const SelectedDesignElement = new BehaviorSubject<DesignElement | null>(
+  null
+);

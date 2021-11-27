@@ -22,11 +22,7 @@ import "./DesignContainer.css";
 
 export const DesignContainer: React.FC = (props) => {
   const subContainer = useRef<HTMLDivElement>(null);
-  const cursor = useManageCursor(
-    subContainer,
-    SelectedDesignElement,
-    "grabbing"
-  );
+  const cursor = useManageCursor(subContainer, "grabbing");
 
   return (
     <div className={"container"}>

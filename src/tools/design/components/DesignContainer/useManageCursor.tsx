@@ -27,14 +27,13 @@ export type CursorTypes = "grabbing" | "default" | "grab";
  */
 export const useManageCursor = (
   ref: React.RefObject<HTMLElement>,
-  state: Subject<any>,
   activeCursor: CursorTypes
 ) => {
   const [cursor, setCursor] = useState<CursorTypes>("default");
   useEffect(() => {
     if (ref.current) {
       const container = ref.current;
-      const subscription = state.subscribe({
+      const subscription = SelectedDesignElement.subscribe({
         next: (v) => {
           if (v) {
             setCursor(activeCursor);
@@ -57,17 +56,5 @@ export const useManageCursor = (
     }
   }, [ref, setCursor, activeCursor]);
 
-  useEffect(() => {
-    const subscription = SelectedDesignElement.subscribe({
-      next: (v) => {
-        if (v) {
-          setCursor("grabbing");
-        }
-      },
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [setCursor]);
   return cursor;
 };

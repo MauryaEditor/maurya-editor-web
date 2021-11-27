@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useAutoResize } from "./useAutoResize";
 import "./Canvas.css";
+import { useDropNewElement } from "./useDropNewElement";
 
 /**
     Copyright 2021 Quaffles    
@@ -19,7 +20,9 @@ import "./Canvas.css";
  */
 export const Canvas: React.FC = (props) => {
   const ref = useRef<HTMLDivElement>(null);
+  const subcontainerRef = useRef<HTMLDivElement>(null);
   const scale = useAutoResize(ref);
+  useDropNewElement(subcontainerRef);
   return (
     <div className={"canvas-container"} ref={ref}>
       <div
@@ -28,6 +31,7 @@ export const Canvas: React.FC = (props) => {
           transform: `scale(${scale})`,
           width: scale ? `${100 / scale}%` : "",
         }}
+        ref={subcontainerRef}
       >
         <div className={"canvas-root"}>Shyam</div>
       </div>

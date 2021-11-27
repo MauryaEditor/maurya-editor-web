@@ -2,9 +2,12 @@
   background-color: #e5e5e5;
   box-sizing: border-box;
   display: flex;
+  height: 100%;
 }
 
 .canvas-subcontainer {
   background: white;
   box-sizing: border-box;
+  height: 100%;
+  overflow: auto;
 }
