@@ -13,9 +13,21 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { DesignElement } from "./DesignElement";
-
-export interface DesignElementCategory {
-  category: string;
-  elements: DesignElement[];
+import React from "react";
+import { ReplaySubjectWrapper } from "../../../runtime/ReplaySubjectWrapper";
+import { RenderProps } from "./RenderProps";
+export interface ElementState {
+  // synced with database
+  state: {
+    style: React.CSSProperties; // dev related styles only like position, top, left
+    properties: { [key: string | number]: any };
+    appearance: { [key: string | number]: any };
+    parent: string;
+  };
+  // fields need only in front end
+  bus: ReplaySubjectWrapper<Omit<ElementState, "bus">>;
+  propertyMap: { key: string }[];
+  appearanceMap: { key: string }[];
+  renderProps: RenderProps;
+  ref: React.RefObject<HTMLElement>;
 }

@@ -13,9 +13,20 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { DesignElement } from "./DesignElement";
+import React from "react";
+import { ElementState } from "../../types/ElementState";
 
-export interface DesignElementCategory {
-  category: string;
-  elements: DesignElement[];
+export class DesignRuntime {
+  private static instance: DesignRuntime = new DesignRuntime();
+  private static state: { [ID: string]: ElementState };
+  private constructor() {}
+  public static getInstance() {
+    if (DesignRuntime.instance === undefined) {
+      DesignRuntime.instance = new DesignRuntime();
+    }
+    return DesignRuntime.instance;
+  }
+  public static addElement(ID: string, state: ElementState) {
+    DesignRuntime.state[ID] = state;
+  }
 }
