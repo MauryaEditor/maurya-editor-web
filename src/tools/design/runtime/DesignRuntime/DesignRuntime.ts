@@ -40,6 +40,12 @@ export class DesignRuntime {
       }
     );
   }
+  public static getChildAcceptors() {
+    return [...DesignRuntime.acceptsChild];
+  }
+  public static getState() {
+    return { ...DesignRuntime.state };
+  }
 }
 
 DesignRuntime.getInstance();

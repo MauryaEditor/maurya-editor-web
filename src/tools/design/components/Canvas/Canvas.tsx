@@ -21,8 +21,9 @@ import { useDropNewElement } from "./useDropNewElement";
 export const Canvas: React.FC = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const subcontainerRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const scale = useAutoResize(ref);
-  useDropNewElement(subcontainerRef);
+  useDropNewElement(subcontainerRef, rootRef);
   return (
     <div className={"canvas-container"} ref={ref}>
       <div
@@ -33,7 +34,9 @@ export const Canvas: React.FC = (props) => {
         }}
         ref={subcontainerRef}
       >
-        <div className={"canvas-root"}>Shyam</div>
+        <div className={"canvas-root"} ref={rootRef}>
+          Shyam
+        </div>
       </div>
     </div>
   );
