@@ -56,5 +56,18 @@ export const useManageCursor = (
       };
     }
   }, [ref, setCursor, activeCursor]);
+
+  useEffect(() => {
+    const subscription = SelectedDesignElement.subscribe({
+      next: (v) => {
+        if (v) {
+          setCursor("grabbing");
+        }
+      },
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setCursor]);
   return cursor;
 };

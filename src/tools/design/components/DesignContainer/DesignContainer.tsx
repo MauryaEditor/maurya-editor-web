@@ -30,7 +30,7 @@ export const DesignContainer: React.FC = (props) => {
 
   return (
     <div className={"container"}>
-      <div className={"sub-container"} ref={subContainer}>
+      <div className={"sub-container"} ref={subContainer} style={{ cursor }}>
         <div className={"panel"}>
           <ELementPanel />
         </div>
