@@ -18,6 +18,7 @@ import { ReplaySubjectWrapper } from "../../../runtime/ReplaySubjectWrapper";
 import { RenderProps } from "./RenderProps";
 export interface ElementState {
   // synced with database
+  compKey: string;
   state: {
     style: React.CSSProperties; // dev related styles only like position, top, left
     properties: { [key: string | number]: any };
