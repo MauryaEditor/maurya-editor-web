@@ -11,9 +11,9 @@ export const useAutoResize = (parent: RefObject<HTMLElement>) => {
     const rescale = () => {
       if (parent.current) {
         const container = parent.current;
+        const width = container.getBoundingClientRect().width;
         // if container is less than 900px then scale = width/900
         // if contianer is not less than 900px then scale = 1
-        const width = container?.getBoundingClientRect().width;
         if (width < 900) {
           setScale(width / 900);
         } else {
@@ -26,6 +26,6 @@ export const useAutoResize = (parent: RefObject<HTMLElement>) => {
     return () => {
       window.removeEventListener("resize", rescale);
     };
-  }, [parent]);
+  }, [parent.current]);
   return scale;
 };

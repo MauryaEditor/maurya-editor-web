@@ -1,7 +1,3 @@
-import { useRef } from "react";
-import { useAutoResize } from "./useAutoResize";
-import "./Canvas.css";
-
 /**
     Copyright 2021 Quaffles    
  
@@ -17,20 +13,26 @@ import "./Canvas.css";
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-export const Canvas: React.FC = (props) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const scale = useAutoResize(ref);
-  return (
-    <div className={"canvas-container"} ref={ref}>
-      <div
-        className={"canvas-subcontainer"}
-        style={{
-          transform: `scale(${scale})`,
-          width: scale ? `${100 / scale}%` : "",
-        }}
-      >
-        <div className={"canvas-root"}>Shyam</div>
-      </div>
-    </div>
-  );
-};
+import React from "react";
+import { ReplaySubjectWrapper } from "../../../../runtime/ReplaySubjectWrapper";
+import { ElementState } from "../../types/ElementState";
+
+export class ElementStateFactory {
+  public static create(compKey: string, ID: string, parent: string) {
+    const state: ElementState = {
+      compKey: compKey,
+      state: {
+        style: {},
+        properties: {},
+        appearance: {},
+        parent: parent,
+      },
+      bus: new ReplaySubjectWrapper<Omit<ElementState, "bus">>(),
+      propertyMap: [],
+      appearanceMap: [],
+      renderProps: { ID },
+      ref: React.createRef(),
+    };
+    return state;
+  }
+}
