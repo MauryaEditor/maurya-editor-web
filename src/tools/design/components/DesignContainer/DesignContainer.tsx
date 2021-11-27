@@ -19,30 +19,17 @@ import { ELementPanel } from "../ElementPanel/ElementPanel";
 import { useManageCursor } from "./useManageCursor";
 
 export const DesignContainer: React.FC = (props) => {
-  const combinedContainer = useRef<HTMLDivElement>(null);
+  const subContainer = useRef<HTMLDivElement>(null);
   const cursor = useManageCursor(
-    combinedContainer,
+    subContainer,
     SelectedDesignElement,
     "grabbing"
   );
 
   return (
-    <div style={{ display: "flex", height: "100%", userSelect: "none" }}>
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          cursor: cursor,
-          position: "relative",
-        }}
-        ref={combinedContainer}
-      >
-        <div
-          style={{
-            width: "8em",
-            overflow: "hidden",
-          }}
-        >
+    <div className={"container"}>
+      <div className={"sub-container"} ref={subContainer}>
+        <div className={"panel"}>
           <ELementPanel />
         </div>
         {/* <div style={{ flex: 1, overflow: "hidden" }}>
