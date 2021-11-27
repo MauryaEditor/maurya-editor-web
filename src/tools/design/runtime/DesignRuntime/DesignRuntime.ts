@@ -19,6 +19,7 @@ import { ElementState } from "../../types/ElementState";
 export class DesignRuntime {
   private static instance: DesignRuntime = new DesignRuntime();
   private static state: { [ID: string]: ElementState };
+  private static acceptsChild: string[] = [];
   private constructor() {}
   public static getInstance() {
     if (DesignRuntime.instance === undefined) {
@@ -29,4 +30,16 @@ export class DesignRuntime {
   public static addElement(ID: string, state: ElementState) {
     DesignRuntime.state[ID] = state;
   }
+  public static registerParent(ID: string) {
+    DesignRuntime.acceptsChild.push(ID);
+  }
+  public static removeParent(ID: string) {
+    DesignRuntime.acceptsChild = DesignRuntime.acceptsChild.filter(
+      (childID) => {
+        return childID !== ID;
+      }
+    );
+  }
 }
+
+DesignRuntime.getInstance();
