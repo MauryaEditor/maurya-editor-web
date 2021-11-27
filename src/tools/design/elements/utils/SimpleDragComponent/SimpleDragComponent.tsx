@@ -13,13 +13,10 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-export interface DesignElement {
-  key: string;
-  comp: React.FC<object>;
-  props: { [key: string | number]: any };
-  ondragComp: React.FC<object>;
-  ondragProps: { [key: string | number]: any };
-  renderComp: React.FC<any>;
-  renderCompProps: { [key: string | number]: any };
-  decorators?: React.FC[];
-}
+export const SimpleDragComponent: React.FC<object> = (props: any) => {
+  return (
+    <div style={{ border: "1px solid black", borderRadius: "2px" }}>
+      {props.name}
+    </div>
+  );
+};

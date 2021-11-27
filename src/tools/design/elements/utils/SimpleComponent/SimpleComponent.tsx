@@ -13,13 +13,20 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-export interface DesignElement {
-  key: string;
-  comp: React.FC<object>;
-  props: { [key: string | number]: any };
-  ondragComp: React.FC<object>;
-  ondragProps: { [key: string | number]: any };
-  renderComp: React.FC<any>;
-  renderCompProps: { [key: string | number]: any };
-  decorators?: React.FC[];
-}
+import "./SimpleComponent.css";
+
+export const SimpleComponent: React.FC<object> = (props: any) => {
+  return (
+    <div
+      className="simple-component"
+      style={{
+        paddingLeft: "1.2rem",
+        fontSize: "0.8rem",
+        lineHeight: "1.8rem",
+        fontWeight: 600,
+      }}
+    >
+      {props.name}
+    </div>
+  );
+};
