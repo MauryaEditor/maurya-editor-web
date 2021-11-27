@@ -18,6 +18,7 @@ import { Observer } from "rxjs";
 import { Registry } from "../../../registry/Registry";
 import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
+import SectionManifest from "../elements/section/Section";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
@@ -96,11 +97,11 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
   }
 }
 
-const InputCategory: DesignElementCategory = {
-  category: "Input",
-  elements: [],
+const LayoutCategory: DesignElementCategory = {
+  category: "Layout",
+  elements: [SectionManifest],
 };
 
 export const DesignElementRegistry = new DesignElementRegistryClass([
-  InputCategory,
+  LayoutCategory,
 ]);
