@@ -1,0 +1,9 @@
+.canvas-container {
+  background-color: #e5e5e5;
+  box-sizing: border-box;
+}
+
+.canvas-subcontainer {
+  background: white;
+  box-sizing: border-box;
+}

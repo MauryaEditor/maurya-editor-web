@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useAutoResize } from "./useAutoResize";
+import "./Canvas.css";
 
 /**
     Copyright 2021 Quaffles    
@@ -20,8 +21,13 @@ export const Canvas: React.FC = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const scale = useAutoResize(ref);
   return (
-    <div ref={ref}>
-      <div style={{ transform: `scale(${scale})` }}>Shyam</div>
+    <div className={"canvas-container"} ref={ref}>
+      <div
+        className={"canvas-subcontainer"}
+        style={{ transform: `scale(${scale})` }}
+      >
+        <div className={"canvas-root"}>Shyam</div>
+      </div>
     </div>
   );
 };
