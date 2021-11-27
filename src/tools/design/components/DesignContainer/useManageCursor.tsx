@@ -55,6 +55,6 @@ export const useManageCursor = (
         container.removeEventListener("mouseup", mouseLeaveOrUpListener);
       };
     }
-  }, [ref]);
+  }, [ref, setCursor, activeCursor]);
   return cursor;
 };
