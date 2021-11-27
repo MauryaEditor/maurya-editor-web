@@ -41,7 +41,6 @@ export const useDropNewElement = (
         const subcontainer = subcontainerRef.current;
         console.log("mouseup", SelectedDesignElement.value);
         if (SelectedDesignElement.value) {
-          SelectedDesignElement.next(null);
           const parent = selectParent(event) || "root";
           let { top, left } = getCoords(rootRef.current!);
           if (parent !== "root") {
@@ -61,6 +60,7 @@ export const useDropNewElement = (
               parent: parent,
             },
           });
+          SelectedDesignElement.next(null);
         }
       };
       subcontainerRef.current.addEventListener("mouseup", onmouseup);

@@ -14,13 +14,21 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { BehaviorSubject } from "rxjs";
 import { ElementState } from "../../types/ElementState";
 
 export class DesignRuntime {
   private static instance: DesignRuntime = new DesignRuntime();
+  private static canvasRoot: {
+    ref: React.RefObject<HTMLDivElement>;
+    bus: BehaviorSubject<{ acceptchild?: string }>;
+  };
   private static state: { [ID: string]: ElementState };
   private static acceptsChild: string[] = [];
-  private constructor() {}
+  private constructor() {
+    // subscribe WebBus
+    // send element to parent
+  }
   public static getInstance() {
     if (DesignRuntime.instance === undefined) {
       DesignRuntime.instance = new DesignRuntime();
@@ -45,6 +53,15 @@ export class DesignRuntime {
   }
   public static getState() {
     return { ...DesignRuntime.state };
+  }
+  public static setCanvasRoot(
+    ref: React.RefObject<HTMLDivElement>,
+    bus: BehaviorSubject<{ acceptchild?: string }>
+  ) {
+    DesignRuntime.canvasRoot = { ref, bus };
+  }
+  public static getCanvasRoot() {
+    return { ...DesignRuntime.canvasRoot };
   }
 }
 

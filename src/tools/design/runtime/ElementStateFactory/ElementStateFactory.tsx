@@ -14,7 +14,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { ReplaySubjectWrapper } from "../../../../runtime/ReplaySubjectWrapper";
+import { BehaviorSubjectWrapper } from "../../../../runtime/BehaviorSubjectWrapper";
 import { ElementState } from "../../types/ElementState";
 
 export class ElementStateFactory {
@@ -27,7 +27,7 @@ export class ElementStateFactory {
         appearance: {},
         parent: parent,
       },
-      bus: new ReplaySubjectWrapper<Omit<ElementState, "bus">>(),
+      bus: new BehaviorSubjectWrapper<Partial<Omit<ElementState, "bus">>>({}),
       propertyMap: [],
       appearanceMap: [],
       renderProps: { ID },

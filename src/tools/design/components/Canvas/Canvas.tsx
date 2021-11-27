@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { useAutoResize } from "./useAutoResize";
 import "./Canvas.css";
 import { useDropNewElement } from "./useDropNewElement";
+import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
+import { useAcceptChild } from "./useAcceptChild";
 
 /**
     Copyright 2021 Quaffles    
@@ -24,6 +26,8 @@ export const Canvas: React.FC = (props) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const scale = useAutoResize(ref);
   useDropNewElement(subcontainerRef, rootRef);
+  const bus = useRegisterWithDesignRuntime(rootRef);
+  const children = useAcceptChild(bus);
   return (
     <div className={"canvas-container"} ref={ref}>
       <div
@@ -35,7 +39,10 @@ export const Canvas: React.FC = (props) => {
         ref={subcontainerRef}
       >
         <div className={"canvas-root"} ref={rootRef}>
-          Shyam
+          {children.map((child) => {
+            console.log(child);
+            return <div>{child}</div>;
+          })}
         </div>
       </div>
     </div>

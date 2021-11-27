@@ -14,7 +14,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { ReplaySubjectWrapper } from "../../../runtime/ReplaySubjectWrapper";
+import { BehaviorSubject } from "rxjs";
 import { RenderProps } from "./RenderProps";
 export interface ElementState {
   // synced with database
@@ -26,7 +26,7 @@ export interface ElementState {
     parent: string;
   };
   // fields need only in front end
-  bus: ReplaySubjectWrapper<Omit<ElementState, "bus">>;
+  bus: BehaviorSubject<Partial<Omit<ElementState, "bus">>>;
   propertyMap: { key: string }[];
   appearanceMap: { key: string }[];
   renderProps: RenderProps;
