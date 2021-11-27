@@ -6,7 +6,7 @@ import { WebDevBusEvent } from "./WebDevBusEvent";
 export const WebDevBus = new Bus<WebDevBusEvent>(new SubjectWrapper());
 
 (window as any).SubscribeWebDevBus = (
-  observer: Observer<WebDevBusEvent>
+  observer: Partial<Observer<WebDevBusEvent>>
 ): Subscription => {
   return WebDevBus.subscribe(observer);
 };

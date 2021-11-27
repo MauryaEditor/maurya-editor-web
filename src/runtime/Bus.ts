@@ -22,7 +22,7 @@ export class Bus<T> {
   ) {
     this.subject = subject;
   }
-  subscribe(observer: Observer<T>) {
+  subscribe(observer: Partial<Observer<T>>) {
     return this.subject.subscribe(observer);
   }
   subscribeSlice(slice: (string | number)[], observer: Observer<T>) {
