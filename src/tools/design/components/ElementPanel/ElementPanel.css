@@ -1,0 +1,22 @@
+.panel {
+  border-right: 1px solid #bfdbfe;
+  height: 100%;
+  background: "#EFF6FF";
+}
+
+.category {
+  padding-top: 2rem;
+  padding-bottom: 0.4rem;
+  padding-top: 1.2rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: bolder;
+}
+
+.category ~ .category {
+  padding-top: 1.2rem;
+}
+
+.element:hover {
+  cursor: grab;
+}
