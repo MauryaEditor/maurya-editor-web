@@ -15,8 +15,10 @@
  */
 import React, { useRef } from "react";
 import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
+import { Canvas } from "../Canvas/Canvas";
 import { ELementPanel } from "../ElementPanel/ElementPanel";
 import { useManageCursor } from "./useManageCursor";
+import "./DesignContainer.css";
 
 export const DesignContainer: React.FC = (props) => {
   const subContainer = useRef<HTMLDivElement>(null);
@@ -32,9 +34,9 @@ export const DesignContainer: React.FC = (props) => {
         <div className={"panel"}>
           <ELementPanel />
         </div>
-        {/* <div style={{ flex: 1, overflow: "hidden" }}>
-          <CanvasBox />
-        </div> */}
+        <div className={"canvas"}>
+          <Canvas />
+        </div>
       </div>
       {/* <div style={{ width: "14em", overflow: "hidden" }}>
         <PropertiesBox />
