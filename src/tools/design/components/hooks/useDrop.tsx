@@ -141,20 +141,28 @@ export const useDrop = (
           return;
         }
         if (
+          DrawRuntimeState[ID] &&
+          DrawRuntimeState[ID].ref &&
+          DrawRuntimeState[ID].ref!.current &&
           DrawRuntimeState[parent] &&
           DrawRuntimeState[parent].ref &&
           DrawRuntimeState[parent].ref!.current &&
           ref.current
         ) {
           const elementTop =
-            DrawRuntimeState[parent].ref!.current!.getBoundingClientRect().top!;
+            DrawRuntimeState[ID].ref!.current!.getBoundingClientRect().top!;
           const elementLeft =
+            DrawRuntimeState[ID].ref!.current?.getBoundingClientRect().left!;
+          const parentTop =
+            DrawRuntimeState[parent].ref!.current?.getBoundingClientRect().top!;
+          const parentLeft =
             DrawRuntimeState[parent].ref!.current?.getBoundingClientRect()
               .left!;
-          const canvasTop = ref.current.getBoundingClientRect().top;
-          const canvasleft = ref.current.getBoundingClientRect().left;
-          const top = elementTop - canvasTop;
-          const left = elementLeft - canvasleft;
+          console.log("parent position", parentTop, parentLeft);
+          console.log("element position", elementTop, elementLeft);
+          const top = elementTop - parentTop;
+          const left = elementLeft - parentLeft;
+          console.log("final child postion", top, left);
           let compItem: ComponentItem;
           for (let i = 0; i < ComponentRegistry.value.length; i++) {
             const compItems = ComponentRegistry.value[i][1];
@@ -168,16 +176,18 @@ export const useDrop = (
           if (!compItem!) {
             throw new Error("compItem not in registry");
           }
+          const style = {
+            position: "absolute",
+            top: top + "px",
+            left: left + "px",
+          };
+          console.log(style);
           const newRenderComp: [React.FC, object, string, React.FC<any>[]] = [
             compItem!.renderComp,
             {
               renderProps: DrawRuntimeState[ID].renderProps,
               ...DrawRuntimeState[ID].state,
-              style: {
-                position: "absolute",
-                top: top + "px",
-                left: left + "px",
-              },
+              style,
               parent: parent,
               ID,
             },
@@ -185,10 +195,11 @@ export const useDrop = (
             compItem.decorators || [ElementDecorator],
           ];
           DrawRuntimeState[parent].bus.next({ addchild: newRenderComp });
+          DrawRuntimeState[ID].bus.next({ style });
           // TODO: post path event for style and parent
         } else {
           throw new Error(
-            "DrawruntimeState[parent].ref.current should be defined for elements which can accept children"
+            "DrawruntimeState[ID].ref.current should be defined for elements which can be dragged"
           );
         }
         setRenderComps((renderComps) => {

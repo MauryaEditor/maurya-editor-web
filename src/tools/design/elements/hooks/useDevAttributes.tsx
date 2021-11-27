@@ -1,5 +1,5 @@
 import { createRef, useEffect, useState } from "react";
-import { DragElement } from "../../rxjs/DrawState";
+import { DragElement, DrawRuntimeState } from "../../rxjs/DrawState";
 
 export function useDevAttributes<T extends HTMLElement>(
   ID: string,
@@ -9,6 +9,11 @@ export function useDevAttributes<T extends HTMLElement>(
     ref?: React.RefObject<T>;
     draggable: boolean;
   }>({ draggable: false, ref: ref || createRef<T>() });
+  useEffect(() => {
+    if (attributes.ref) {
+      DrawRuntimeState[ID].ref = attributes.ref;
+    }
+  }, [attributes, attributes.ref]);
   useEffect(() => {
     if (attributes.ref?.current) {
       const element = attributes.ref.current;
