@@ -13,26 +13,17 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
-import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
-import { DesignElementCategory } from "../../types/DesignElementCategory";
 import "./ElementPanel.css";
+import { useDragElement } from "./useDragElement";
+import { useListCategories } from "./useListCategories";
 
 export const ELementPanel: React.FC = (props) => {
-  const [categories, setCategories] = useState<DesignElementCategory[]>([]);
-  useEffect(() => {
-    const subscription = DesignElementRegistry.subscribe({
-      next: (v) => {
-        setCategories(v);
-      },
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [setCategories]);
+  const categories = useListCategories();
+  const cursor = useDragElement();
   return (
-    <div className={"panel"}>
+    <div className={"panel"} style={{ cursor }}>
       {categories.map((category) => {
         const elements = category.elements;
         const categoryName = category.category;
@@ -48,6 +39,7 @@ export const ELementPanel: React.FC = (props) => {
                   onMouseDown={() => {
                     SelectedDesignElement.next(element);
                   }}
+                  style={{ cursor: cursor === "default" ? "grab" : cursor }}
                 >
                   <Comp {...element.props} />
                 </div>
