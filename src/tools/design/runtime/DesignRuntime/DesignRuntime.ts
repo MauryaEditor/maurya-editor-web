@@ -74,6 +74,12 @@ export class DesignRuntime {
             payload.ID,
             payload.state!.parent
           );
+          DesignRuntime.state[payload.ID].state = {
+            style: payload.state?.style || {},
+            properties: payload.state?.properties || {},
+            appearance: payload.state?.appearance || {},
+            parent: payload.state?.parent,
+          };
           // send to parent
           if (payload.state!.parent === "root") {
             DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });

@@ -17,6 +17,7 @@ export const Section = React.forwardRef<HTMLDivElement, RenderProps>(
           width: "100%",
           border: "1px solid black",
           boxSizing: "border-box",
+          position: "relative",
         }}
       >
         <RenderElements children={children} />
