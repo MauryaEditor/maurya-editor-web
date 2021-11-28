@@ -19,6 +19,7 @@ import { Registry } from "../../../registry/Registry";
 import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
 import SectionManifest from "../elements/section/Section";
+import ButtonManifest from "../elements/button/Button";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
@@ -109,6 +110,12 @@ const LayoutCategory: DesignElementCategory = {
   elements: [SectionManifest],
 };
 
+const BasicCategory: DesignElementCategory = {
+  category: "Basic",
+  elements: [ButtonManifest],
+};
+
 export const DesignElementRegistry = new DesignElementRegistryClass([
   LayoutCategory,
+  BasicCategory,
 ]);
