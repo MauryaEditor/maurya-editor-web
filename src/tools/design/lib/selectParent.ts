@@ -13,27 +13,32 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import { useEffect } from "react";
-import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
-import { DraggedElement } from "../runtime/interaction-states/DraggedElement";
 
-export const DraggableDecorator: React.FC<{ ID: string }> = (props) => {
-  useEffect(() => {
+import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
+
+const isInsideRect = (element: HTMLElement, event: MouseEvent) => {
+  const domRect = element.getBoundingClientRect();
+  if (
+    event.clientX >= domRect.left &&
+    event.clientX <= domRect.right &&
+    event.clientY >= domRect.top &&
+    event.clientY <= domRect.bottom
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const selectParent = (event: MouseEvent) => {
+  const parent = DesignRuntime.getChildAcceptors().find((ID) => {
     if (
-      DesignRuntime.getState()[props.ID].ref &&
-      DesignRuntime.getState()[props.ID].ref.current
+      DesignRuntime.getState()[ID].ref &&
+      DesignRuntime.getState()[ID].ref.current
     ) {
-      const component = DesignRuntime.getState()[props.ID].ref.current!;
-      const onmousedown = (event: MouseEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
-        DraggedElement.next(props.ID);
-      };
-      component.addEventListener("mousedown", onmousedown);
-      return () => {
-        if (component) component.removeEventListener("mousedown", onmousedown);
-      };
+      return isInsideRect(DesignRuntime.getState()[ID].ref.current!, event);
+    } else {
+      throw new Error("child acceptors should have ref");
     }
-  }, [props.ID]);
-  return <>{props.children}</>;
+  });
+  return parent || "root";
 };

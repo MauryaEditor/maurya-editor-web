@@ -8,13 +8,16 @@ export const useDevStyle = (ID: string) => {
     DesignRuntime.getState()[ID].state.style
   );
   useEffect(() => {
-    bus.subscribe({
+    const subscription = bus.subscribe({
       next: (v) => {
         if (v && v["state"] && v["state"]["style"]) {
           setStyle(v["state"]["style"]);
         }
       },
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [bus, setStyle]);
   return style;
 };

@@ -17,6 +17,7 @@ import React from "react";
 import { Subject, Subscription } from "rxjs";
 import { WebBus } from "../../../../runtime/WebBus";
 import { WebCreateData } from "../../../../runtime/WebBusEvent";
+import { AcceptsChild } from "../../types/AcceptsChild";
 import { ElementState } from "../../types/ElementState";
 import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
 
@@ -24,10 +25,10 @@ export class DesignRuntime {
   private static instance: DesignRuntime = new DesignRuntime();
   private static canvasRoot: {
     ref: React.RefObject<HTMLDivElement>;
-    bus: Subject<{ acceptchild?: string }>;
+    bus: Subject<AcceptsChild>;
   } = {
     ref: React.createRef(),
-    bus: new Subject<{ acceptchild?: string }>(),
+    bus: new Subject<AcceptsChild>(),
   };
   private static state: { [ID: string]: ElementState } = {};
   private static acceptsChild: string[] = [];

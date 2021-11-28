@@ -11,6 +11,13 @@ export const useAcceptChild = () => {
             return [...children, v["acceptchild"]!];
           });
         }
+        if (v && v["removechild"]) {
+          setChildren((children) => {
+            return children.filter((child) => {
+              return child !== v["removechild"];
+            });
+          });
+        }
       },
     });
     return () => {

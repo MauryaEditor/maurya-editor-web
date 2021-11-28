@@ -5,6 +5,7 @@ import { useDropNewElement } from "./useDropNewElement";
 import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
 import { useAcceptChild } from "./useAcceptChild";
 import { RenderElements } from "./RenderElements";
+import { useRepositionHandler } from "./useRepositionHandler";
 
 /**
     Copyright 2021 Quaffles    
@@ -29,6 +30,7 @@ export const Canvas: React.FC = (props) => {
   useDropNewElement(subcontainerRef, rootRef);
   const children = useAcceptChild();
   useRegisterWithDesignRuntime(rootRef);
+  useRepositionHandler(subcontainerRef);
   return (
     <div className={"canvas-container"} ref={ref}>
       <div
