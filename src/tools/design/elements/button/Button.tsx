@@ -8,7 +8,6 @@ import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComp
 export const Button = React.forwardRef<HTMLButtonElement, RenderProps>(
   (props, ref) => {
     const devStyle = useDevStyle(props.ID);
-    console.log(devStyle);
     return (
       <button ref={ref} style={{ ...devStyle }}>
         Button
