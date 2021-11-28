@@ -4,7 +4,7 @@ import { SelectedDesignElement } from "../../runtime/interaction-states/Selected
 export const useDragElement = () => {
   const [cursor, setCursor] = useState<"default" | "grabbing">("default");
   useEffect(() => {
-    SelectedDesignElement.subscribe({
+    const subscription = SelectedDesignElement.subscribe({
       next: (v) => {
         if (v) {
           setCursor("grabbing");
@@ -13,6 +13,9 @@ export const useDragElement = () => {
         }
       },
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
   return cursor;
 };
