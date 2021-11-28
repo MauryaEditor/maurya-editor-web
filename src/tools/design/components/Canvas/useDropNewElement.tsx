@@ -39,7 +39,6 @@ export const useDropNewElement = (
     if (subcontainerRef.current) {
       const onmouseup = (event: MouseEvent) => {
         const subcontainer = subcontainerRef.current;
-        console.log("mouseup", SelectedDesignElement.value);
         if (SelectedDesignElement.value) {
           const parent = selectParent(event) || "root";
           let { top, left } = getCoords(rootRef.current!);
