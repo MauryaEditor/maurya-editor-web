@@ -15,6 +15,7 @@
  */
 import React from "react";
 import { BehaviorSubjectWrapper } from "../../../../runtime/BehaviorSubjectWrapper";
+import { AcceptsChild } from "../../types/AcceptsChild";
 import { ElementState } from "../../types/ElementState";
 
 export class ElementStateFactory {
@@ -27,7 +28,9 @@ export class ElementStateFactory {
         appearance: {},
         parent: parent,
       },
-      bus: new BehaviorSubjectWrapper<Partial<Omit<ElementState, "bus">>>({}),
+      bus: new BehaviorSubjectWrapper<
+        Partial<Omit<ElementState, "bus">> | AcceptsChild
+      >({}),
       propertyMap: [],
       appearanceMap: [],
       renderProps: { ID },

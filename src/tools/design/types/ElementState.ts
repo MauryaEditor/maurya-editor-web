@@ -15,6 +15,7 @@
  */
 import React from "react";
 import { BehaviorSubject } from "rxjs";
+import { AcceptsChild } from "./AcceptsChild";
 import { RenderProps } from "./RenderProps";
 export interface ElementState {
   // synced with database
@@ -26,7 +27,7 @@ export interface ElementState {
     parent: string;
   };
   // fields need only in front end
-  bus: BehaviorSubject<Partial<Omit<ElementState, "bus">>>;
+  bus: BehaviorSubject<Partial<Omit<ElementState, "bus">> | AcceptsChild>;
   propertyMap: { key: string }[];
   appearanceMap: { key: string }[];
   renderProps: RenderProps;

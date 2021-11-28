@@ -65,7 +65,6 @@ export class DesignRuntime {
     // subscribe WebBus
     DesignRuntime.webBusSubscription = WebBus.subscribe({
       next: (v) => {
-        console.log(v);
         if (v && v["type"] === "CREATE") {
           // update runtime state
           const payload = v.payload as WebCreateData;
@@ -76,8 +75,14 @@ export class DesignRuntime {
             payload.state!.parent
           );
           // send to parent
-          if (payload.state!.parent) {
+          if (payload.state!.parent === "root") {
             DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
+          } else if (payload.state!.parent) {
+            DesignRuntime.state[payload.state!.parent].bus.next({
+              acceptchild: payload.ID,
+            });
+          } else {
+            throw new Error("parent should have exist already");
           }
         }
         if (v && v["type"] === "PATCH") {
