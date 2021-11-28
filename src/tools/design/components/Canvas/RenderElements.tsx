@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { DraggableDecorator } from "../../decorators/DraggableDecorator";
 import { PostElementRenderedDecorator } from "../../decorators/PostElementRenderedDecoratot";
 import { RenderDecorator } from "../../decorators/RenderDecorator";
 import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
@@ -24,7 +25,7 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
       (childID): RenderableElementDescription => {
         const compKey = DesignRuntime.getState()[childID].compKey;
         const designElement = DesignElementRegistry.getElementByKey(compKey);
-        const decorators = [PostElementRenderedDecorator];
+        const decorators = [PostElementRenderedDecorator, DraggableDecorator]; // default decorators
         const ref = DesignRuntime.getState()[childID].ref;
         if (designElement.decorators) {
           decorators.push(...designElement.decorators);
