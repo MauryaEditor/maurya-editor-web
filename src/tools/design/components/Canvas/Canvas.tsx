@@ -26,8 +26,8 @@ export const Canvas: React.FC = (props) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const scale = useAutoResize(ref);
   useDropNewElement(subcontainerRef, rootRef);
-  const bus = useRegisterWithDesignRuntime(rootRef);
-  const children = useAcceptChild(bus);
+  const children = useAcceptChild();
+  useRegisterWithDesignRuntime(rootRef);
   return (
     <div className={"canvas-container"} ref={ref}>
       <div
@@ -40,8 +40,7 @@ export const Canvas: React.FC = (props) => {
       >
         <div className={"canvas-root"} ref={rootRef}>
           {children.map((child) => {
-            console.log(child);
-            return <div>{child}</div>;
+            return <div key={child}>{child}</div>;
           })}
         </div>
       </div>

@@ -14,36 +14,25 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { BehaviorSubject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { WebBus } from "../../../../runtime/WebBus";
+import { WebCreateData } from "../../../../runtime/WebBusEvent";
 import { ElementState } from "../../types/ElementState";
+import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
 
 export class DesignRuntime {
   private static instance: DesignRuntime = new DesignRuntime();
   private static canvasRoot: {
     ref: React.RefObject<HTMLDivElement>;
-    bus: BehaviorSubject<{ acceptchild?: string }>;
+    bus: Subject<{ acceptchild?: string }>;
+  } = {
+    ref: React.createRef(),
+    bus: new Subject<{ acceptchild?: string }>(),
   };
-  private static state: { [ID: string]: ElementState };
+  private static state: { [ID: string]: ElementState } = {};
   private static acceptsChild: string[] = [];
-  private constructor() {
-    // subscribe WebBus
-    WebBus.subscribe({
-      next: (v) => {
-        if (v && v["type"] === "CREATE") {
-          // update runtime state
-
-          // send to parent
-          DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
-        }
-        if (v && v["type"] === "PATCH") {
-          // check if parent got updated
-          // send removechild to old parent and acceptchild to new parent
-          // send element to parent
-        }
-      },
-    });
-  }
+  private static webBusSubscription: Subscription;
+  private constructor() {}
   public static getInstance() {
     if (DesignRuntime.instance === undefined) {
       DesignRuntime.instance = new DesignRuntime();
@@ -69,11 +58,43 @@ export class DesignRuntime {
   public static getState() {
     return { ...DesignRuntime.state };
   }
-  public static setCanvasRoot(
-    ref: React.RefObject<HTMLDivElement>,
-    bus: BehaviorSubject<{ acceptchild?: string }>
-  ) {
-    DesignRuntime.canvasRoot = { ref, bus };
+  private static unsubscribeWebBus() {
+    DesignRuntime.webBusSubscription?.unsubscribe();
+  }
+  private static subscribeWebBus() {
+    // subscribe WebBus
+    DesignRuntime.webBusSubscription = WebBus.subscribe({
+      next: (v) => {
+        console.log(v);
+        if (v && v["type"] === "CREATE") {
+          // update runtime state
+          const payload = v.payload as WebCreateData;
+          // TODO: ensure that payload.state!.parent exists
+          DesignRuntime.state[payload.ID] = ElementStateFactory.create(
+            payload.compKey,
+            payload.ID,
+            payload.state!.parent
+          );
+          // send to parent
+          if (payload.state!.parent) {
+            DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
+          }
+        }
+        if (v && v["type"] === "PATCH") {
+          // check if parent got updated
+          // send removechild to old parent and acceptchild to new parent
+          // send element to parent
+        }
+      },
+    });
+  }
+  public static setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
+    // only ref changes, others are same as previous
+    DesignRuntime.canvasRoot.ref = ref;
+    // remove previous subscription to WebBus
+    DesignRuntime.unsubscribeWebBus();
+    // subscribe web bus for the first time or again
+    DesignRuntime.subscribeWebBus();
   }
   public static getCanvasRoot() {
     return { ...DesignRuntime.canvasRoot };

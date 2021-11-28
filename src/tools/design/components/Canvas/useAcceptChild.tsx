@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { BehaviorSubject } from "rxjs";
+import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 
-export const useAcceptChild = (
-  bus: BehaviorSubject<{ acceptchild?: string }>
-) => {
+export const useAcceptChild = () => {
   const [children, setChildren] = useState<string[]>([]);
   useEffect(() => {
-    const subscription = bus.subscribe({
+    const subscription = DesignRuntime.getCanvasRoot().bus.subscribe({
       next: (v) => {
         if (v && v["acceptchild"]) {
           setChildren((children) => {
@@ -18,6 +16,6 @@ export const useAcceptChild = (
     return () => {
       subscription.unsubscribe();
     };
-  }, [bus, setChildren]);
+  }, [setChildren]);
   return children;
 };
