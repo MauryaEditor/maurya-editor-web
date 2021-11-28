@@ -14,8 +14,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { BehaviorSubject } from "rxjs";
-import { AcceptsChild } from "./AcceptsChild";
+import { ElementBus } from "./ElementBus";
 import { RenderProps } from "./RenderProps";
 export interface ElementState {
   // synced with database
@@ -27,7 +26,7 @@ export interface ElementState {
     parent: string;
   };
   // fields need only in front end
-  bus: BehaviorSubject<Partial<Omit<ElementState, "bus">> | AcceptsChild>;
+  bus: ElementBus;
   propertyMap: { key: string }[];
   appearanceMap: { key: string }[];
   renderProps: RenderProps;
