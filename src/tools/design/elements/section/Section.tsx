@@ -4,7 +4,7 @@ import { SimpleComponent } from "../utils/SimpleComponent/SimpleComponent";
 import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComponent";
 
 export const Section = React.forwardRef<HTMLDivElement>((props, ref) => {
-  return <div ref={ref}></div>;
+  return <div ref={ref}>Shyam is cool</div>;
 });
 
 const manifest: DesignElement = {

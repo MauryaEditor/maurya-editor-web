@@ -4,6 +4,7 @@ import "./Canvas.css";
 import { useDropNewElement } from "./useDropNewElement";
 import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
 import { useAcceptChild } from "./useAcceptChild";
+import { RenderElements } from "./RenderElements";
 
 /**
     Copyright 2021 Quaffles    
@@ -39,9 +40,7 @@ export const Canvas: React.FC = (props) => {
         ref={subcontainerRef}
       >
         <div className={"canvas-root"} ref={rootRef}>
-          {children.map((child) => {
-            return <div key={child}>{child}</div>;
-          })}
+          <RenderElements children={children} />
         </div>
       </div>
     </div>

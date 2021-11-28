@@ -16,15 +16,14 @@
 import React from "react";
 
 export interface RenderDecoratorProps {
-  decorators: React.FC<any>[];
+  decorators: React.FC<{ ID: string }>[];
   ID: string;
-  style?: React.CSSProperties;
 }
 
 export const RenderDecorator: React.FC<RenderDecoratorProps> = (props) => {
   const DirectChildren = props.decorators[0];
   return (
-    <DirectChildren ID={props.ID} style={props.style}>
+    <DirectChildren ID={props.ID}>
       {props.decorators.length >= 2 ? (
         <RenderDecorator
           decorators={props.decorators.slice(1)}

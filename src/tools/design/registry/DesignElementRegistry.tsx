@@ -95,6 +95,13 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
       }
     }
   }
+  public getElementByKey(key: string): DesignElement {
+    const indices = this.findElementByKey(key);
+    if (indices) {
+      return { ...this.subject.value[indices[0]].elements[indices[1]] };
+    }
+    throw Error("key not found in the design element registry");
+  }
 }
 
 const LayoutCategory: DesignElementCategory = {
