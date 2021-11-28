@@ -2,6 +2,7 @@
   background-color: #e5e5e5;
   box-sizing: border-box;
   display: flex;
+  align-items: center;
   height: 100%;
 }
 

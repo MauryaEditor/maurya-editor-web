@@ -36,6 +36,7 @@ export const Canvas: React.FC = (props) => {
         style={{
           transform: `scale(${scale})`,
           width: scale ? `${100 / scale}%` : "",
+          height: scale ? `${100 / scale}%` : "",
         }}
         ref={subcontainerRef}
       >
