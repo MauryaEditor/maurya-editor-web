@@ -21,5 +21,5 @@ export interface DesignElement {
   ondragProps: { [key: string | number]: any };
   renderComp: React.FC<any>;
   renderCompProps: { [key: string | number]: any };
-  decorators?: React.FC[];
+  decorators?: React.FC<{ ID: string }>[];
 }

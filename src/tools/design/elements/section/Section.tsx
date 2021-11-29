@@ -1,5 +1,6 @@
 import React from "react";
 import { RenderElements } from "../../components/Canvas/RenderElements";
+import { AdjustChildPositionOnDrop } from "../../decorators/AdjustChildPositionOnDrop";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
 import { useAcceptChild } from "../hooks/useAcceptChild";
@@ -34,6 +35,7 @@ const manifest: DesignElement = {
   ondragProps: { name: "Section" },
   renderComp: Section,
   renderCompProps: {},
+  decorators: [AdjustChildPositionOnDrop],
 };
 
 export default manifest;

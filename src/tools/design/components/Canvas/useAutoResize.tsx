@@ -18,7 +18,7 @@ export const useAutoResize = (parent: RefObject<HTMLElement>) => {
         if (width < 900) {
           setScale(width / 900);
         } else {
-          setScale(1);
+          setScale(1.0);
         }
       }
     };

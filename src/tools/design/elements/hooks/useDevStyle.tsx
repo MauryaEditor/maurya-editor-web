@@ -11,7 +11,7 @@ export const useDevStyle = (ID: string) => {
     const subscription = bus.subscribe({
       next: (v) => {
         if (v && v["state"] && v["state"]["style"]) {
-          setStyle(v["state"]["style"]);
+          setStyle(DesignRuntime.getState()[ID].state.style);
         }
       },
     });

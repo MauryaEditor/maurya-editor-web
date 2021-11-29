@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import getCoords from "../../lib/getCoords";
 import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
@@ -17,9 +18,9 @@ export const useRepositionHandler = (
           const elementRect =
             DesignRuntime.getState()[v].ref.current?.getBoundingClientRect()!;
           const top =
-            (elementRect.top - canvasRootRect.top) / CanvasScale.value;
+            (elementRect.top - canvasRootRect.top) / CanvasScale.value + "px";
           const left =
-            (elementRect.left - canvasRootRect.left) / CanvasScale.value;
+            (elementRect.left - canvasRootRect.left) / CanvasScale.value + "px";
           DesignRuntime.getState()[v].state.style = {
             ...DesignRuntime.getState()[v].state.style,
             top,
@@ -46,21 +47,28 @@ export const useRepositionHandler = (
         // move dragged element if it exists
         if (DraggedElement.value) {
           const ID = DraggedElement.value;
-          const canvasRect =
-            DesignRuntime.getCanvasRoot().ref.current?.getBoundingClientRect()!;
-          const elementRect =
-            DesignRuntime.getState()[ID].ref.current?.getBoundingClientRect()!;
-          if (elementRect) {
+          if (
+            DesignRuntime.getState()[ID].ref.current &&
+            DesignRuntime.getCanvasRoot().ref.current
+          ) {
+            const canvasRect = getCoords(
+              DesignRuntime.getCanvasRoot().ref.current!
+            );
+            const elementRect = getCoords(
+              DesignRuntime.getState()[ID].ref.current!
+            );
+            const top =
+              (elementRect.top - canvasRect.top + event.movementY) /
+                CanvasScale.value +
+              "px";
+            const left =
+              (elementRect.left - canvasRect.left + event.movementX) /
+                CanvasScale.value +
+              "px";
             DesignRuntime.getState()[ID].state.style = {
               ...DesignRuntime.getState()[ID].state.style,
-              top:
-                (elementRect.top - canvasRect.top) / CanvasScale.value +
-                event.movementY +
-                "px",
-              left:
-                (elementRect.left - canvasRect.left) / CanvasScale.value +
-                event.movementX +
-                "px",
+              top,
+              left,
             };
             DesignRuntime.getState()[ID].bus.next({
               state: DesignRuntime.getState()[ID].state,
@@ -74,17 +82,17 @@ export const useRepositionHandler = (
           const parent = selectParent(event, ID);
           if (parent !== "root") {
             // re-wire to parent
-            const parentRect =
-              DesignRuntime.getState()[
-                parent
-              ].ref.current?.getBoundingClientRect()!;
-            const elementRect =
-              DesignRuntime.getState()[
-                ID
-              ].ref.current?.getBoundingClientRect()!;
-            const top = (elementRect.top - parentRect.top) / CanvasScale.value;
+            const parentRect = getCoords(
+              DesignRuntime.getState()[parent].ref.current!
+            );
+
+            const elementRect = getCoords(
+              DesignRuntime.getState()[ID].ref.current!
+            );
+            const top =
+              (elementRect.top - parentRect.top) / CanvasScale.value + "px";
             const left =
-              (elementRect.left - parentRect.left) / CanvasScale.value;
+              (elementRect.left - parentRect.left) / CanvasScale.value + "px";
             DesignRuntime.getState()[ID].state.style = {
               ...DesignRuntime.getState()[ID].state.style,
               top,

@@ -18,4 +18,4 @@ import { BehaviorSubject } from "rxjs";
 /**
  * This state stores the current zoom out/scale factor of the canvas
  */
-export const CanvasScale = new BehaviorSubject<number>(1);
+export const CanvasScale = new BehaviorSubject<number>(1.0);
