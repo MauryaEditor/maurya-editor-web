@@ -47,14 +47,16 @@ export const useRepositionHandler = (
             DesignRuntime.getCanvasRoot().ref.current?.getBoundingClientRect()!;
           const elementRect =
             DesignRuntime.getState()[ID].ref.current?.getBoundingClientRect()!;
-          DesignRuntime.getState()[ID].state.style = {
-            ...DesignRuntime.getState()[ID].state.style,
-            top: elementRect.top - canvasRect.top + event.movementY + "px",
-            left: elementRect.left - canvasRect.left + event.movementX + "px",
-          };
-          DesignRuntime.getState()[ID].bus.next({
-            state: DesignRuntime.getState()[ID].state,
-          });
+          if (elementRect) {
+            DesignRuntime.getState()[ID].state.style = {
+              ...DesignRuntime.getState()[ID].state.style,
+              top: elementRect.top - canvasRect.top + event.movementY + "px",
+              left: elementRect.left - canvasRect.left + event.movementX + "px",
+            };
+            DesignRuntime.getState()[ID].bus.next({
+              state: DesignRuntime.getState()[ID].state,
+            });
+          }
         }
       };
       const onmouseup = (event: MouseEvent) => {

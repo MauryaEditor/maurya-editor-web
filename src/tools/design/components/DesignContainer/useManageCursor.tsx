@@ -13,9 +13,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 import React, { useEffect, useState } from "react";
-import { Subject } from "rxjs";
 import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
 
 export type CursorTypes = "grabbing" | "default" | "grab";

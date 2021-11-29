@@ -19,11 +19,12 @@ import { Canvas } from "../Canvas/Canvas";
 import { ELementPanel } from "../ElementPanel/ElementPanel";
 import { useManageCursor } from "./useManageCursor";
 import "./DesignContainer.css";
+import { useShowSampleElement } from "./useShowSampleElement";
 
 export const DesignContainer: React.FC = (props) => {
   const subContainer = useRef<HTMLDivElement>(null);
   const cursor = useManageCursor(subContainer, "grabbing");
-
+  const SampleElement = useShowSampleElement(subContainer);
   return (
     <div className={"container"}>
       <div className={"sub-container"} ref={subContainer} style={{ cursor }}>
@@ -33,6 +34,19 @@ export const DesignContainer: React.FC = (props) => {
         <div className={"canvas"}>
           <Canvas />
         </div>
+        {SampleElement &&
+        SampleElement.element &&
+        SampleElement.left &&
+        SampleElement.top ? (
+          <div
+            className={"sample-element"}
+            style={{ top: SampleElement.top, left: SampleElement.left }}
+          >
+            <SampleElement.element.ondragComp
+              {...SampleElement.element.ondragProps}
+            />
+          </div>
+        ) : null}
       </div>
       {/* <div style={{ width: "14em", overflow: "hidden" }}>
         <PropertiesBox />
