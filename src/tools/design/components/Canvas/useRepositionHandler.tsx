@@ -25,9 +25,11 @@ export const useRepositionHandler = (
           };
           // re-wire element to root
           const parent = DesignRuntime.getState()[v].state.parent;
-          DesignRuntime.getState()[v].state.parent = "root";
-          DesignRuntime.getState()[parent].bus.next({ removechild: v });
-          DesignRuntime.getCanvasRoot().bus.next({ acceptchild: v });
+          if (parent !== "root") {
+            DesignRuntime.getState()[v].state.parent = "root";
+            DesignRuntime.getState()[parent].bus.next({ removechild: v });
+            DesignRuntime.getCanvasRoot().bus.next({ acceptchild: v });
+          }
         }
       },
     });
@@ -58,7 +60,7 @@ export const useRepositionHandler = (
       const onmouseup = (event: MouseEvent) => {
         if (DraggedElement.value) {
           const ID = DraggedElement.value;
-          const parent = selectParent(event);
+          const parent = selectParent(event, ID);
           if (parent !== "root") {
             // re-wire to parent
             const parentRect =

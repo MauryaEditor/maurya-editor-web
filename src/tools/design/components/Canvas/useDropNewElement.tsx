@@ -13,7 +13,7 @@ export const useDropNewElement = (
     if (subcontainerRef.current) {
       const onmouseup = (event: MouseEvent) => {
         if (SelectedDesignElement.value) {
-          const parent = selectParent(event) || "root";
+          const parent = selectParent(event);
           let { top, left } = getCoords(rootRef.current!);
           if (parent !== "root") {
             ({ top, left } = getCoords(
