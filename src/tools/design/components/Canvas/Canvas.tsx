@@ -1,12 +1,3 @@
-import { useRef } from "react";
-import { useAutoResize } from "./useAutoResize";
-import "./Canvas.css";
-import { useDropNewElement } from "./useDropNewElement";
-import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
-import { useAcceptChild } from "./useAcceptChild";
-import { RenderElements } from "./RenderElements";
-import { useRepositionHandler } from "./useRepositionHandler";
-
 /**
     Copyright 2021 Quaffles    
  
@@ -22,6 +13,15 @@ import { useRepositionHandler } from "./useRepositionHandler";
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
+import { useRef } from "react";
+import { useAutoResize } from "./useAutoResize";
+import "./Canvas.css";
+import { useDropNewElement } from "./useDropNewElement";
+import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
+import { useAcceptChild } from "./useAcceptChild";
+import { RenderElements } from "./RenderElements";
+import { useRepositionHandler } from "./useRepositionHandler";
+
 export const Canvas: React.FC = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const subcontainerRef = useRef<HTMLDivElement>(null);
