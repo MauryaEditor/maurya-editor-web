@@ -31,8 +31,10 @@ const isInsideRect = (element: HTMLElement, event: MouseEvent) => {
 
 export const selectParent = (event: MouseEvent, draggedElementID?: string) => {
   const parent = DesignRuntime.getChildAcceptors().find((ID) => {
+    if (ID === draggedElementID) {
+      return;
+    }
     if (
-      ID !== draggedElementID &&
       DesignRuntime.getState()[ID].ref &&
       DesignRuntime.getState()[ID].ref.current
     ) {
