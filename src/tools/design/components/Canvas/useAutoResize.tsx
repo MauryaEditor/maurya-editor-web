@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useState } from "react";
+import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
 
 /**
  *
@@ -27,5 +28,10 @@ export const useAutoResize = (parent: RefObject<HTMLElement>) => {
       window.removeEventListener("resize", rescale);
     };
   }, [parent.current]);
+  useEffect(() => {
+    if (scale) {
+      CanvasScale.next(scale);
+    }
+  }, [scale]);
   return scale;
 };
