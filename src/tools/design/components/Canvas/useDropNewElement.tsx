@@ -3,6 +3,7 @@ import { PostCreateEvent } from "../../../../runtime/commands";
 import getCoords from "../../lib/getCoords";
 import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
+import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
 import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
 
 export const useDropNewElement = (
@@ -26,8 +27,8 @@ export const useDropNewElement = (
             state: {
               style: {
                 position: "absolute",
-                top: `${event.clientY - top + 10}px`,
-                left: `${event.clientX - left + 10}px`,
+                top: `${(event.clientY - top) / CanvasScale.value + 10}px`,
+                left: `${(event.clientX - left) / CanvasScale.value + 10}px`,
               },
               parent: parent,
             },
