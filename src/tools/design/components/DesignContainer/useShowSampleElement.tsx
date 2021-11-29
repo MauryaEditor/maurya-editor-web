@@ -41,28 +41,28 @@ export const useShowSampleElement = (
     };
   }, [setSampleElement]);
   useEffect(() => {
-    const onMouseMoveOrDown = (event: MouseEvent) => {
+    const onmousedown = (event: MouseEvent) => {
       const { top, left } = getCoords(combinedContainerRef.current!);
       setSampleTop(`${event.clientY - top + 10}px`);
       setSampleLeft(`${event.clientX - left + 10}px`);
     };
-    combinedContainerRef.current?.addEventListener(
-      "mousedown",
-      onMouseMoveOrDown
-    );
-    combinedContainerRef.current?.addEventListener(
-      "mousemove",
-      onMouseMoveOrDown
-    );
+    const onmousemove = (event: MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const { top, left } = getCoords(combinedContainerRef.current!);
+      setSampleTop(`${event.clientY - top + 10}px`);
+      setSampleLeft(`${event.clientX - left + 10}px`);
+    };
+    combinedContainerRef.current?.addEventListener("mousedown", onmousedown);
+    combinedContainerRef.current?.addEventListener("mousemove", onmousemove);
     return () => {
       combinedContainerRef.current?.removeEventListener(
         "mousedown",
-        onMouseMoveOrDown
+        onmousedown
       );
-
       combinedContainerRef.current?.removeEventListener(
         "mousemove",
-        onMouseMoveOrDown
+        onmousemove
       );
     };
   }, [combinedContainerRef, setSampleTop, setSampleLeft]);

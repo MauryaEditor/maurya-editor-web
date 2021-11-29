@@ -45,9 +45,9 @@ export const useRepositionHandler = (
     if (containerRef.current) {
       const onmousemove = (event: MouseEvent) => {
         // move dragged element if it exists
-        event.preventDefault();
-        event.stopPropagation();
         if (DraggedElement.value) {
+          event.preventDefault();
+          event.stopPropagation();
           const ID = DraggedElement.value;
           if (
             DesignRuntime.getState()[ID].ref.current &&
