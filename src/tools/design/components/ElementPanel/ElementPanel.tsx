@@ -19,7 +19,7 @@ import "./ElementPanel.css";
 import { useDragElement } from "./useDragElement";
 import { useListCategories } from "./useListCategories";
 
-export const ELementPanel: React.FC = (props) => {
+export const ELementPanel: React.FC = React.memo((props) => {
   const categories = useListCategories();
   const cursor = useDragElement();
   return (
@@ -50,4 +50,4 @@ export const ELementPanel: React.FC = (props) => {
       })}
     </div>
   );
-};
+});

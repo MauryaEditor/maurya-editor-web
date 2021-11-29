@@ -21,8 +21,9 @@ import { useRegisterWithDesignRuntime } from "./useRegisterWithDesignRuntime";
 import { useAcceptChild } from "./useAcceptChild";
 import { RenderElements } from "./RenderElements";
 import { useRepositionHandler } from "./useRepositionHandler";
+import React from "react";
 
-export const Canvas: React.FC = (props) => {
+export const Canvas: React.FC = React.memo((props) => {
   const ref = useRef<HTMLDivElement>(null);
   const subcontainerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -48,4 +49,4 @@ export const Canvas: React.FC = (props) => {
       </div>
     </div>
   );
-};
+});
