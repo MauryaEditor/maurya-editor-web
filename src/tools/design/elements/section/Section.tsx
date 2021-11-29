@@ -34,7 +34,7 @@ const manifest: DesignElement = {
   ondragComp: SimpleDragComponent,
   ondragProps: { name: "Section" },
   renderComp: Section,
-  renderCompProps: {},
+  renderCompProps: { style: { minHeight: "100px" } },
   decorators: [AdjustChildPositionOnDrop],
 };
 
