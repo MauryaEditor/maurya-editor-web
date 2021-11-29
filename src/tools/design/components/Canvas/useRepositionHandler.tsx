@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
+import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
 import { DraggedElement } from "../../runtime/interaction-states/DraggedElement";
 
 export const useRepositionHandler = (
@@ -15,8 +16,10 @@ export const useRepositionHandler = (
             DesignRuntime.getCanvasRoot().ref.current?.getBoundingClientRect()!;
           const elementRect =
             DesignRuntime.getState()[v].ref.current?.getBoundingClientRect()!;
-          const top = elementRect.top - canvasRootRect.top;
-          const left = elementRect.left - canvasRootRect.left;
+          const top =
+            (elementRect.top - canvasRootRect.top) / CanvasScale.value;
+          const left =
+            (elementRect.left - canvasRootRect.left) / CanvasScale.value;
           DesignRuntime.getState()[v].state.style = {
             ...DesignRuntime.getState()[v].state.style,
             top,
@@ -50,8 +53,14 @@ export const useRepositionHandler = (
           if (elementRect) {
             DesignRuntime.getState()[ID].state.style = {
               ...DesignRuntime.getState()[ID].state.style,
-              top: elementRect.top - canvasRect.top + event.movementY + "px",
-              left: elementRect.left - canvasRect.left + event.movementX + "px",
+              top:
+                (elementRect.top - canvasRect.top) / CanvasScale.value +
+                event.movementY +
+                "px",
+              left:
+                (elementRect.left - canvasRect.left) / CanvasScale.value +
+                event.movementX +
+                "px",
             };
             DesignRuntime.getState()[ID].bus.next({
               state: DesignRuntime.getState()[ID].state,
@@ -73,8 +82,9 @@ export const useRepositionHandler = (
               DesignRuntime.getState()[
                 ID
               ].ref.current?.getBoundingClientRect()!;
-            const top = elementRect.top - parentRect.top;
-            const left = elementRect.left - parentRect.left;
+            const top = (elementRect.top - parentRect.top) / CanvasScale.value;
+            const left =
+              (elementRect.left - parentRect.left) / CanvasScale.value;
             DesignRuntime.getState()[ID].state.style = {
               ...DesignRuntime.getState()[ID].state.style,
               top,
