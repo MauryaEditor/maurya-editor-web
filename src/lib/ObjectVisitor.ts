@@ -7,13 +7,13 @@ export class ObjectVisitor {
   route: (string | number)[] = [];
   constructor(
     private handlers: {
-      terminal?: (
+      enterTerminal?: (
         key: string | number,
         value: string | number | boolean | any[],
         parentObj: { [key: string | number]: any },
         pathSoFar: (string | number)[]
       ) => void;
-      nonTerminal?: (
+      enterNonTerminal?: (
         key: string | number,
         value: { [key: string | number]: any },
         parentObj: { [key: string | number]: any },
@@ -39,8 +39,8 @@ export class ObjectVisitor {
     parentObj: { [key: string | number]: any }
   ) {
     this.route.push(key);
-    if (this.handlers.terminal) {
-      this.handlers.terminal(key, value, parentObj, this.route);
+    if (this.handlers.enterTerminal) {
+      this.handlers.enterTerminal(key, value, parentObj, this.route);
     }
   }
   enterNonTerminal(
@@ -49,8 +49,8 @@ export class ObjectVisitor {
     parentObj: { [key: string | number]: any }
   ) {
     this.route.push(key);
-    if (this.handlers.nonTerminal) {
-      this.handlers.nonTerminal(key, value, parentObj, this.route);
+    if (this.handlers.enterNonTerminal) {
+      this.handlers.enterNonTerminal(key, value, parentObj, this.route);
     }
   }
   exitTerminal(

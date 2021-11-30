@@ -18,6 +18,7 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
    */
   traverse(curr: any, visitor: ObjectVisitor) {
     if (typeof curr === "object" && !Array.isArray(curr)) {
+      //no else for this
       const keys = Object.keys(curr);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
@@ -45,18 +46,25 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
    */
   visitPath(path: (string | number)[], visitor: ObjectVisitor) {
     let curr = this.obj;
-    for (let i = 0; i < path.length; i++) {
-      if (curr) {
-        if (
-          typeof curr[path[i]] === "object" &&
-          !Array.isArray(curr[path[i]])
-        ) {
-          visitor.enterNonTerminal(path[i], curr[path[i]], curr);
+    //path must have atleast 1 element
+    if (path.length > 0) {
+      for (let i = 0; i < path.length; i++) {
+        if (curr && curr[path[i]] !== undefined) {
+          if (
+            typeof curr[path[i]] === "object" &&
+            !Array.isArray(curr[path[i]])
+          ) {
+            visitor.enterNonTerminal(path[i], curr[path[i]], curr);
+          } else {
+            visitor.enterTerminal(path[i], curr[path[i]], curr);
+          }
+          curr = curr[path[i]];
         } else {
-          visitor.enterTerminal(path[i], curr[path[i]], curr);
+          throw new Error("Path Doesn't Exists");
         }
-        curr = curr[path[i]];
       }
+    } else {
+      throw new Error("No path was provided");
     }
   }
 }
