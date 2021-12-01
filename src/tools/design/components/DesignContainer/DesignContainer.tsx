@@ -20,6 +20,7 @@ import { ELementPanel } from "../ElementPanel/ElementPanel";
 import { useManageCursor } from "./useManageCursor";
 import "./DesignContainer.css";
 import { useShowSampleElement } from "./useShowSampleElement";
+import { PropertyPanel } from "../PropertyPanel/PropertyPanel";
 
 export const DesignContainer: React.FC = (props) => {
   const subContainer = useRef<HTMLDivElement>(null);
@@ -48,9 +49,9 @@ export const DesignContainer: React.FC = (props) => {
           </div>
         ) : null}
       </div>
-      {/* <div style={{ width: "14em", overflow: "hidden" }}>
-        <PropertiesBox />
-      </div> */}
+      <div style={{ width: "14em", overflow: "hidden" }}>
+        <PropertyPanel />
+      </div>
     </div>
   );
 };
