@@ -10,10 +10,14 @@ import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComp
 export const Button = React.forwardRef<HTMLButtonElement, RenderProps>(
   (props, ref) => {
     const devStyle = useDevStyle(props.ID);
-    const TextValue = useAttachProperty(props.ID, "Value", "design/text");
+    const TextValue = useAttachProperty<string>(
+      props.ID,
+      "Value",
+      "design/text"
+    );
     return (
       <button ref={ref} style={{ ...devStyle }}>
-        Button
+        {TextValue}
       </button>
     );
   }

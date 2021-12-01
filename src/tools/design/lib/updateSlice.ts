@@ -18,10 +18,13 @@ export const updateSlice = (
   slice: (string | number)[],
   value: any
 ) => {
+  let cur = obj;
   for (let i = 0; i < slice.length; i++) {
     if (i === slice.length - 1) {
-      return (obj[slice[i]] = value);
+      cur[slice[i]] = value;
+      return;
     }
-    obj[slice[i]] = {};
+    if (!cur[slice[i]]) cur[slice[i]] = {};
+    cur = cur[slice[i]];
   }
 };

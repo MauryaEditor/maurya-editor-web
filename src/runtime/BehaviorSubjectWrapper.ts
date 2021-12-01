@@ -13,7 +13,7 @@ export class BehaviorSubjectWrapper<
     super(v);
     // subscribe to itself to send updates to subscribers of a slice
     this.subscribe((v) => {
-      this.sendSliceToSubscribers(v);
+      // this.sendSliceToSubscribers(v);
     });
   }
   subscribeSlice(slice: (string | number)[], next: (value: any) => void) {

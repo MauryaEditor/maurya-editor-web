@@ -45,18 +45,21 @@ export function useAttachProperty<ReturnType>(
   }, [propertyName, propertyType, ID]);
   // listen for changes
   useEffect(() => {
-    bus.subscribe({
+    const subscription = bus.subscribe({
       next: (v) => {
         if (
           v &&
           v["state"] &&
           v["state"]["properties"] &&
-          v["state"]["properties"][propertyName]
+          v["state"]["properties"][propertyName] !== undefined
         ) {
           setValue(DesignRuntime.getState()[ID].state.properties[propertyName]);
         }
       },
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [bus, propertyName, propertyType, ID, setValue]);
   return value;
 }

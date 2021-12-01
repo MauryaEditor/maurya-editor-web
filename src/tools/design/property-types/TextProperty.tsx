@@ -21,20 +21,20 @@ import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
 import { PropertyTypeProps } from "../types/PropertyTypeProps";
 
 export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(
+    getValueFromSlice(props.ID, props.slice) || ""
+  );
+  const [firstRenderDone, setFirstRenderDone] = useState<boolean>(false);
   const bus = DesignRuntime.getState()[props.ID].bus;
-  // get initial value
+  // set flag for first render
   useEffect(() => {
-    try {
-      const value = getValueFromSlice(props.ID, props.slice);
-      setValue(value);
-    } catch {}
-  }, [setValue, props.ID, props.slice]);
+    setFirstRenderDone(true);
+  }, []);
   // subscribe for changes
   useEffect(() => {
-    bus.subscribe({
+    const subscription = bus.subscribe({
       next: (v) => {
-        if (checkIfPathExists(v, props.slice)) {
+        if (checkIfPathExists(v, ["state", ...props.slice])) {
           try {
             const value = getValueFromSlice(props.ID, props.slice);
             setValue(value);
@@ -44,7 +44,17 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
         }
       },
     });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [props.slice, setValue, bus]);
+  // send changes after first render
+  useEffect(() => {
+    if (firstRenderDone) {
+      updateSlice(DesignRuntime.getState()[props.ID].state, props.slice, value);
+      bus.next(DesignRuntime.getState()[props.ID]);
+    }
+  }, [value, firstRenderDone]);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
       <div style={{ color: "#1E40AF", fontWeight: 600, fontSize: "0.8em" }}>
@@ -53,13 +63,7 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
       <input
         type="text"
         onChange={(event) => {
-          // TODO: post to design runtime with onAccept
-          updateSlice(
-            DesignRuntime.getState()[props.ID].state,
-            props.slice,
-            event.target.value
-          );
-          bus.next(DesignRuntime.getState()[props.ID]);
+          setValue(event.target.value);
         }}
         value={value}
         style={{
