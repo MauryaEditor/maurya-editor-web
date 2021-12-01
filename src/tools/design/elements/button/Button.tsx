@@ -1,6 +1,8 @@
 import React from "react";
+import { SelectOnClick } from "../../decorators/SelectOnClickDecorator";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
+import { useAttachProperty } from "../hooks/useAttachProperty";
 import { useDevStyle } from "../hooks/useDevStyle";
 import { SimpleComponent } from "../utils/SimpleComponent/SimpleComponent";
 import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComponent";
@@ -8,6 +10,7 @@ import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComp
 export const Button = React.forwardRef<HTMLButtonElement, RenderProps>(
   (props, ref) => {
     const devStyle = useDevStyle(props.ID);
+    const TextValue = useAttachProperty(props.ID, "Value", "design/text");
     return (
       <button ref={ref} style={{ ...devStyle }}>
         Button
@@ -24,6 +27,7 @@ const manifest: DesignElement = {
   ondragProps: { name: "Button" },
   renderComp: Button,
   renderCompProps: {},
+  decorators: [SelectOnClick],
 };
 
 export default manifest;

@@ -27,8 +27,8 @@ export interface ElementState {
   };
   // fields need only in front end
   bus: ElementBus;
-  propertyMap: { key: string; type: string }[];
-  appearanceMap: { key: string; type: string }[];
+  propertyMap: { key: string; type: string; slice: (string | number)[] }[];
+  appearanceMap: { key: string; type: string; slice: (string | number)[] }[];
   renderProps: RenderProps;
   ref: React.RefObject<HTMLElement>;
 }

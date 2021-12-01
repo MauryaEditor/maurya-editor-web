@@ -14,7 +14,13 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { PropertyPanelHeader } from "../../types/PropertyPanelHeaders";
+import { Header } from "./components/Header";
+import { useGetHeaders } from "./useGetHeaders";
+import { useSubscribePropertyBus } from "./useSubscribePropertyBus";
 export const PropertyPanel: React.FC = React.memo((props) => {
+  const headers = useGetHeaders();
+  const comps = useSubscribePropertyBus();
   return (
     <div
       style={{
@@ -36,6 +42,15 @@ export const PropertyPanel: React.FC = React.memo((props) => {
         }}
       >
         {/** header item goes here*/}
+        {headers.map((header) => {
+          return (
+            <Header
+              name={header}
+              activeHeader={comps?.activeHeader}
+              key={header}
+            />
+          );
+        })}
       </div>
       <div
         style={{
@@ -46,6 +61,9 @@ export const PropertyPanel: React.FC = React.memo((props) => {
         }}
       >
         {/** property element goes here*/}
+        {comps?.comps.map((Comp) => {
+          return <Comp.Comp {...Comp.props} key={Comp.props.name} />;
+        })}
       </div>
     </div>
   );

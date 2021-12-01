@@ -27,7 +27,11 @@ export function useAttachAppearance<ReturnType>(
   useEffect(() => {
     DesignRuntime.getState()[ID].propertyMap = [
       ...DesignRuntime.getState()[ID].propertyMap,
-      { key: appearanceName, type: propertyType },
+      {
+        key: appearanceName,
+        type: propertyType,
+        slice: ["appearance", appearanceName],
+      },
     ];
   }, [appearanceName, propertyType, ID]);
   // listen for changes
