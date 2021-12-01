@@ -24,7 +24,7 @@ export class SubjectWrapper<
     visitable.visitPath(
       slice,
       new ObjectVisitor({
-        terminal: (key, value, parentObj) => {
+        enterTerminal: (key, value, parentObj) => {
           if (value === undefined) {
             parentObj[key] = [next];
           } else if (Array.isArray(value)) {
@@ -43,10 +43,10 @@ export class SubjectWrapper<
         visitable.visitPath(
           slice,
           new ObjectVisitor({
-            terminal: (key, value, parentObj) => {
+            enterTerminal: (key, value, parentObj) => {
               next(value);
             },
-            nonTerminal: (key, value, parentObj) => {
+            enterNonTerminal: (key, value, parentObj) => {
               next(value);
             },
           })
@@ -62,7 +62,7 @@ export class SubjectWrapper<
     visitable.visitPath(
       [...slice, this.SubscriberField],
       new ObjectVisitor({
-        terminal: (key, value, parentObj) => {
+        enterTerminal: (key, value, parentObj) => {
           if (value && Array.isArray(value)) {
             const index = value.indexOf(next);
             if (index >= 0) {
@@ -79,7 +79,7 @@ export class SubjectWrapper<
       visitable.visitPath(
         [...path, this.SubscriberField],
         new ObjectVisitor({
-          terminal: (key, value) => {
+          enterTerminal: (key, value) => {
             if (Array.isArray(value)) {
               for (let i = 0; i < value.length; i++) {
                 if (typeof value[i] === "function") value[i]();
@@ -93,10 +93,10 @@ export class SubjectWrapper<
     const visitable = new VisitableObject(v);
     visitable.visit(
       new ObjectVisitor({
-        terminal: (key, value, parentObj, pathSoFar) => {
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
           callSliceSubscribers(pathSoFar);
         },
-        nonTerminal: (key, value, parentObj, pathSoFar) => {
+        enterNonTerminal: (key, value, parentObj, pathSoFar) => {
           callSliceSubscribers(pathSoFar);
         },
       })
