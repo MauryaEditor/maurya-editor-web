@@ -25,6 +25,15 @@ export function useAttachProperty<ReturnType>(
   const [value, setValue] = useState<ReturnType>();
   // attach property
   useEffect(() => {
+    // check if property already exists
+    const property = DesignRuntime.getState()[ID].propertyMap.find((map) => {
+      if (map.key === propertyName) {
+        return true;
+      }
+    });
+    if (property) {
+      return;
+    }
     DesignRuntime.getState()[ID].propertyMap = [
       ...DesignRuntime.getState()[ID].propertyMap,
       {
@@ -44,7 +53,7 @@ export function useAttachProperty<ReturnType>(
           v["state"]["properties"] &&
           v["state"]["properties"][propertyName]
         ) {
-          setValue(DesignRuntime.getState()[0].state.properties[propertyName]);
+          setValue(DesignRuntime.getState()[ID].state.properties[propertyName]);
         }
       },
     });
