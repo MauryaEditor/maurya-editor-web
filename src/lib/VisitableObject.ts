@@ -17,7 +17,6 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
    * @param visitor
    */
   traverse(curr: any, visitor: ObjectVisitor) {
-    
     if (typeof curr === "object" && !Array.isArray(curr)) {
       //no else for this
       const keys = Object.keys(curr);
@@ -29,16 +28,15 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
         } else {
           visitor.enterTerminal(key, curr[key], curr);
         }
-        
+
         if (typeof curr[key] === "object" && !Array.isArray(curr)) {
           visitor.exitNonTerminal(key, curr[key], curr);
         } else {
           visitor.exitTerminal(key, curr[key], curr);
         }
       }
-    }
-    else{
-      throw new Error("Provide a valid path")
+    } else {
+      throw new Error("Provide a valid path");
     }
   }
   /**

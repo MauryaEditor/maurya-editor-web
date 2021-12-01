@@ -12,14 +12,14 @@ Adhereing to the following process is the best way to get your work included in 
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) the project, clone your fork, and configure the remotes:
 
-    ```bash
-    # Clone your fork of the repo into the current directory
-    git clone https://github.com/<your-username>/maurya-editor-web.git
-    # Navigate to the newly cloned directory
-    cd maurya-editor-web
-    # Assign the original repo to a remote called "upstream"
-    git remote add upstream https://github.com/MauryaEditor/maurya-editor-web.git
-    ```
+   ```bash
+   # Clone your fork of the repo into the current directory
+   git clone https://github.com/<your-username>/maurya-editor-web.git
+   # Navigate to the newly cloned directory
+   cd maurya-editor-web
+   # Assign the original repo to a remote called "upstream"
+   git remote add upstream https://github.com/MauryaEditor/maurya-editor-web.git
+   ```
 
 2. From the root directory of the forked repo, run `npm install`
 
@@ -27,16 +27,16 @@ Once all the node modules are installed, run `npm start` or `npm build` to valid
 
 3. If you cloned a while ago, get the latest changes from upstream:
 
-    ```bash
-    git checkout main
-    git pull upstream main
-    ```
+   ```bash
+   git checkout main
+   git pull upstream main
+   ```
 
 4. Create a new topic branch (off the main project development branch) to contain your feature, change or fix:
 
-    ```bash
-    git checkout -b <topic-branch-name>
-    ```
+   ```bash
+   git checkout -b <topic-branch-name>
+   ```
 
 5. Commit your changes in logical chunks. Please adhere to these [git commit
    message guidelines](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
@@ -46,15 +46,15 @@ Once all the node modules are installed, run `npm start` or `npm build` to valid
 
 6. Locally merge (or rebase) the upstream development branch into your topic branch:
 
-    ```bash
-    git pull [--rebase] upstream main
-    ```
+   ```bash
+   git pull [--rebase] upstream main
+   ```
 
 7. Push your topic branch up to your fork:
 
-    ```bash
-    git push origin <topic-branch-name>
-    ```
+   ```bash
+   git push origin <topic-branch-name>
+   ```
 
 8. [Open a Pull Request](https://help.github.com/articles/using-pull-requests/)
    with a clear title and description.
@@ -72,4 +72,4 @@ owners to license your work under the terms of the [GPL v2.0 License](COPYING).
 <a name="references"></a>
 References:
 
--   This CONTRIBUTING.md file is inspired/copied from [h5bp](https://github.com/h5bp/html5-boilerplate/blob/main/.github/CONTRIBUTING.md#pull-requests)
+- This CONTRIBUTING.md file is inspired/copied from [h5bp](https://github.com/h5bp/html5-boilerplate/blob/main/.github/CONTRIBUTING.md#pull-requests)

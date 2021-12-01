@@ -17,8 +17,8 @@ export class BehaviorSubjectWrapper<
     });
   }
   //getSlices() is only for testing purposes
-  getSlices () {
-    return {...this.slices}
+  getSlices() {
+    return { ...this.slices };
   }
   subscribeSlice(slice: (string | number)[], next: (value: any) => void) {
     // add slice
@@ -33,7 +33,7 @@ export class BehaviorSubjectWrapper<
             parentObj[key] = [next];
           } else if (Array.isArray(value)) {
             parentObj[key].push(next);
-          } else { 
+          } else {
             throw Error("value must have been undefined or an existing array");
           }
         },
@@ -42,7 +42,7 @@ export class BehaviorSubjectWrapper<
     // call next with current value
     const obervable = this.asObservable().pipe(first());
     obervable.subscribe({
-      next: (v ) => {
+      next: (v) => {
         const visitable = new VisitableObject(v);
         visitable.visitPath(
           slice,
@@ -99,7 +99,7 @@ export class BehaviorSubjectWrapper<
       new ObjectVisitor({
         enterTerminal: (key, value, parentObj, pathSoFar) => {
           callSliceSubscribers(pathSoFar);
-        }, 
+        },
         enterNonTerminal: (key, value, parentObj, pathSoFar) => {
           callSliceSubscribers(pathSoFar);
         },

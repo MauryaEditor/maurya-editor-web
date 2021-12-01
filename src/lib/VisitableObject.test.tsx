@@ -30,17 +30,13 @@ test("test visitPath-1", () => {
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
     enterNonTerminal: (
       key: string | number,
       value: { [key: string | number]: any },
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-    
-    },
+    ) => {},
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
@@ -62,17 +58,13 @@ test("test visitPath-2", () => {
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
     enterNonTerminal: (
       key: string | number,
       value: { [key: string | number]: any },
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
@@ -102,17 +94,13 @@ test("test visitPath-3", () => {
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
     enterNonTerminal: (
       key: string | number,
       value: { [key: string | number]: any },
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-    
-    },
+    ) => {},
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
@@ -145,17 +133,13 @@ test("test visitPath-4", () => {
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
     enterNonTerminal: (
       key: string | number,
       value: { [key: string | number]: any },
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
@@ -184,17 +168,13 @@ test("test visitPath-5", () => {
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
     enterNonTerminal: (
       key: string | number,
       value: { [key: string | number]: any },
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
-    ) => {
-      
-    },
+    ) => {},
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
@@ -224,7 +204,7 @@ test("test visitPath-6", () => {
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
     ) => {
-      logs.push("terminal")
+      logs.push("terminal");
     },
     enterNonTerminal: (
       key: string | number,
@@ -232,38 +212,26 @@ test("test visitPath-6", () => {
       parentObj: { [key: string | number]: any },
       pathSoFar: (string | number)[]
     ) => {
-      logs.push("non-terminal")
+      logs.push("non-terminal");
     },
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
-  vistiable.visitPath(["properties","borders","outer_border",2],visitor
-    )
-    assert(check(logs));
-
-  
+  vistiable.visitPath(["properties", "borders", "outer_border", 2], visitor);
+  assert(check(logs));
 });
 
-
-
-
-
 /////////////////////////////////////// Traverse Function Tests ///////////////////////////////////////
-const check_traversed_route = (
-  
-  logs: any[]
-): Boolean => {
-  let last = logs[logs.length-1];
-  if(last.length ===0){
-    return true
+const check_traversed_route = (logs: any[]): Boolean => {
+  let last = logs[logs.length - 1];
+  if (last.length === 0) {
+    return true;
   }
-  return false
+  return false;
 };
 
 //Traverse Function Test 1
 //A Minimal test to check whether general cases are being handledd corretly or not.
-
-
 
 test("test traverse-1", () => {
   const logs: any[] = [];
@@ -298,41 +266,37 @@ test("test traverse-1", () => {
     ) => {
       logs.push(pathSoFar);
     },
-    exitTerminal : (key: string | number,
+    exitTerminal: (
+      key: string | number,
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
-      pathSoFar: (string | number)[]) => {
-        logs.push(pathSoFar);
-        
-      },
-      exitNonTerminal : (
-        key: string | number,
-        value: { [key: string | number]: any },
-        parentObj: { [key: string | number]: any },
-        pathSoFar: (string | number)[]
-        ) => {
-          logs.push(pathSoFar);
-          
-        }
-
+      pathSoFar: (string | number)[]
+    ) => {
+      logs.push(pathSoFar);
+    },
+    exitNonTerminal: (
+      key: string | number,
+      value: { [key: string | number]: any },
+      parentObj: { [key: string | number]: any },
+      pathSoFar: (string | number)[]
+    ) => {
+      logs.push(pathSoFar);
+    },
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
-  
+
   vistiable.traverse(obj, visitor);
-  
+
   assert(check_traversed_route(logs));
 });
-
 
 //Traverse Function Test 2
 //An Empty Object was passed in the function. An Error was expected
 
-
-
 test("test traverse-2", () => {
   const logs: any[] = [];
-  const obj:any = "Hello There";
+  const obj: any = "Hello There";
   const handlers = {
     enterTerminal: (
       key: string | number,
@@ -349,39 +313,30 @@ test("test traverse-2", () => {
       pathSoFar: (string | number)[]
     ) => {
       logs.push(pathSoFar);
-    }, 
-    exitTerminal : (key: string | number,
+    },
+    exitTerminal: (
+      key: string | number,
       value: string | number | boolean | any[],
       parentObj: { [key: string | number]: any },
-      pathSoFar: (string | number)[]) => {
-        logs.push(pathSoFar);
-        
-      },
-      exitNonTerminal : (
-        key: string | number,
-        value: { [key: string | number]: any },
-        parentObj: { [key: string | number]: any },
-        pathSoFar: (string | number)[]
-        ) => {
-          logs.push(pathSoFar);
-          
-        }
-
+      pathSoFar: (string | number)[]
+    ) => {
+      logs.push(pathSoFar);
+    },
+    exitNonTerminal: (
+      key: string | number,
+      value: { [key: string | number]: any },
+      parentObj: { [key: string | number]: any },
+      pathSoFar: (string | number)[]
+    ) => {
+      logs.push(pathSoFar);
+    },
   };
   const visitor = new ObjectVisitor(handlers);
   const vistiable = new VisitableObject(obj);
-  
+
   expect(() => {
     vistiable.traverse(obj, visitor);
   }).toThrowError("Provide a valid path");
 });
-
-
-
-
-
-
-
-
 
 export {};
