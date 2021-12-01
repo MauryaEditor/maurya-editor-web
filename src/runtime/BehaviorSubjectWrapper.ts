@@ -7,7 +7,7 @@ import { VisitableObject } from "../lib/VisitableObject";
 export class BehaviorSubjectWrapper<
   T extends { [key: string | number]: any }
 > extends BehaviorSubject<T> {
-  slices: { [key: string | number]: any } = {};
+  private slices: { [key: string | number]: any } = {};
   private SubscriberField = "__sliceSubscribers";
   constructor(v: T) {
     super(v);
@@ -15,6 +15,10 @@ export class BehaviorSubjectWrapper<
     this.subscribe((v) => {
       this.sendSliceToSubscribers(v);
     });
+  }
+  //getSlices() is only for testing purposes
+  getSlices () {
+    return {...this.slices}
   }
   subscribeSlice(slice: (string | number)[], next: (value: any) => void) {
     // add slice
