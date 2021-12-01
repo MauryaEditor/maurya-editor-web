@@ -14,7 +14,6 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useRef } from "react";
-import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
 import { Canvas } from "../Canvas/Canvas";
 import { ELementPanel } from "../ElementPanel/ElementPanel";
 import { useManageCursor } from "./useManageCursor";
