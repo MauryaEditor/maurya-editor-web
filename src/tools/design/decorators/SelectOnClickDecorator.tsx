@@ -4,7 +4,7 @@ import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
 import { ElementSelected } from "../runtime/interaction-states/ElementSelected";
 import { PropertyPanelHeader } from "../types/PropertyPanelHeaders";
 
-export const SelectOnClick: React.FC<{ ID: string }> = (props) => {
+export const SelectOnClickDecorator: React.FC<{ ID: string }> = (props) => {
   useEffect(() => {
     if (DesignRuntime.getState()[props.ID].ref) {
       const onclick = () => {

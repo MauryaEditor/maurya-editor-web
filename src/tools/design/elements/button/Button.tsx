@@ -1,5 +1,5 @@
 import React from "react";
-import { SelectOnClick } from "../../decorators/SelectOnClickDecorator";
+import { SelectOnClickDecorator } from "../../decorators/SelectOnClickDecorator";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
 import { useAttachProperty } from "../hooks/useAttachProperty";
@@ -27,7 +27,6 @@ const manifest: DesignElement = {
   ondragProps: { name: "Button" },
   renderComp: Button,
   renderCompProps: {},
-  decorators: [SelectOnClick],
 };
 
 export default manifest;

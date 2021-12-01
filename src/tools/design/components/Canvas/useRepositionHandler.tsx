@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import getCoords from "../../lib/getCoords";
+import { selectElement } from "../../lib/selectElement";
 import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
@@ -108,6 +109,7 @@ export const useRepositionHandler = (
           } else {
             // no-need to re-wire
           }
+          selectElement(ID);
           // TODO: PostPatchEvent with current style & current parent
         }
       };
