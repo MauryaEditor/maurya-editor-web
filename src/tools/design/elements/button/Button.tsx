@@ -4,8 +4,8 @@ import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
 import { useAttachProperty } from "../hooks/useAttachProperty";
 import { useDevStyle } from "../hooks/useDevStyle";
-import { SimpleComponent } from "../utils/SimpleComponent/SimpleComponent";
-import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComponent";
+import { SimpleComponent } from "../../dev-pkg/utils/SimpleComponent/SimpleComponent";
+import { SimpleDragComponent } from "../../dev-pkg/utils/SimpleDragComponent/SimpleDragComponent";
 
 export const Button = React.forwardRef<HTMLButtonElement, RenderProps>(
   (props, ref) => {

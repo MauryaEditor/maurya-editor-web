@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
-import { useBus } from "./useBus";
+import { useBus } from "../../dev-pkg/hooks/useBus";
 
 export const useDevStyle = (ID: string) => {
   const bus = useBus(ID);
