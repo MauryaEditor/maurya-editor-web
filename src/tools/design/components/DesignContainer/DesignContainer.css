@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  height: 100%;
+  user-select: none;
+}
+
+.sub-container {
+  flex: 1;
+  display: flex;
+  cursor: cursor;
+  position: relative;
+}
+
+.panel {
+  width: "8em";
+  overflow: "hidden";
+}
+
+.canvas {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sample-element {
+  position: absolute;
+}

@@ -12,7 +12,7 @@ import { WebDevBus } from "./WebDevBus";
 import { WebDevBusEvent } from "./WebDevBusEvent";
 
 export const PostCreateEvent = (
-  payload: Omit<WebCreateData, "tempID">,
+  payload: Omit<WebCreateData, "ID">,
   busOptions?: BusPostOptions
 ): string => {
   const ID = Runtime.getID();
