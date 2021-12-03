@@ -15,7 +15,7 @@
  */
 import { useEffect, useState } from "react";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
-import { useBus } from "./useBus";
+import { useBus } from "../../dev-pkg/hooks/useBus";
 export function useAttachProperty<ReturnType>(
   ID: string,
   propertyName: string,

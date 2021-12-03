@@ -3,9 +3,9 @@ import { RenderElements } from "../../components/Canvas/RenderElements";
 import { AdjustChildPositionOnDrop } from "../../decorators/AdjustChildPositionOnDrop";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
-import { useAcceptChild } from "../hooks/useAcceptChild";
-import { SimpleComponent } from "../utils/SimpleComponent/SimpleComponent";
-import { SimpleDragComponent } from "../utils/SimpleDragComponent/SimpleDragComponent";
+import { useAcceptChild } from "../../dev-pkg/hooks/useAcceptChild";
+import { SimpleComponent } from "../../dev-pkg/utils/SimpleComponent/SimpleComponent";
+import { SimpleDragComponent } from "../../dev-pkg/utils/SimpleDragComponent/SimpleDragComponent";
 
 export const Section = React.forwardRef<HTMLDivElement, RenderProps>(
   (props, ref) => {
