@@ -105,10 +105,10 @@ export const useRepositionHandler = (
             DesignRuntime.getState()[ID].state.parent = parent;
             DesignRuntime.getCanvasRoot().bus.next({ removechild: ID });
             DesignRuntime.getState()[parent].bus.next({ acceptchild: ID });
-            DraggedElement.next(null);
           } else {
             // no-need to re-wire
           }
+          DraggedElement.next(null);
           selectElement(ID);
           // TODO: PostPatchEvent with current style & current parent
         }
