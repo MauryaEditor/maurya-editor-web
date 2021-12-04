@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { PostCreateEvent } from "../../../../runtime/commands";
 import getCoords from "../../lib/getCoords";
+import { selectElement } from "../../lib/selectElement";
 import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
@@ -21,7 +22,7 @@ export const useDropNewElement = (
               DesignRuntime.getState()[parent].ref.current!
             ));
           }
-          PostCreateEvent({
+          const ID = PostCreateEvent({
             compKey: SelectedDesignElement.value.key,
             pkg: "design",
             state: {
@@ -34,6 +35,7 @@ export const useDropNewElement = (
             },
           });
           SelectedDesignElement.next(null);
+          selectElement(ID);
         }
       };
       subcontainerRef.current.addEventListener("mouseup", onmouseup);
