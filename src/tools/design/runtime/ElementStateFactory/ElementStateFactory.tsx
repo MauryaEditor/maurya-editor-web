@@ -28,6 +28,7 @@ export class ElementStateFactory {
         appearance: {},
         parent: parent,
       },
+      alias: "",
       bus: new BehaviorSubjectWrapper<
         Partial<Omit<ElementState, "bus">> | AcceptsChild
       >({}),

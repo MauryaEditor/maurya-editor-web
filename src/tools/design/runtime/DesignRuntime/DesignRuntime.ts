@@ -15,6 +15,7 @@
  */
 import React from "react";
 import { Subject, Subscription } from "rxjs";
+import { PostLinkEvent, PostPatchEvent } from "../../../../runtime/commands";
 import { WebBus } from "../../../../runtime/WebBus";
 import { WebCreateData } from "../../../../runtime/WebBusEvent";
 import { AcceptsChild } from "../../types/AcceptsChild";
@@ -110,6 +111,41 @@ export class DesignRuntime {
   }
   public static getCanvasRoot() {
     return { ...DesignRuntime.canvasRoot };
+  }
+  /**
+   * if record is true than a PatchRequest to backend will be sent
+   */
+  public static patchState(
+    ID: string,
+    patch: Pick<ElementState, "state">,
+    record: boolean = false
+  ) {
+    DesignRuntime.getState()[ID].state = {
+      ...DesignRuntime.getState()[ID].state,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: patch });
+    }
+  }
+  public static patchStyle(
+    ID: string,
+    patch: React.CSSProperties,
+    record: boolean = false
+  ) {
+    DesignRuntime.getState()[ID].state.style = {
+      ...DesignRuntime.getState()[ID].state.style,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: { style: patch } });
+    }
+  }
+  public static linkAlias(ID: string, alias: string, record: boolean = false) {
+    DesignRuntime.getState()[ID].alias = alias;
+    if (record) {
+      PostLinkEvent({ ID, alias });
+    }
   }
 }
 
