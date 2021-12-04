@@ -17,7 +17,8 @@ import React from "react";
 import { Subject, Subscription } from "rxjs";
 import { PostLinkEvent, PostPatchEvent } from "../../../../runtime/commands";
 import { WebBus } from "../../../../runtime/WebBus";
-import { WebCreateData } from "../../../../runtime/WebBusEvent";
+import { WebCreateData, WebPatchData } from "../../../../runtime/WebBusEvent";
+import { WebDevBus } from "../../../../runtime/WebDevBus";
 import { AcceptsChild } from "../../types/AcceptsChild";
 import { ElementState } from "../../types/ElementState";
 import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
@@ -34,6 +35,7 @@ export class DesignRuntime {
   private static state: { [ID: string]: ElementState } = {};
   private static acceptsChild: string[] = [];
   private static webBusSubscription: Subscription;
+  private static devBusSubscription: Subscription;
   private constructor() {}
   public static getInstance() {
     if (DesignRuntime.instance === undefined) {
@@ -97,9 +99,66 @@ export class DesignRuntime {
           // check if parent got updated
           // send removechild to old parent and acceptchild to new parent
           // send element to parent
+          const payload = v["payload"] as WebPatchData;
+          const keys = Object.keys(payload.slice);
+          for (let key of keys) {
+            switch (key) {
+              case "style":
+              case "appearance":
+              case "properties":
+                if (DesignRuntime.getState()[payload.ID]["state"][key]) {
+                  DesignRuntime.getState()[payload.ID]["state"][key] = {
+                    ...DesignRuntime.getState()[payload.ID]["state"][key],
+                    ...payload.slice[key],
+                  };
+                } else {
+                  DesignRuntime.getState()[payload.ID]["state"][key] = {
+                    ...payload.slice[key],
+                  };
+                }
+                DesignRuntime.getState()[payload.ID].bus.next({
+                  state: DesignRuntime.getState()[payload.ID]["state"],
+                });
+                break;
+              case "parent":
+                console.log("updating parent");
+                const newParent = payload.slice.parent;
+                const newParentBus =
+                  newParent === "root"
+                    ? DesignRuntime.getCanvasRoot().bus
+                    : DesignRuntime.getState()[newParent].bus;
+                const oldParent =
+                  DesignRuntime.getState()[payload.ID].state.parent;
+                const oldParentBus =
+                  oldParent === "root"
+                    ? DesignRuntime.getCanvasRoot().bus
+                    : DesignRuntime.getState()[oldParent].bus;
+                DesignRuntime.getState()[payload.ID].state.parent = newParent;
+                oldParentBus.next({
+                  removechild: payload.ID,
+                });
+                newParentBus.next({
+                  acceptchild: payload.ID,
+                });
+                break;
+            }
+          }
         }
       },
     });
+  }
+  private static subscribeDevBus() {
+    DesignRuntime.devBusSubscription = WebDevBus.subscribe({
+      next: (v) => {
+        if (v) {
+          console.log("rendered", v);
+        }
+      },
+    });
+  }
+  private static unsubscribeDevBus() {
+    if (DesignRuntime.devBusSubscription)
+      DesignRuntime.devBusSubscription.unsubscribe();
   }
   public static setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
     // only ref changes, others are same as previous
@@ -108,6 +167,10 @@ export class DesignRuntime {
     DesignRuntime.unsubscribeWebBus();
     // subscribe web bus for the first time or again
     DesignRuntime.subscribeWebBus();
+    // unsubscribe web dev bus
+    DesignRuntime.unsubscribeDevBus();
+    // subscribe dev bus
+    DesignRuntime.subscribeDevBus();
   }
   public static getCanvasRoot() {
     return { ...DesignRuntime.canvasRoot };
