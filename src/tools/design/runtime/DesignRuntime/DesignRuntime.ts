@@ -14,7 +14,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { Subject, Subscription } from "rxjs";
+import { ReplaySubject, Subject, Subscription } from "rxjs";
 import { PostLinkEvent, PostPatchEvent } from "../../../../runtime/commands";
 import { SessionWebBus } from "../../../../runtime/SessionWebBus";
 import { WebBus } from "../../../../runtime/WebBus";
@@ -73,13 +73,21 @@ export class DesignRuntime {
     return { ...DesignRuntime.state };
   }
   private static subscribeWebBusForCreate() {
+    console.log("subscribing web bus");
     DesignRuntime.webBusSubscription = WebBus.subscribe({
       next: (v) => {
+        console.log("rec");
         if (v && v["type"] === "CREATE") {
           DesignRuntime.initialCreate.push(v);
         } else {
           DesignRuntime.initialExceptCreate.push(v);
         }
+      },
+      error: (err) => {
+        console.log(err);
+      },
+      complete: () => {
+        console.log("completed");
       },
     });
   }
@@ -215,14 +223,24 @@ export class DesignRuntime {
       DesignRuntime.devBusSubscription.unsubscribe();
   }
   public static setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
+    console.log("setting canvas root");
     // only ref changes, others are same as previous
     DesignRuntime.canvasRoot.ref = ref;
     // unsubscribe sessionBus if previously subscribed
     DesignRuntime.unsubscribeSessionBus();
     // subscribe dev bus
     DesignRuntime.subscribeDevBus();
-    // subscribe web bus to collect all create
-    DesignRuntime.subscribeWebBusForCreate();
+    // if canvas root is set for the second time or more
+    // mimic that initial events are already loaded
+    if (DesignRuntime.initialCreate.length > 0) {
+      WebDevBus.post({
+        type: EVENTS_LOADED,
+        payload: DesignRuntime.initialCreate.length,
+      });
+    } else {
+      // subscribe web bus to collect all create
+      DesignRuntime.subscribeWebBusForCreate();
+    }
   }
   public static getCanvasRoot() {
     return { ...DesignRuntime.canvasRoot };
