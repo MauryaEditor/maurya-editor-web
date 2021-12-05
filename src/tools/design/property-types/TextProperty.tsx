@@ -14,7 +14,9 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
+import { PostPatchEvent } from "../../../runtime/commands";
 import { checkIfPathExists } from "../lib/checkIfPathExists";
+import { extractSlice } from "../lib/extractSlice";
 import { getValueFromSlice } from "../lib/getValueFromSlice";
 import { updateSlice } from "../lib/updateSlice";
 import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
@@ -53,8 +55,12 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
     if (firstRenderDone) {
       updateSlice(DesignRuntime.getState()[props.ID].state, props.slice, value);
       bus.next(DesignRuntime.getState()[props.ID]);
+      PostPatchEvent({
+        ID: props.ID,
+        slice: extractSlice(props.ID, props.slice),
+      });
     }
-  }, [value, firstRenderDone]);
+  }, [value, firstRenderDone, props.ID, props.slice]);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.4em" }}>
       <div style={{ color: "#1E40AF", fontWeight: 600, fontSize: "0.8em" }}>
