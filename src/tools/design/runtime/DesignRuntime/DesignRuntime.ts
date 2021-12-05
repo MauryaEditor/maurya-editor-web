@@ -16,9 +16,16 @@
 import React from "react";
 import { Subject, Subscription } from "rxjs";
 import { PostLinkEvent, PostPatchEvent } from "../../../../runtime/commands";
+import { SessionWebBus } from "../../../../runtime/SessionWebBus";
 import { WebBus } from "../../../../runtime/WebBus";
-import { WebCreateData, WebPatchData } from "../../../../runtime/WebBusEvent";
+import {
+  WebBusEvent,
+  WebCreateData,
+  WebPatchData,
+} from "../../../../runtime/WebBusEvent";
 import { WebDevBus } from "../../../../runtime/WebDevBus";
+import { EVENTS_LOADED } from "../../../../runtime/WebDevBusEvent";
+import { DEV_ELEMENT_RENDERED } from "../../decorators/PostElementRenderedDecoratot";
 import { AcceptsChild } from "../../types/AcceptsChild";
 import { ElementState } from "../../types/ElementState";
 import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
@@ -34,8 +41,11 @@ export class DesignRuntime {
   };
   private static state: { [ID: string]: ElementState } = {};
   private static acceptsChild: string[] = [];
+  private static sessionBusSubscription: Subscription;
   private static webBusSubscription: Subscription;
   private static devBusSubscription: Subscription;
+  private static initialCreate: WebBusEvent[] = [];
+  private static initialExceptCreate: WebBusEvent[] = [];
   private constructor() {}
   public static getInstance() {
     if (DesignRuntime.instance === undefined) {
@@ -62,96 +72,140 @@ export class DesignRuntime {
   public static getState() {
     return { ...DesignRuntime.state };
   }
-  private static unsubscribeWebBus() {
-    DesignRuntime.webBusSubscription?.unsubscribe();
-  }
-  private static subscribeWebBus() {
-    // subscribe WebBus
+  private static subscribeWebBusForCreate() {
     DesignRuntime.webBusSubscription = WebBus.subscribe({
       next: (v) => {
         if (v && v["type"] === "CREATE") {
-          // update runtime state
-          const payload = v.payload as WebCreateData;
-          // TODO: ensure that payload.state!.parent exists
-          DesignRuntime.state[payload.ID] = ElementStateFactory.create(
-            payload.compKey,
-            payload.ID,
-            payload.state!.parent
-          );
-          DesignRuntime.state[payload.ID].state = {
-            style: payload.state?.style || {},
-            properties: payload.state?.properties || {},
-            appearance: payload.state?.appearance || {},
-            parent: payload.state?.parent,
-          };
-          // send to parent
-          if (payload.state!.parent === "root") {
-            DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
-          } else if (payload.state!.parent) {
-            DesignRuntime.state[payload.state!.parent].bus.next({
-              acceptchild: payload.ID,
-            });
-          } else {
-            throw new Error("parent should have exist already");
-          }
-        }
-        if (v && v["type"] === "PATCH") {
-          // check if parent got updated
-          // send removechild to old parent and acceptchild to new parent
-          // send element to parent
-          const payload = v["payload"] as WebPatchData;
-          const keys = Object.keys(payload.slice);
-          for (let key of keys) {
-            switch (key) {
-              case "style":
-              case "appearance":
-              case "properties":
-                if (DesignRuntime.getState()[payload.ID]["state"][key]) {
-                  DesignRuntime.getState()[payload.ID]["state"][key] = {
-                    ...DesignRuntime.getState()[payload.ID]["state"][key],
-                    ...payload.slice[key],
-                  };
-                } else {
-                  DesignRuntime.getState()[payload.ID]["state"][key] = {
-                    ...payload.slice[key],
-                  };
-                }
-                DesignRuntime.getState()[payload.ID].bus.next({
-                  state: DesignRuntime.getState()[payload.ID]["state"],
-                });
-                break;
-              case "parent":
-                console.log("updating parent");
-                const newParent = payload.slice.parent;
-                const newParentBus =
-                  newParent === "root"
-                    ? DesignRuntime.getCanvasRoot().bus
-                    : DesignRuntime.getState()[newParent].bus;
-                const oldParent =
-                  DesignRuntime.getState()[payload.ID].state.parent;
-                const oldParentBus =
-                  oldParent === "root"
-                    ? DesignRuntime.getCanvasRoot().bus
-                    : DesignRuntime.getState()[oldParent].bus;
-                DesignRuntime.getState()[payload.ID].state.parent = newParent;
-                oldParentBus.next({
-                  removechild: payload.ID,
-                });
-                newParentBus.next({
-                  acceptchild: payload.ID,
-                });
-                break;
-            }
-          }
+          DesignRuntime.initialCreate.push(v);
+        } else {
+          DesignRuntime.initialExceptCreate.push(v);
         }
       },
     });
   }
+  private static processInitialEventsExceptCreate() {
+    for (let i = 0; i < DesignRuntime.initialExceptCreate.length; i++) {
+      const v = DesignRuntime.initialExceptCreate[i];
+      if (v && v.type === "PATCH") {
+        DesignRuntime.handlePatchEvent(v);
+      }
+    }
+  }
+  private static unsubscribeWebBus() {
+    DesignRuntime.webBusSubscription?.unsubscribe();
+  }
+  private static unsubscribeSessionBus() {
+    DesignRuntime.sessionBusSubscription?.unsubscribe();
+  }
+  private static handleCreateEvent(v: WebBusEvent) {
+    // update runtime state
+    const payload = v.payload as WebCreateData;
+    // TODO: ensure that payload.state!.parent exists
+    DesignRuntime.state[payload.ID] = ElementStateFactory.create(
+      payload.compKey,
+      payload.ID,
+      payload.state!.parent
+    );
+    DesignRuntime.state[payload.ID].state = {
+      style: payload.state?.style || {},
+      properties: payload.state?.properties || {},
+      appearance: payload.state?.appearance || {},
+      parent: payload.state?.parent,
+    };
+    // send to parent
+    if (payload.state!.parent === "root") {
+      DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
+    } else if (payload.state!.parent) {
+      DesignRuntime.state[payload.state!.parent].bus.next({
+        acceptchild: payload.ID,
+      });
+    } else {
+      throw new Error("parent should have exist already");
+    }
+  }
+  private static handlePatchEvent(v: WebBusEvent) {
+    // check if parent got updated
+    // send removechild to old parent and acceptchild to new parent
+    // send element to parent
+    const payload = v["payload"] as WebPatchData;
+    const keys = Object.keys(payload.slice);
+    for (let key of keys) {
+      switch (key) {
+        case "style":
+        case "appearance":
+        case "properties":
+          if (DesignRuntime.getState()[payload.ID]["state"][key]) {
+            DesignRuntime.getState()[payload.ID]["state"][key] = {
+              ...DesignRuntime.getState()[payload.ID]["state"][key],
+              ...payload.slice[key],
+            };
+          } else {
+            DesignRuntime.getState()[payload.ID]["state"][key] = {
+              ...payload.slice[key],
+            };
+          }
+          DesignRuntime.getState()[payload.ID].bus.next({
+            state: DesignRuntime.getState()[payload.ID]["state"],
+          });
+          break;
+        case "parent":
+          console.log("updating parent");
+          const newParent = payload.slice.parent;
+          const newParentBus =
+            newParent === "root"
+              ? DesignRuntime.getCanvasRoot().bus
+              : DesignRuntime.getState()[newParent].bus;
+          const oldParent = DesignRuntime.getState()[payload.ID].state.parent;
+          const oldParentBus =
+            oldParent === "root"
+              ? DesignRuntime.getCanvasRoot().bus
+              : DesignRuntime.getState()[oldParent].bus;
+          DesignRuntime.getState()[payload.ID].state.parent = newParent;
+          oldParentBus.next({
+            removechild: payload.ID,
+          });
+          newParentBus.next({
+            acceptchild: payload.ID,
+          });
+          break;
+      }
+    }
+  }
+  private static subscribeSessionBus() {
+    // subscribe WebBus
+    DesignRuntime.sessionBusSubscription = SessionWebBus.subscribe({
+      next: (v) => {
+        if (v && v["type"] === "CREATE") {
+          DesignRuntime.handleCreateEvent(v);
+        }
+        if (v && v["type"] === "PATCH") {
+          DesignRuntime.handlePatchEvent(v);
+        }
+      },
+    });
+  }
+  private static *getNextInitialCreateEvent() {
+    for (let i = 0; i < DesignRuntime.initialCreate.length; i++) {
+      yield DesignRuntime.initialCreate[i];
+    }
+  }
   private static subscribeDevBus() {
+    const gen = DesignRuntime.getNextInitialCreateEvent();
     DesignRuntime.devBusSubscription = WebDevBus.subscribe({
       next: (v) => {
         if (v) {
-          console.log("rendered", v);
+          if (v.type === EVENTS_LOADED || v.type === DEV_ELEMENT_RENDERED) {
+            const nxt = gen.next();
+            if (!nxt.done) {
+              DesignRuntime.handleCreateEvent(nxt.value);
+            } else {
+              // clean up after all elements have been created
+              DesignRuntime.unsubscribeWebBus();
+              DesignRuntime.unsubscribeDevBus();
+              DesignRuntime.processInitialEventsExceptCreate();
+              DesignRuntime.subscribeSessionBus();
+            }
+          }
         }
       },
     });
@@ -163,14 +217,12 @@ export class DesignRuntime {
   public static setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
     // only ref changes, others are same as previous
     DesignRuntime.canvasRoot.ref = ref;
-    // remove previous subscription to WebBus
-    DesignRuntime.unsubscribeWebBus();
-    // subscribe web bus for the first time or again
-    DesignRuntime.subscribeWebBus();
-    // unsubscribe web dev bus
-    DesignRuntime.unsubscribeDevBus();
+    // unsubscribe sessionBus if previously subscribed
+    DesignRuntime.unsubscribeSessionBus();
     // subscribe dev bus
     DesignRuntime.subscribeDevBus();
+    // subscribe web bus to collect all create
+    DesignRuntime.subscribeWebBusForCreate();
   }
   public static getCanvasRoot() {
     return { ...DesignRuntime.canvasRoot };

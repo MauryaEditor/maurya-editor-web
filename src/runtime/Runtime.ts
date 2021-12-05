@@ -24,6 +24,8 @@ import "./SessionWebBus";
 import "./WebDevBus";
 import "./commands";
 import { WebBusEvent } from "./WebBusEvent";
+import { WebDevBus } from "./WebDevBus";
+import { EVENTS_LOADED } from "./WebDevBusEvent";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -54,6 +56,7 @@ export class Runtime {
         events.forEach((event) => {
           WebBus.post(event);
         });
+        WebDevBus.post({ type: EVENTS_LOADED, payload: events.length });
       }
     });
     Runtime.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {

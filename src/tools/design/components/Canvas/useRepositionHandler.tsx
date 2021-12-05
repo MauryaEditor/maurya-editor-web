@@ -94,9 +94,10 @@ export const useRepositionHandler = (
           );
           if (parent !== "root") {
             // re-wire to parent
-            DesignRuntime.patchState(ID, { parent: parent } as any, true);
             DesignRuntime.getCanvasRoot().bus.next({ removechild: ID });
             DesignRuntime.getState()[parent].bus.next({ acceptchild: ID });
+            // CAUTION: send patch after re-wiring
+            DesignRuntime.patchState(ID, { parent: parent } as any, true);
           } else {
             // no-need to re-wire
           }
