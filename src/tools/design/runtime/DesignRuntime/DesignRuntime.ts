@@ -76,18 +76,11 @@ export class DesignRuntime {
     console.log("subscribing web bus");
     DesignRuntime.webBusSubscription = WebBus.subscribe({
       next: (v) => {
-        console.log("rec");
         if (v && v["type"] === "CREATE") {
           DesignRuntime.initialCreate.push(v);
         } else {
           DesignRuntime.initialExceptCreate.push(v);
         }
-      },
-      error: (err) => {
-        console.log(err);
-      },
-      complete: () => {
-        console.log("completed");
       },
     });
   }
@@ -157,7 +150,6 @@ export class DesignRuntime {
           });
           break;
         case "parent":
-          console.log("updating parent");
           const newParent = payload.slice.parent;
           const newParentBus =
             newParent === "root"
