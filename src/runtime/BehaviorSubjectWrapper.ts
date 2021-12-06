@@ -3,6 +3,8 @@ import { first } from "rxjs/operators";
 import { createPathIfNotExists } from "../lib/createPathIfNotExists";
 import { ObjectVisitor } from "../lib/ObjectVisitor";
 import { VisitableObject } from "../lib/VisitableObject";
+export const PathIsLonger = "a shorter path already exists in the slice";
+export const PathIsSmaller = "a longer path already exists in the slice";
 
 export class BehaviorSubjectWrapper<
   T extends { [key: string | number]: any }
@@ -20,51 +22,46 @@ export class BehaviorSubjectWrapper<
   getSlices() {
     return { ...this.slices };
   }
-  subscribeSlice(slice: (string | number)[], next: (value: any) => void) {
-    // add slice
-    createPathIfNotExists(this.slices, [...slice, this.SubscriberField]);
-    // add listener to the slice
-    const visitable = new VisitableObject(this.slices);
-    visitable.visitPath(
-      [...slice, this.SubscriberField],
-      new ObjectVisitor({
-        enterTerminal: (key, value, parentObj) => {
-          if (value === undefined) {
-            parentObj[key] = [next];
-          } else if (Array.isArray(value)) {
-            parentObj[key].push(next);
-          } else {
-            throw Error("value must have been undefined or an existing array");
+  subscribeSlice(path: (string | number)[], next: (value: any) => void) {
+    let currentObj = this.slices;
+    let count = -1;
+    // this.slices = {}; path: [1, 2]
+    // this.slices = {1}; path: [1, 3]
+    while (count < path.length - 1) {
+      const visitable = new VisitableObject(currentObj);
+      const visitor = new ObjectVisitor({
+        enterNonTerminal: () => {
+          if (path.length - 2 <= count) {
+            throw new Error(PathIsSmaller);
           }
+          count++;
+          currentObj = currentObj[path[count]];
         },
-      })
-    );
-    // call next with current value
-    const obervable = this.asObservable().pipe(first());
-    obervable.subscribe({
-      next: (v) => {
-        const visitable = new VisitableObject(v);
-        visitable.visitPath(
-          slice,
-          new ObjectVisitor({
-            enterTerminal: (key, value, parentObj) => {
-              next(value);
-            },
-            enterNonTerminal: (key, value, parentObj) => {
-              next(value);
-            },
-          })
-        );
-      },
-    });
-    return () => {
-      this.unsubscribeSlice(slice, next);
-    };
+        enterTerminal: () => {
+          if (count < path.length - 2) {
+            throw new Error(PathIsLonger);
+          }
+          // we expect that array exists
+          count++;
+          currentObj[path[count]].push(next);
+        },
+      });
+      try {
+        visitable.visitPath(path, visitor);
+      } catch (err: any) {
+        if (err.message === PathIsLonger || err.message === PathIsSmaller) {
+          throw err;
+        }
+        currentObj[path[count + 1]] = count < path.length - 2 ? {} : [next];
+        currentObj = currentObj[path[count + 1]];
+        count++;
+      }
+    }
   }
-  unsubscribeSlice(slice: (string | number)[], next: (value: any) => void) {
+  unsubscribeSlice(path: (string | number)[], next: (value: any) => void) {
     const visitable = new VisitableObject(this.slices);
     visitable.visitPath(
-      [...slice, this.SubscriberField],
+      [...path, this.SubscriberField],
       new ObjectVisitor({
         enterTerminal: (key, value, parentObj) => {
           if (value && Array.isArray(value)) {
