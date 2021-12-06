@@ -57,6 +57,7 @@ export class BehaviorSubjectWrapper<
         count++;
       }
     }
+    // send last data to the current subscriber
   }
   unsubscribeSlice(path: (string | number)[], next: (value: any) => void) {
     const visitable = new VisitableObject(this.slices);
