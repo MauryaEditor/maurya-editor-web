@@ -112,6 +112,7 @@ export class DesignRuntime {
       properties: payload.state?.properties || {},
       appearance: payload.state?.appearance || {},
       parent: payload.state?.parent,
+      alias: payload.state?.alias,
     };
     // send to parent
     if (payload.state!.parent === "root") {
@@ -267,7 +268,7 @@ export class DesignRuntime {
     }
   }
   public static linkAlias(ID: string, alias: string, record: boolean = false) {
-    DesignRuntime.getState()[ID].alias = alias;
+    DesignRuntime.getState()[ID].state.alias = alias;
     if (record) {
       PostLinkEvent({ ID, alias });
     }
