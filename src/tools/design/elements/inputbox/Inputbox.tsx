@@ -27,11 +27,11 @@ export const Inputbox = React.forwardRef<HTMLInputElement, RenderProps>(
 );
 
 const manifest: DesignElement = {
-  key: "TextBox",
+  key: "Inputbox",
   comp: SimpleComponent,
-  props: { name: "TextBox" },
+  props: { name: "Inputbox" },
   ondragComp: SimpleDragComponent,
-  ondragProps: { name: "TextBox" },
+  ondragProps: { name: "Inputbox" },
   renderComp: Inputbox,
   renderCompProps: {},
 };

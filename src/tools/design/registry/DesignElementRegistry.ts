@@ -20,7 +20,7 @@ import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
 import SectionManifest from "../elements/section/Section";
 import ButtonManifest from "../elements/button/Button";
-import InputManifest from "../elements/inputbox/Inputbox";
+import InputManifest from "../elements/Inputbox/Inputbox";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
