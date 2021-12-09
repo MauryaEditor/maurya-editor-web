@@ -16,7 +16,10 @@ export const useAcceptChild = (ID: string) => {
       next: (v) => {
         if (v && v["acceptchild"]) {
           setChildren((children) => {
-            return [...children, v["acceptchild"]!];
+            if (!children.includes(v["acceptchild"]!)) {
+              return [...children, v["acceptchild"]!];
+            }
+            return [...children];
           });
         }
         if (v && v["removechild"]) {

@@ -22,7 +22,9 @@ export function useAttachProperty<ReturnType>(
   propertyType: string
 ) {
   const bus = useBus(ID);
-  const [value, setValue] = useState<ReturnType>();
+  const [value, setValue] = useState<ReturnType>(
+    DesignRuntime.getState()[ID].state.properties[propertyName]
+  );
   // attach property
   useEffect(() => {
     // check if property already exists
