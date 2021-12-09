@@ -20,6 +20,7 @@ import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
 import SectionManifest from "../elements/section/Section";
 import ButtonManifest from "../elements/button/Button";
+import InputManifest from "../elements/inputbox/Inputbox";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
@@ -112,7 +113,7 @@ const LayoutCategory: DesignElementCategory = {
 
 const BasicCategory: DesignElementCategory = {
   category: "Basic",
-  elements: [ButtonManifest],
+  elements: [ButtonManifest, InputManifest],
 };
 
 export const DesignElementRegistry = new DesignElementRegistryClass([
