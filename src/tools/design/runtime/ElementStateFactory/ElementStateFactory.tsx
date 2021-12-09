@@ -36,6 +36,7 @@ export class ElementStateFactory {
       appearanceMap: [],
       renderProps: { ID },
       ref: React.createRef(),
+      isAliasable: false,
     };
     return state;
   }

@@ -267,12 +267,6 @@ export class DesignRuntime {
       PostPatchEvent({ ID, slice: { style: patch } });
     }
   }
-  public static linkAlias(ID: string, alias: string, record: boolean = false) {
-    DesignRuntime.getState()[ID].state.alias = alias;
-    if (record) {
-      PostLinkEvent({ ID, alias });
-    }
-  }
 }
 
 DesignRuntime.getInstance();
