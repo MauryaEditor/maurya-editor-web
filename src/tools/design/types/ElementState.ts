@@ -32,4 +32,5 @@ export interface ElementState {
   appearanceMap: { key: string; type: string; slice: (string | number)[] }[];
   renderProps: RenderProps;
   ref: React.RefObject<HTMLElement>;
+  isAliasable: boolean; // true if the state.alias can be used as variable
 }
