@@ -27,7 +27,8 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
     return this.subject.subscribe(observer);
   }
   /**
-   * register category
+   * register a category
+   * throw an error if it exists already
    * @param category
    * @param element
    */
@@ -39,6 +40,19 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
       throw Error("cannot add duplicate category");
     }
     this.subject.next([...this.subject.value, category]);
+  }
+  /**
+   *
+   * @param name
+   * @returns category or undefined
+   */
+  getCategoryByName(name: string) {
+    const category = this.subject.value.find((category) => {
+      if (category.category === name) {
+        return true;
+      }
+    });
+    return category;
   }
   /**
    * adds element to category only if category exists
@@ -97,12 +111,11 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
       }
     }
   }
-  public getElementByKey(key: string): DesignElement {
+  public getElementByKey(key: string): DesignElement | undefined {
     const indices = this.findElementByKey(key);
     if (indices) {
       return { ...this.subject.value[indices[0]].elements[indices[1]] };
     }
-    throw Error("key not found in the design element registry");
   }
 }
 

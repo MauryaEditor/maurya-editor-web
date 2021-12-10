@@ -26,7 +26,9 @@ import {
 import { WebDevBus } from "../../../../runtime/WebDevBus";
 import { EVENTS_LOADED } from "../../../../runtime/WebDevBusEvent";
 import { DEV_ELEMENT_RENDERED } from "../../decorators/PostElementRenderedDecoratot";
+import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
 import { AcceptsChild } from "../../types/AcceptsChild";
+import { DesignElement } from "../../types/DesignElement";
 import { ElementState } from "../../types/ElementState";
 import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
 
@@ -267,6 +269,24 @@ export class DesignRuntime {
       PostPatchEvent({ ID, slice: { style: patch } });
     }
   }
+  public static registerDesignElement(
+    categoryName: string,
+    designElementManifest: DesignElement
+  ) {
+    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
+      DesignElementRegistry.registerCategory({
+        category: categoryName,
+        elements: [designElementManifest],
+      });
+    } else {
+      DesignElementRegistry.registerElement(
+        categoryName,
+        designElementManifest
+      );
+    }
+  }
 }
 
 DesignRuntime.getInstance();
+
+(window as any).DesignRuntime = DesignRuntime.getInstance();
