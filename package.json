@@ -25,7 +25,7 @@
     "build:web": "BUILD_PATH='./build/web' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --outDir build/dist"
+    "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --jsx preserve --outDir build/dist"
   },
   "eslintConfig": {
     "extends": [
