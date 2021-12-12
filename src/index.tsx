@@ -21,7 +21,9 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-
+import { createGlobalVariable } from "./lib/createGlobalVariable";
+createGlobalVariable("React", React);
+createGlobalVariable("ReactDOM", ReactDOM);
 ReactDOM.render(
   <React.StrictMode>
     <App />
