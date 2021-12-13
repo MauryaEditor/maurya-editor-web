@@ -73,6 +73,7 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
         elements: [...category.elements, element],
       };
       this.subject.next([...categories.splice(index, 1, newCategory)]);
+      return;
     }
     throw Error("element doesn't exist in the registry");
   }
