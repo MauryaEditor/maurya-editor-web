@@ -58,6 +58,12 @@ export class Runtime {
           WebBus.post(event);
         });
         WebDevBus.post({ type: EVENTS_LOADED, payload: events.length });
+      } else {
+        // TODO: temporary fix
+        // send EVENTS_LOADED when there is no projectID
+        setTimeout(() => {
+          WebDevBus.post({ type: EVENTS_LOADED, payload: 0 });
+        }, 2000);
       }
     });
     Runtime.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
