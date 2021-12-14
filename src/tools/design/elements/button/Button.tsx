@@ -1,5 +1,4 @@
 import React from "react";
-import { SelectOnClickDecorator } from "../../decorators/SelectOnClickDecorator";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
 import { useAttachProperty } from "../hooks/useAttachProperty";

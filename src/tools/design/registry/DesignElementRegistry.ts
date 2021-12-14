@@ -18,9 +18,6 @@ import { Observer } from "rxjs";
 import { Registry } from "../../../registry/Registry";
 import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
-import SectionManifest from "../elements/section/Section";
-import ButtonManifest from "../elements/button/Button";
-import InputManifest from "../elements/Inputbox/Inputbox";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
@@ -59,7 +56,7 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
    * otherwise throws error
    */
   registerElement(category: string, element: DesignElement) {
-    const categories = this.subject.value;
+    const categories = [...this.subject.value];
     if (this.findElementByKey(element.key)) {
       throw Error("cannot add element with duplicate key");
     }
@@ -72,7 +69,8 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
         ...category,
         elements: [...category.elements, element],
       };
-      this.subject.next([...categories.splice(index, 1, newCategory)]);
+      categories.splice(index, 1, newCategory);
+      this.subject.next([...categories]);
       return;
     }
     throw Error("element doesn't exist in the registry");
@@ -120,17 +118,17 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
   }
 }
 
-const LayoutCategory: DesignElementCategory = {
-  category: "Layout",
-  elements: [SectionManifest],
-};
+// const LayoutCategory: DesignElementCategory = {
+//   category: "Layout",
+//   elements: [SectionManifest],
+// };
 
-const BasicCategory: DesignElementCategory = {
-  category: "Basic",
-  elements: [ButtonManifest, InputManifest],
-};
+// const BasicCategory: DesignElementCategory = {
+//   category: "Basic",
+//   elements: [ButtonManifest, InputManifest],
+// };
 
 export const DesignElementRegistry = new DesignElementRegistryClass([
-  LayoutCategory,
-  BasicCategory,
+  // LayoutCategory,
+  // BasicCategory,
 ]);

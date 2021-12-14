@@ -20,6 +20,9 @@ import { useManageCursor } from "./useManageCursor";
 import "./DesignContainer.css";
 import { useShowSampleElement } from "./useShowSampleElement";
 import { PropertyPanel } from "../PropertyPanel/PropertyPanel";
+import { initDesignElementRegistry } from "../../init/init-design-element-registry";
+
+initDesignElementRegistry();
 
 export const DesignContainer: React.FC = (props) => {
   const subContainer = useRef<HTMLDivElement>(null);
