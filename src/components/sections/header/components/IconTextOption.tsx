@@ -1,6 +1,7 @@
 export interface IconTextOption {
   text: string;
   img: string;
+  onClick?: () => void;
 }
 
 export const IconTextOption: React.FC<IconTextOption> = (props) => {
@@ -11,6 +12,7 @@ export const IconTextOption: React.FC<IconTextOption> = (props) => {
         flexDirection: "column",
         alignItems: "center",
       }}
+      onClick={props.onClick}
     >
       <div>
         <img src={props.img} />

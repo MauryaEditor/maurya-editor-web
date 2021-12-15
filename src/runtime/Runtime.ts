@@ -131,10 +131,9 @@ export class Runtime {
       headers: headers,
       body: JSON.stringify({ ...event, token, projectID }),
     };
-    return fetch(
-      `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
-      options
-    ).then((resp) => resp.json());
+    return fetch(`${backendUrl}/web-events`, options).then((resp) =>
+      resp.json()
+    );
   }
   private static syncEvents() {
     setTimeout(async () => {
