@@ -13,11 +13,17 @@ export const Options: React.FC = (props) => {
     const projectID = getProjectID();
     console.log("projectID", projectID);
     if (projectID) {
-      fetch(`${backendUrl}/compiler?compiler=all&projectID=${projectID}`).then(
-        (resp) => {
-          console.log(resp);
-        }
-      );
+      fetch(`${backendUrl}/compiler?compiler=all&projectID=${projectID}`)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          const protocol = window.location.protocol;
+          const host = window.location.host;
+          if (resp.web)
+            window.open(
+              `${protocol}//${host}/preview-project?projectID=${projectID}`,
+              "_blank"
+            );
+        });
     }
   }, []);
   return (
