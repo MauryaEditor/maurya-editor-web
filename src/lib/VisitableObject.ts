@@ -22,14 +22,14 @@ export class VisitableObject<T extends { [key: string | number]: any }> {
       const keys = Object.keys(curr);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
-        if (typeof curr[key] === "object" && !Array.isArray(curr)) {
+        if (typeof curr[key] === "object" && !Array.isArray(curr[key])) {
           visitor.enterNonTerminal(key, curr[key], curr);
           this.traverse(curr[key], visitor);
         } else {
           visitor.enterTerminal(key, curr[key], curr);
         }
 
-        if (typeof curr[key] === "object" && !Array.isArray(curr)) {
+        if (typeof curr[key] === "object" && !Array.isArray(curr[key])) {
           visitor.exitNonTerminal(key, curr[key], curr);
         } else {
           visitor.exitTerminal(key, curr[key], curr);

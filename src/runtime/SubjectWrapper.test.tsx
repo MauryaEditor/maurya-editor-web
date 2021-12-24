@@ -1,16 +1,15 @@
 import assert from "assert";
 import { ObjectVisitor } from "../lib/ObjectVisitor";
 import {
-  PathIsSmaller,
-  PathIsLonger,
   FunctionDoesNotExist,
-  InvalidFunction,
-} from "../errors/lib/BehaviorSubjectWrapperErrors";
-import { BehaviorSubjectWrapper } from "./BehaviorSubjectWrapper";
+  PathIsLonger,
+  PathIsSmaller,
+} from "./BehaviorSubjectWrapper";
+import { SubjectWrapper } from "./SubjectWrapper";
 
 test("subscribeSlice on empty slice with path of size 1", () => {
   const path = [1];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, (changes) => {});
   assert(subject.getSlices()[1]);
   //console.log("1st test", subject.getSlices());
@@ -18,7 +17,7 @@ test("subscribeSlice on empty slice with path of size 1", () => {
 
 test("subscribeSlice on empty slice with path of size 2", () => {
   const path = [1, 2];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, (changes) => {});
   assert(subject.getSlices()[1]);
   //console.log("2nd test", subject.getSlices());
@@ -26,7 +25,7 @@ test("subscribeSlice on empty slice with path of size 2", () => {
 
 test("subscribeSlice on a slice with existing path and a new path of size 3", () => {
   const path = [1, 2];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, (changes) => {});
   assert(subject.getSlices()[1]);
   expect(() => {
@@ -37,7 +36,7 @@ test("subscribeSlice on a slice with existing path and a new path of size 3", ()
 
 test("subscribeSlice on a slice with existing longer path and a new path of size 2", () => {
   const path = [1, 2, 3];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, (changes) => {});
   assert(subject.getSlices()[1]);
   expect(() => {
@@ -48,7 +47,7 @@ test("subscribeSlice on a slice with existing longer path and a new path of size
 
 test("subscribeSlice on an exactly existing slice", () => {
   const path = [1, 2, 3];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, (changes) => {});
   assert(subject.getSlices()[1]);
   const newPath = [1, 2, 3];
@@ -58,7 +57,7 @@ test("subscribeSlice on an exactly existing slice", () => {
 
 test("subscribeSlice on a slice with 4 different non conflicting inputs", () => {
   const path1 = [1, 2, 4];
-  const subject = new BehaviorSubjectWrapper({ 1: { 2: { 3: {} } } });
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path1, (changes) => {});
   assert(subject.getSlices()[1][2][4]);
 
@@ -78,7 +77,7 @@ test("UnsubscribeSlice Test when A Non-Existent Function is given", () => {
   };
   const obj = { 1: { 2: { 3: [] } } };
   const path = [1, 2, 3];
-  const subject = new BehaviorSubjectWrapper(obj);
+  const subject = new SubjectWrapper();
   expect(() => {
     subject.subscribeSlice(path, test);
     subject.unsubscribeSlice(path, test2);
@@ -92,7 +91,7 @@ test("UnsubscribeSlice Test when an Existent Function is given", () => {
 
   const obj = { 1: { 2: { 3: [] } } };
   const path = [1, 2, 3];
-  const subject = new BehaviorSubjectWrapper(obj);
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, test);
   assert(a == 2);
   a = 1;
@@ -113,9 +112,8 @@ test("UnsubscribeSlice Test when multiple functions are subscirbed to", () => {
 
   const obj = { 1: { 2: { 3: [] } } };
   const path = [1, 2, 3];
-  const array = [];
-  array.push(a);
-  const subject = new BehaviorSubjectWrapper(obj);
+  const array = [a];
+  const subject = new SubjectWrapper();
   subject.subscribeSlice(path, test);
   array.push(a);
   subject.subscribeSlice(path, test2);
@@ -142,7 +140,7 @@ function checkIfSame(array1: any[], array2: any[]) {
 test("Subscribing Multiple functions then unsubscribing to one of them to ensure that proper unsubscription protocol is in place", () => {
   const obj = { 1: { 2: { 3: [] } } };
   const path = [1, 2, 3];
-  const subject = new BehaviorSubjectWrapper(obj);
+  const subject = new SubjectWrapper();
   let functionStatus = {
     test1Subscribed: false,
 
@@ -170,24 +168,18 @@ test("Subscribing Multiple functions then unsubscribing to one of them to ensure
       functionStatus["test3Subscribed"]
     );
   };
+
   subject.subscribeSlice(path, test1);
-
   subject.subscribeSlice(path, test2);
-
   subject.subscribeSlice(path, test3);
-
   assert(check);
   subject.unsubscribeSlice(path, test1);
   subject.subscribeSlice(path, test4);
 
-  subject.next({ 1: { 2: { 3: [] } } });
-
   assert(
-    !functionStatus["test2Subscribed"] &&
-      !functionStatus["test3Subscribed"] &&
-      !functionStatus["test4Subscribed"]
+    !functionStatus["test2Subscribed"] && !functionStatus["test3Subscribed"]
   );
-  assert(functionStatus["test1Subscribed"]);
+  assert(!functionStatus["test1Subscribed"]);
 });
 
 export {};
