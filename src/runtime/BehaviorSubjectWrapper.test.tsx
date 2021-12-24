@@ -1,10 +1,9 @@
 import assert from "assert";
-import { ObjectVisitor } from "../lib/ObjectVisitor";
+
 import {
   PathIsSmaller,
   PathIsLonger,
   FunctionDoesNotExist,
-  InvalidFunction,
 } from "../errors/lib/BehaviorSubjectWrapperErrors";
 import { BehaviorSubjectWrapper } from "./BehaviorSubjectWrapper";
 

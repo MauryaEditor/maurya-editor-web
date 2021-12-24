@@ -1,6 +1,6 @@
 import { ReplaySubject, TimestampProvider } from "rxjs";
 import { first } from "rxjs/operators";
-import { createPathIfNotExists } from "../lib/createPathIfNotExists";
+
 import { ObjectVisitor } from "../lib/ObjectVisitor";
 import { VisitableObject } from "../lib/VisitableObject";
 import {

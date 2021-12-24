@@ -1,10 +1,10 @@
 import assert from "assert";
-import { ObjectVisitor } from "../lib/ObjectVisitor";
+
 import {
-  FunctionDoesNotExist,
-  PathIsLonger,
   PathIsSmaller,
-} from "./BehaviorSubjectWrapper";
+  PathIsLonger,
+  FunctionDoesNotExist,
+} from "../errors/lib/BehaviorSubjectWrapperErrors";
 import { SubjectWrapper } from "./SubjectWrapper";
 
 test("subscribeSlice on empty slice with path of size 1", () => {
