@@ -25,7 +25,8 @@
     "build:web": "BUILD_PATH='./build/web' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --jsx preserve --outDir build/dist"
+    "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --jsx preserve --outDir build/dist",
+    "lint:check": "prettier --check \"src/**/*\""
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +48,8 @@
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.34",
-    "env-cmd": "^10.1.0"
+    "env-cmd": "^10.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1"
   }
 }
