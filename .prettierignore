@@ -1,0 +1,5 @@
+src/assets
+src/**/*.svg
+src/**/*.png
+src/**/*.jpg
+src/**/*.jpeg

@@ -12,4 +12,4 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Run linter
-        run: npm run lint
+        run: npm run lint:check
