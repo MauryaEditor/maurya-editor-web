@@ -1,14 +1,20 @@
 import { ReplaySubject, TimestampProvider } from "rxjs";
 import { first } from "rxjs/operators";
-import { createPathIfNotExists } from "../lib/createPathIfNotExists";
+
 import { ObjectVisitor } from "../lib/ObjectVisitor";
 import { VisitableObject } from "../lib/VisitableObject";
+import {
+  PathIsSmaller,
+  PathIsLonger,
+  FunctionDoesNotExist,
+  InvalidFunction,
+} from "../errors/lib/BehaviorSubjectWrapperErrors";
 
 export class ReplaySubjectWrapper<
   T extends { [key: string | number]: any }
 > extends ReplaySubject<T> {
   slices: { [key: string | number]: any } = {};
-  private SubscriberField = "__sliceSubscribers";
+  //private SubscriberField = "__sliceSubscribers";
   constructor(
     _bufferSize?: number | undefined,
     _windowTime?: number | undefined,
@@ -20,58 +26,77 @@ export class ReplaySubjectWrapper<
       this.sendSliceToSubscribers(v);
     });
   }
-  subscribeSlice(slice: (string | number)[], next: (value: any) => void) {
-    // add slice
-    createPathIfNotExists(this.slices, [...slice, this.SubscriberField]);
-    // add listener to the slice
-    const visitable = new VisitableObject(this.slices);
-    visitable.visitPath(
-      slice,
-      new ObjectVisitor({
-        terminal: (key, value, parentObj) => {
-          if (value === undefined) {
-            parentObj[key] = [next];
-          } else if (Array.isArray(value)) {
-            parentObj[key].push(next);
-          } else {
-            throw Error("value must have been undefined or an existing array");
+  getSlices() {
+    return { ...this.slices };
+  }
+
+  subscribeSlice(path: (string | number)[], next: (value: any) => void) {
+    let currentObj = this.slices;
+    let count = -1;
+
+    while (count < path.length - 1) {
+      const visitable = new VisitableObject(currentObj);
+      const visitor = new ObjectVisitor({
+        enterNonTerminal: () => {
+          if (path.length - 2 <= count) {
+            throw new Error(PathIsSmaller);
           }
+          count++;
+          currentObj = currentObj[path[count]];
         },
-      })
-    );
-    // call next with current value
+        enterTerminal: () => {
+          if (count < path.length - 2) {
+            throw new Error(PathIsLonger);
+          }
+          // we expect that array exists
+          count++;
+          currentObj[path[count]].push(next);
+        },
+      });
+      try {
+        visitable.visitPath(path, visitor);
+      } catch (err: any) {
+        if (err.message === PathIsLonger || err.message === PathIsSmaller) {
+          throw err;
+        }
+        currentObj[path[count + 1]] = count < path.length - 2 ? {} : [next];
+        currentObj = currentObj[path[count + 1]];
+        count++;
+      }
+    }
+    // send last data to the current subscriber
     const obervable = this.asObservable().pipe(first());
     obervable.subscribe({
       next: (v) => {
         const visitable = new VisitableObject(v);
         visitable.visitPath(
-          slice,
+          path,
           new ObjectVisitor({
-            terminal: (key, value, parentObj) => {
-              next(value);
-            },
-            nonTerminal: (key, value, parentObj) => {
+            enterTerminal: (key, value, parentObj) => {
               next(value);
             },
           })
         );
       },
     });
-    return () => {
-      this.unsubscribeSlice(slice, next);
-    };
   }
-  unsubscribeSlice(slice: (string | number)[], next: (value: any) => void) {
-    const visitable = new VisitableObject(this.slices);
+  unsubscribeSlice(path: (string | number)[], next: (value: any) => void) {
+    let currObj = this.slices;
+    const visitable = new VisitableObject(currObj);
+
     visitable.visitPath(
-      [...slice, this.SubscriberField],
+      path,
       new ObjectVisitor({
-        terminal: (key, value, parentObj) => {
+        enterTerminal: (key, value, parentObj) => {
           if (value && Array.isArray(value)) {
             const index = value.indexOf(next);
             if (index >= 0) {
               value.splice(index, 1);
+            } else {
+              throw new Error(FunctionDoesNotExist);
             }
+          } else {
+            throw new Error("Invalid");
           }
         },
       })
@@ -81,12 +106,15 @@ export class ReplaySubjectWrapper<
     const callSliceSubscribers = (path: (string | number)[]) => {
       const visitable = new VisitableObject(this.slices);
       visitable.visitPath(
-        [...path, this.SubscriberField],
+        [...path],
         new ObjectVisitor({
-          terminal: (key, value) => {
+          enterTerminal: (key, value) => {
             if (Array.isArray(value)) {
               for (let i = 0; i < value.length; i++) {
                 if (typeof value[i] === "function") value[i]();
+                else {
+                  throw new Error(InvalidFunction);
+                }
               }
             }
           },
@@ -97,10 +125,7 @@ export class ReplaySubjectWrapper<
     const visitable = new VisitableObject(v);
     visitable.visit(
       new ObjectVisitor({
-        terminal: (key, value, parentObj, pathSoFar) => {
-          callSliceSubscribers(pathSoFar);
-        },
-        nonTerminal: (key, value, parentObj, pathSoFar) => {
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
           callSliceSubscribers(pathSoFar);
         },
       })
