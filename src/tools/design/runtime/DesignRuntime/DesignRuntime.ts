@@ -283,6 +283,35 @@ class DesignRuntimeClass {
       );
     }
   }
+  /**
+   * if record is true than a PatchRequest to backend will be sent
+   */
+  public static patchState(
+    ID: string,
+    patch: Pick<ElementState, "state">,
+    record: boolean = false
+  ) {
+    DesignRuntime.getState()[ID].state = {
+      ...DesignRuntime.getState()[ID].state,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: patch });
+    }
+  }
+  public static patchStyle(
+    ID: string,
+    patch: React.CSSProperties,
+    record: boolean = false
+  ) {
+    DesignRuntime.getState()[ID].state.style = {
+      ...DesignRuntime.getState()[ID].state.style,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: { style: patch } });
+    }
+  }
 }
 
 export const DesignRuntime = createGlobalVariable(

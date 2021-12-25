@@ -118,17 +118,4 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
   }
 }
 
-// const LayoutCategory: DesignElementCategory = {
-//   category: "Layout",
-//   elements: [SectionManifest],
-// };
-
-// const BasicCategory: DesignElementCategory = {
-//   category: "Basic",
-//   elements: [ButtonManifest, InputManifest],
-// };
-
-export const DesignElementRegistry = new DesignElementRegistryClass([
-  // LayoutCategory,
-  // BasicCategory,
-]);
+export const DesignElementRegistry = new DesignElementRegistryClass([]);

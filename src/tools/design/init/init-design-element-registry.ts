@@ -1,6 +1,6 @@
 import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
 import ButtonManifest from "../elements/button/Button";
-import InputboxManifest from "../elements/Inputbox/Inputbox";
+import InputboxManifest from "../elements/inputbox/Inputbox";
 import SectionManifest from "../elements/section/Section";
 
 export const initDesignElementRegistry = () => {
