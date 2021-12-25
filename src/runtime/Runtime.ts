@@ -26,6 +26,7 @@ import "./commands";
 import { WebBusEvent } from "./WebBusEvent";
 import { WebDevBus } from "./WebDevBus";
 import { EVENTS_LOADED } from "./WebDevBusEvent";
+import { backendUrl } from "../lib/backend-url";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -57,6 +58,12 @@ export class Runtime {
           WebBus.post(event);
         });
         WebDevBus.post({ type: EVENTS_LOADED, payload: events.length });
+      } else {
+        // TODO: temporary fix
+        // send EVENTS_LOADED when there is no projectID
+        setTimeout(() => {
+          WebDevBus.post({ type: EVENTS_LOADED, payload: 0 });
+        }, 2000);
       }
     });
     Runtime.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
@@ -76,11 +83,11 @@ export class Runtime {
       return;
     }
     return await fetch(
-      `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events?pid=${projectID}&token=${token}`
+      `${backendUrl}/web-events?pid=${projectID}&token=${token}`
     ).then((resp) => resp.json());
   }
   private static async fetchIDs(size: number) {
-    const uri = `${process.env.REACT_APP_BACKEND_ORIGIN}/uuid?size=${size}`;
+    const uri = `${backendUrl}/uuid?size=${size}`;
     const uris = await fetch(uri).then((resp) => resp.json());
     return uris;
   }
@@ -124,10 +131,9 @@ export class Runtime {
       headers: headers,
       body: JSON.stringify({ ...event, token, projectID }),
     };
-    return fetch(
-      `${process.env.REACT_APP_BACKEND_ORIGIN}/web-events`,
-      options
-    ).then((resp) => resp.json());
+    return fetch(`${backendUrl}/web-events`, options).then((resp) =>
+      resp.json()
+    );
   }
   private static syncEvents() {
     setTimeout(async () => {

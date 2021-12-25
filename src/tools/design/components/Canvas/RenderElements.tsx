@@ -25,6 +25,11 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
       (childID): RenderableElementDescription => {
         const compKey = DesignRuntime.getState()[childID].compKey;
         const designElement = DesignElementRegistry.getElementByKey(compKey);
+        if (!designElement) {
+          throw new Error(
+            "Tried rendering an element not registered with DesignElementRegistry"
+          );
+        }
         const decorators = [PostElementRenderedDecorator, DraggableDecorator]; // default decorators
         const ref = DesignRuntime.getState()[childID].ref;
         if (designElement.decorators) {

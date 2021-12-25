@@ -15,6 +15,17 @@ export const useSubscribePropertyBus = () => {
       next: (v) => {
         if (v && v.activeHeader && v.ID) {
           const propertyMap = DesignRuntime.getState()[v.ID].propertyMap;
+          if (
+            DesignRuntime.getState()[v.ID].isAliasable &&
+            !propertyMap.find((m) => {
+              return m.key === "Alias";
+            })
+          )
+            propertyMap.push({
+              key: "Alias",
+              type: "design/text",
+              slice: ["alias"],
+            });
           const comps: {
             Comp: React.FC<PropertyTypeProps>;
             props: PropertyTypeProps;

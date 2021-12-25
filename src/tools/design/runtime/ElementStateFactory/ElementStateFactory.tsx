@@ -27,8 +27,8 @@ export class ElementStateFactory {
         properties: {},
         appearance: {},
         parent: parent,
+        alias: "",
       },
-      alias: "",
       bus: new BehaviorSubjectWrapper<
         Partial<Omit<ElementState, "bus">> | AcceptsChild
       >({}),
@@ -36,6 +36,7 @@ export class ElementStateFactory {
       appearanceMap: [],
       renderProps: { ID },
       ref: React.createRef(),
+      isAliasable: false,
     };
     return state;
   }

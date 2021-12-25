@@ -1,11 +1,11 @@
 import React from "react";
-import { SelectOnClickDecorator } from "../../decorators/SelectOnClickDecorator";
 import { DesignElement } from "../../types/DesignElement";
 import { RenderProps } from "../../types/RenderProps";
 import { useAttachProperty } from "../hooks/useAttachProperty";
 import { useDevStyle } from "../hooks/useDevStyle";
 import { SimpleComponent } from "../../dev-pkg/utils/SimpleComponent/SimpleComponent";
 import { SimpleDragComponent } from "../../dev-pkg/utils/SimpleDragComponent/SimpleDragComponent";
+import { AttachAliasDecorator } from "../../decorators/AttachAliasDecorator";
 
 export const Button = React.forwardRef<HTMLButtonElement, RenderProps>(
   (props, ref) => {
@@ -31,6 +31,7 @@ const manifest: DesignElement = {
   ondragProps: { name: "Button" },
   renderComp: Button,
   renderCompProps: {},
+  decorators: [AttachAliasDecorator],
 };
 
 export default manifest;

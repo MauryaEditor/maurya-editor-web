@@ -1,4 +1,5 @@
 import React from "react";
+import { AttachAliasDecorator } from "../../decorators/AttachAliasDecorator";
 import { SimpleComponent } from "../../dev-pkg/utils/SimpleComponent/SimpleComponent";
 import { SimpleDragComponent } from "../../dev-pkg/utils/SimpleDragComponent/SimpleDragComponent";
 import { DesignElement } from "../../types/DesignElement";
@@ -34,6 +35,7 @@ const manifest: DesignElement = {
   ondragProps: { name: "Inputbox" },
   renderComp: Inputbox,
   renderCompProps: {},
+  decorators: [AttachAliasDecorator],
 };
 
 export default manifest;

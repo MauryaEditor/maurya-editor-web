@@ -24,12 +24,13 @@ export interface ElementState {
     properties: { [key: string | number]: any };
     appearance: { [key: string | number]: any };
     parent: string;
+    alias: string;
   };
-  alias: string;
   // fields need only in front end
   bus: ElementBus;
   propertyMap: { key: string; type: string; slice: (string | number)[] }[];
   appearanceMap: { key: string; type: string; slice: (string | number)[] }[];
   renderProps: RenderProps;
   ref: React.RefObject<HTMLElement>;
+  isAliasable: boolean; // true if the state.alias can be used as variable
 }

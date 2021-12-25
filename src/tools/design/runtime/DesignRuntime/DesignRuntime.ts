@@ -15,6 +15,7 @@
  */
 import React from "react";
 import { ReplaySubject, Subject, Subscription } from "rxjs";
+import { createGlobalVariable } from "../../../../lib/createGlobalVariable";
 import { PostLinkEvent, PostPatchEvent } from "../../../../runtime/commands";
 import { SessionWebBus } from "../../../../runtime/SessionWebBus";
 import { WebBus } from "../../../../runtime/WebBus";
@@ -26,105 +27,106 @@ import {
 import { WebDevBus } from "../../../../runtime/WebDevBus";
 import { EVENTS_LOADED } from "../../../../runtime/WebDevBusEvent";
 import { DEV_ELEMENT_RENDERED } from "../../decorators/PostElementRenderedDecoratot";
+import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
 import { AcceptsChild } from "../../types/AcceptsChild";
+import { DesignElement } from "../../types/DesignElement";
 import { ElementState } from "../../types/ElementState";
 import { ElementStateFactory } from "../ElementStateFactory/ElementStateFactory";
 
-export class DesignRuntime {
-  private static instance: DesignRuntime = new DesignRuntime();
-  private static canvasRoot: {
+class DesignRuntimeClass {
+  private static instance: DesignRuntimeClass = new DesignRuntimeClass();
+  private canvasRoot: {
     ref: React.RefObject<HTMLDivElement>;
     bus: Subject<AcceptsChild>;
   } = {
     ref: React.createRef(),
     bus: new Subject<AcceptsChild>(),
   };
-  private static state: { [ID: string]: ElementState } = {};
-  private static acceptsChild: string[] = [];
-  private static sessionBusSubscription: Subscription;
-  private static webBusSubscription: Subscription;
-  private static devBusSubscription: Subscription;
-  private static initialCreate: WebBusEvent[] = [];
-  private static initialExceptCreate: WebBusEvent[] = [];
+  private state: { [ID: string]: ElementState } = {};
+  private acceptsChild: string[] = [];
+  private sessionBusSubscription: Subscription | undefined = undefined;
+  private webBusSubscription: Subscription | undefined = undefined;
+  private devBusSubscription: Subscription | undefined = undefined;
+  private initialCreate: WebBusEvent[] = [];
+  private initialExceptCreate: WebBusEvent[] = [];
   private constructor() {}
   public static getInstance() {
-    if (DesignRuntime.instance === undefined) {
-      DesignRuntime.instance = new DesignRuntime();
+    if (DesignRuntimeClass.instance === undefined) {
+      DesignRuntimeClass.instance = new DesignRuntimeClass();
     }
-    return DesignRuntime.instance;
+    return DesignRuntimeClass.instance;
   }
-  public static addElement(ID: string, state: ElementState) {
-    DesignRuntime.state[ID] = state;
+  public addElement(ID: string, state: ElementState) {
+    this.state[ID] = state;
   }
-  public static registerParent(ID: string) {
-    DesignRuntime.acceptsChild.push(ID);
+  public registerParent(ID: string) {
+    this.acceptsChild.push(ID);
   }
-  public static removeParent(ID: string) {
-    DesignRuntime.acceptsChild = DesignRuntime.acceptsChild.filter(
-      (childID) => {
-        return childID !== ID;
-      }
-    );
+  public removeParent(ID: string) {
+    this.acceptsChild = this.acceptsChild.filter((childID) => {
+      return childID !== ID;
+    });
   }
-  public static getChildAcceptors() {
-    return [...DesignRuntime.acceptsChild];
+  public getChildAcceptors() {
+    return [...this.acceptsChild];
   }
-  public static getState() {
-    return { ...DesignRuntime.state };
+  public getState() {
+    return { ...this.state };
   }
-  private static subscribeWebBusForCreate() {
+  private subscribeWebBusForCreate() {
     console.log("subscribing web bus");
-    DesignRuntime.webBusSubscription = WebBus.subscribe({
+    this.webBusSubscription = WebBus.subscribe({
       next: (v) => {
         if (v && v["type"] === "CREATE") {
-          DesignRuntime.initialCreate.push(v);
+          this.initialCreate.push(v);
         } else {
-          DesignRuntime.initialExceptCreate.push(v);
+          this.initialExceptCreate.push(v);
         }
       },
     });
   }
-  private static processInitialEventsExceptCreate() {
-    for (let i = 0; i < DesignRuntime.initialExceptCreate.length; i++) {
-      const v = DesignRuntime.initialExceptCreate[i];
+  private processInitialEventsExceptCreate() {
+    for (let i = 0; i < this.initialExceptCreate.length; i++) {
+      const v = this.initialExceptCreate[i];
       if (v && v.type === "PATCH") {
-        DesignRuntime.handlePatchEvent(v);
+        this.handlePatchEvent(v);
       }
     }
   }
-  private static unsubscribeWebBus() {
-    DesignRuntime.webBusSubscription?.unsubscribe();
+  private unsubscribeWebBus() {
+    this.webBusSubscription?.unsubscribe();
   }
-  private static unsubscribeSessionBus() {
-    DesignRuntime.sessionBusSubscription?.unsubscribe();
+  private unsubscribeSessionBus() {
+    this.sessionBusSubscription?.unsubscribe();
   }
-  private static handleCreateEvent(v: WebBusEvent) {
+  private handleCreateEvent(v: WebBusEvent) {
     // update runtime state
     const payload = v.payload as WebCreateData;
     // TODO: ensure that payload.state!.parent exists
-    DesignRuntime.state[payload.ID] = ElementStateFactory.create(
+    this.state[payload.ID] = ElementStateFactory.create(
       payload.compKey,
       payload.ID,
       payload.state!.parent
     );
-    DesignRuntime.state[payload.ID].state = {
+    this.state[payload.ID].state = {
       style: payload.state?.style || {},
       properties: payload.state?.properties || {},
       appearance: payload.state?.appearance || {},
       parent: payload.state?.parent,
+      alias: payload.state?.alias,
     };
     // send to parent
     if (payload.state!.parent === "root") {
-      DesignRuntime.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
+      this.canvasRoot.bus.next({ acceptchild: v["payload"].ID });
     } else if (payload.state!.parent) {
-      DesignRuntime.state[payload.state!.parent].bus.next({
+      this.state[payload.state!.parent].bus.next({
         acceptchild: payload.ID,
       });
     } else {
       throw new Error("parent should have exist already");
     }
   }
-  private static handlePatchEvent(v: WebBusEvent) {
+  private handlePatchEvent(v: WebBusEvent) {
     // check if parent got updated
     // send removechild to old parent and acceptchild to new parent
     // send element to parent
@@ -135,32 +137,32 @@ export class DesignRuntime {
         case "style":
         case "appearance":
         case "properties":
-          if (DesignRuntime.getState()[payload.ID]["state"][key]) {
-            DesignRuntime.getState()[payload.ID]["state"][key] = {
-              ...DesignRuntime.getState()[payload.ID]["state"][key],
+          if (this.getState()[payload.ID]["state"][key]) {
+            this.getState()[payload.ID]["state"][key] = {
+              ...this.getState()[payload.ID]["state"][key],
               ...payload.slice[key],
             };
           } else {
-            DesignRuntime.getState()[payload.ID]["state"][key] = {
+            this.getState()[payload.ID]["state"][key] = {
               ...payload.slice[key],
             };
           }
-          DesignRuntime.getState()[payload.ID].bus.next({
-            state: DesignRuntime.getState()[payload.ID]["state"],
+          this.getState()[payload.ID].bus.next({
+            state: this.getState()[payload.ID]["state"],
           });
           break;
         case "parent":
           const newParent = payload.slice.parent;
           const newParentBus =
             newParent === "root"
-              ? DesignRuntime.getCanvasRoot().bus
-              : DesignRuntime.getState()[newParent].bus;
-          const oldParent = DesignRuntime.getState()[payload.ID].state.parent;
+              ? this.getCanvasRoot().bus
+              : this.getState()[newParent].bus;
+          const oldParent = this.getState()[payload.ID].state.parent;
           const oldParentBus =
             oldParent === "root"
-              ? DesignRuntime.getCanvasRoot().bus
-              : DesignRuntime.getState()[oldParent].bus;
-          DesignRuntime.getState()[payload.ID].state.parent = newParent;
+              ? this.getCanvasRoot().bus
+              : this.getState()[oldParent].bus;
+          this.getState()[payload.ID].state.parent = newParent;
           oldParentBus.next({
             removechild: payload.ID,
           });
@@ -171,71 +173,115 @@ export class DesignRuntime {
       }
     }
   }
-  private static subscribeSessionBus() {
+  private subscribeSessionBus() {
     // subscribe WebBus
-    DesignRuntime.sessionBusSubscription = SessionWebBus.subscribe({
+    this.sessionBusSubscription = SessionWebBus.subscribe({
       next: (v) => {
         if (v && v["type"] === "CREATE") {
-          DesignRuntime.handleCreateEvent(v);
+          this.handleCreateEvent(v);
         }
         if (v && v["type"] === "PATCH") {
-          DesignRuntime.handlePatchEvent(v);
+          this.handlePatchEvent(v);
         }
       },
     });
   }
-  private static *getNextInitialCreateEvent() {
-    for (let i = 0; i < DesignRuntime.initialCreate.length; i++) {
-      yield DesignRuntime.initialCreate[i];
+  private *getNextInitialCreateEvent() {
+    for (let i = 0; i < this.initialCreate.length; i++) {
+      yield this.initialCreate[i];
     }
   }
-  private static subscribeDevBus() {
-    const gen = DesignRuntime.getNextInitialCreateEvent();
-    DesignRuntime.devBusSubscription = WebDevBus.subscribe({
+  private subscribeDevBus() {
+    const gen = this.getNextInitialCreateEvent();
+    this.devBusSubscription = WebDevBus.subscribe({
       next: (v) => {
         if (v) {
           if (v.type === EVENTS_LOADED || v.type === DEV_ELEMENT_RENDERED) {
             const nxt = gen.next();
             if (!nxt.done) {
-              DesignRuntime.handleCreateEvent(nxt.value);
+              this.handleCreateEvent(nxt.value);
             } else {
               // clean up after all elements have been created
-              DesignRuntime.unsubscribeWebBus();
-              DesignRuntime.unsubscribeDevBus();
-              DesignRuntime.processInitialEventsExceptCreate();
-              DesignRuntime.subscribeSessionBus();
+              this.unsubscribeWebBus();
+              this.unsubscribeDevBus();
+              this.processInitialEventsExceptCreate();
+              this.subscribeSessionBus();
             }
           }
         }
       },
     });
   }
-  private static unsubscribeDevBus() {
-    if (DesignRuntime.devBusSubscription)
-      DesignRuntime.devBusSubscription.unsubscribe();
+  private unsubscribeDevBus() {
+    if (this.devBusSubscription) this.devBusSubscription.unsubscribe();
   }
-  public static setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
+  public setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
     console.log("setting canvas root");
     // only ref changes, others are same as previous
-    DesignRuntime.canvasRoot.ref = ref;
+    this.canvasRoot.ref = ref;
     // unsubscribe sessionBus if previously subscribed
-    DesignRuntime.unsubscribeSessionBus();
+    this.unsubscribeSessionBus();
     // subscribe dev bus
-    DesignRuntime.subscribeDevBus();
+    this.subscribeDevBus();
     // if canvas root is set for the second time or more
     // mimic that initial events are already loaded
-    if (DesignRuntime.initialCreate.length > 0) {
+    if (this.initialCreate.length > 0) {
       WebDevBus.post({
         type: EVENTS_LOADED,
-        payload: DesignRuntime.initialCreate.length,
+        payload: this.initialCreate.length,
       });
     } else {
       // subscribe web bus to collect all create
-      DesignRuntime.subscribeWebBusForCreate();
+      this.subscribeWebBusForCreate();
     }
   }
-  public static getCanvasRoot() {
-    return { ...DesignRuntime.canvasRoot };
+  public getCanvasRoot() {
+    return { ...this.canvasRoot };
+  }
+  /**
+   * if record is true than a PatchRequest to backend will be sent
+   */
+  public patchState(
+    ID: string,
+    patch: Pick<ElementState, "state">,
+    record: boolean = false
+  ) {
+    this.getState()[ID].state = {
+      ...this.getState()[ID].state,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: patch });
+    }
+  }
+  public patchStyle(
+    ID: string,
+    patch: React.CSSProperties,
+    record: boolean = false
+  ) {
+    this.getState()[ID].state.style = {
+      ...this.getState()[ID].state.style,
+      ...patch,
+    };
+    if (record) {
+      PostPatchEvent({ ID, slice: { style: patch } });
+    }
+  }
+  public registerDesignElement(
+    categoryName: string,
+    designElementManifest: DesignElement
+  ) {
+    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
+      DesignElementRegistry.registerCategory({
+        category: categoryName,
+        elements: [designElementManifest],
+      });
+    } else {
+      DesignElementRegistry.registerElement(
+        categoryName,
+        designElementManifest
+      );
+    }
   }
   /**
    * if record is true than a PatchRequest to backend will be sent
@@ -266,12 +312,9 @@ export class DesignRuntime {
       PostPatchEvent({ ID, slice: { style: patch } });
     }
   }
-  public static linkAlias(ID: string, alias: string, record: boolean = false) {
-    DesignRuntime.getState()[ID].alias = alias;
-    if (record) {
-      PostLinkEvent({ ID, alias });
-    }
-  }
 }
 
-DesignRuntime.getInstance();
+export const DesignRuntime = createGlobalVariable(
+  "DesignRuntime",
+  DesignRuntimeClass.getInstance()
+);

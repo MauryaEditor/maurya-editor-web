@@ -18,16 +18,14 @@ import { Observer } from "rxjs";
 import { Registry } from "../../../registry/Registry";
 import { DesignElement } from "../types/DesignElement";
 import { DesignElementCategory } from "../types/DesignElementCategory";
-import SectionManifest from "../elements/section/Section";
-import ButtonManifest from "../elements/button/Button";
-import InputManifest from "../elements/Inputbox/Inputbox";
 
 export class DesignElementRegistryClass extends Registry<DesignElementCategory> {
   subscribe(observer: Partial<Observer<DesignElementCategory[]>>) {
     return this.subject.subscribe(observer);
   }
   /**
-   * register category
+   * register a category
+   * throw an error if it exists already
    * @param category
    * @param element
    */
@@ -41,11 +39,24 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
     this.subject.next([...this.subject.value, category]);
   }
   /**
+   *
+   * @param name
+   * @returns category or undefined
+   */
+  getCategoryByName(name: string) {
+    const category = this.subject.value.find((category) => {
+      if (category.category === name) {
+        return true;
+      }
+    });
+    return category;
+  }
+  /**
    * adds element to category only if category exists
    * otherwise throws error
    */
   registerElement(category: string, element: DesignElement) {
-    const categories = this.subject.value;
+    const categories = [...this.subject.value];
     if (this.findElementByKey(element.key)) {
       throw Error("cannot add element with duplicate key");
     }
@@ -58,7 +69,9 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
         ...category,
         elements: [...category.elements, element],
       };
-      this.subject.next([...categories.splice(index, 1, newCategory)]);
+      categories.splice(index, 1, newCategory);
+      this.subject.next([...categories]);
+      return;
     }
     throw Error("element doesn't exist in the registry");
   }
@@ -97,26 +110,12 @@ export class DesignElementRegistryClass extends Registry<DesignElementCategory> 
       }
     }
   }
-  public getElementByKey(key: string): DesignElement {
+  public getElementByKey(key: string): DesignElement | undefined {
     const indices = this.findElementByKey(key);
     if (indices) {
       return { ...this.subject.value[indices[0]].elements[indices[1]] };
     }
-    throw Error("key not found in the design element registry");
   }
 }
 
-const LayoutCategory: DesignElementCategory = {
-  category: "Layout",
-  elements: [SectionManifest],
-};
-
-const BasicCategory: DesignElementCategory = {
-  category: "Basic",
-  elements: [ButtonManifest, InputManifest],
-};
-
-export const DesignElementRegistry = new DesignElementRegistryClass([
-  LayoutCategory,
-  BasicCategory,
-]);
+export const DesignElementRegistry = new DesignElementRegistryClass([]);
