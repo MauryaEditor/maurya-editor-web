@@ -51,7 +51,21 @@ class DesignRuntimeClass {
   private devBusSubscription: Subscription;
   private constructor() {
     this.webBusSubscription = Runtime.subscribeWebBus({
-      next: () => {},
+      next: (v) => {
+        if (v.type === "CREATE") {
+          this.handleCreateEvent(v);
+        }
+        switch (v.type) {
+          case "CREATE":
+            this.handleCreateEvent(v);
+            break;
+          case "PATCH":
+            this.handlePatchEvent(v);
+            break;
+          default:
+            console.error("unhandled type of event", v);
+        }
+      },
     });
     this.sessionBusSubscription = Runtime.subscribeSessionWebBus({
       next: () => {},
@@ -81,33 +95,52 @@ class DesignRuntimeClass {
     return [...this.acceptsChild];
   }
   public getState(): { [ID: string]: SerializableElementState } {
-    const stringifiedState = JSON.stringify(this.state); //Check
+    const elementIDs = Object.keys(this.state);
+    const stringifiable: { [ID: string]: Partial<ElementState> } = {};
+    elementIDs.forEach((elementID) => {
+      const elementState = this.state[elementID];
+      const stringifiableElement: Partial<ElementState> = { ...elementState };
+      delete stringifiableElement.bus;
+      delete stringifiableElement.ref;
+      stringifiable[elementID] = stringifiableElement;
+    });
+    const stringifiedState = JSON.stringify(stringifiable);
     return JSON.parse(stringifiedState) as {
       [ID: string]: SerializableElementState;
     };
   }
   public getStateFor(ID: string): { [ID: string]: SerializableElementState } {
-    const elementState = JSON.stringify(this.state[ID]); //Check
-    return JSON.parse(elementState) as {
-      [ID: string]: SerializableElementState;
-    }; //Typecast as SerializableElementState
+    if (this.state[ID]) {
+      const stringifiable: Partial<ElementState> = { ...this.state[ID] };
+      delete stringifiable.bus;
+      delete stringifiable.ref;
+      const elementState = JSON.stringify(stringifiable);
+      return JSON.parse(elementState) as {
+        [ID: string]: SerializableElementState;
+      };
+    } else {
+      throw Error("Fetching state for non-existent element with ID" + ID);
+    }
   }
   private handleCreateEvent(v: WebBusEvent) {
     // update runtime state
     const payload = v.payload as WebCreateData;
     // TODO: ensure that payload.state!.parent exists
-    this.state[payload.ID] = ElementStateFactory.create(
+    // it creates an element with default values
+    const newElement = ElementStateFactory.create(
       payload.compKey,
       payload.ID,
       payload.state!.parent
     );
-    this.state[payload.ID].state = {
+    // overriding the default values by the event values
+    newElement.state = {
       style: payload.state?.style || {},
       properties: payload.state?.properties || {},
       appearance: payload.state?.appearance || {},
       parent: payload.state?.parent,
       alias: payload.state?.alias,
     };
+    this.addElement(payload.ID, newElement);
     // send to parent
     this.wireElement(payload.state!.parent, payload.ID);
   }
@@ -170,17 +203,7 @@ class DesignRuntimeClass {
           break;
         case "parent":
           const newParent = payload.slice.parent;
-          // const newParentBus =
-          //   newParent === "root"
-          //     ? this.getCanvasRoot().bus
-          //     : this.getState()[newParent].bus;
           const oldParent = this.getState()[payload.ID].state.parent;
-          // const oldParentBus =
-          //   oldParent === "root"
-          //     ? this.getCanvasRoot().bus
-          //     : this.getState()[oldParent].bus;
-          // this.getState()[payload.ID].state.parent = newParent;
-
           this.rewireElement(oldParent, newParent, payload.ID);
           break;
       }
