@@ -31,7 +31,7 @@ import {
   WebPatchData,
 } from "./WebBusEvent";
 import { WebDevBus } from "./WebDevBus";
-import { EVENTS_LOADED, WebDevBusEvent } from "./WebDevBusEvent";
+import { WebDevBusEvent } from "./WebDevBusEvent";
 import { backendUrl } from "../lib/backend-url";
 import { createGlobalVariable } from "../lib/createGlobalVariable";
 import { BusPostOptions } from "./Bus";
@@ -65,16 +65,10 @@ export class RuntimeClass {
   private constructor() {
     this.retrieveEvents().then((events) => {
       if (events) {
+        this.tempEvents.push(...events);
         events.forEach((event) => {
           WebBus.post(event);
         });
-        WebDevBus.post({ type: EVENTS_LOADED, payload: events.length });
-      } else {
-        // TODO: temporary fix
-        // send EVENTS_LOADED when there is no projectID
-        setTimeout(() => {
-          WebDevBus.post({ type: EVENTS_LOADED, payload: 0 });
-        }, 2000);
       }
     });
     this.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
@@ -93,6 +87,7 @@ export class RuntimeClass {
     if (!token || !projectID) {
       return;
     }
+    // TODO: check if the request to retrieve events was successful
     return await fetch(
       `${backendUrl}/web-events?pid=${projectID}&token=${token}`
     ).then((resp) => resp.json());
