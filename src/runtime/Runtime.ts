@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 import { IDPoolResponse } from "../dto/IDPoolResponse";
 import { getAuth } from "../lib/getAuth";
 import { getProjectID } from "../lib/getProjectID";
@@ -23,10 +24,20 @@ import { WebBus } from "./WebBus";
 import "./SessionWebBus";
 import "./WebDevBus";
 import "./commands";
-import { WebBusEvent } from "./WebBusEvent";
+import {
+  WebBusEvent,
+  WebCreateData,
+  WebLinkData,
+  WebPatchData,
+} from "./WebBusEvent";
 import { WebDevBus } from "./WebDevBus";
-import { EVENTS_LOADED } from "./WebDevBusEvent";
+import { EVENTS_LOADED, WebDevBusEvent } from "./WebDevBusEvent";
 import { backendUrl } from "../lib/backend-url";
+import { createGlobalVariable } from "../lib/createGlobalVariable";
+import { BusPostOptions } from "./Bus";
+import { SessionWebBus } from "./SessionWebBus";
+import { Observer, Subscription } from "rxjs";
+import { PostCreateEvent } from "./commands";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -44,15 +55,15 @@ export const RuntimeState: {
 
 const AccountSize = 20;
 
-export class Runtime {
-  static instance: Runtime;
-  private static IDIssued: any = {};
-  private static tempEvents: WebBusEvent[] = [];
-  private static currIndex: number = 0;
-  private static IDBank: { payload: string[]; token: string }[] = [];
-  private static currSyncIndex: number = 0;
+export class RuntimeClass {
+  static instance: RuntimeClass;
+  private IDIssued: any = {};
+  private tempEvents: WebBusEvent[] = [];
+  private currIndex: number = 0;
+  private IDBank: { payload: string[]; token: string }[] = [];
+  private currSyncIndex: number = 0;
   private constructor() {
-    Runtime.retrieveEvents().then((events) => {
+    this.retrieveEvents().then((events) => {
       if (events) {
         events.forEach((event) => {
           WebBus.post(event);
@@ -66,16 +77,16 @@ export class Runtime {
         }, 2000);
       }
     });
-    Runtime.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
-      Runtime.storeIDsAt(0, payload.pool, token);
+    this.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
+      this.storeIDsAt(0, payload.pool, token);
     });
-    Runtime.syncEvents();
+    this.syncEvents();
   }
   public static getRuntime() {
-    if (!Runtime.instance) Runtime.instance = new Runtime();
-    return Runtime.instance;
+    if (!RuntimeClass.instance) RuntimeClass.instance = new RuntimeClass();
+    return this.instance;
   }
-  private static async retrieveEvents(): Promise<WebBusEvent[] | undefined> {
+  private async retrieveEvents(): Promise<WebBusEvent[] | undefined> {
     const { token } = getAuth();
     const projectID = getProjectID();
     // TODO: handle what if non-logged in user tries to access this page
@@ -86,39 +97,39 @@ export class Runtime {
       `${backendUrl}/web-events?pid=${projectID}&token=${token}`
     ).then((resp) => resp.json());
   }
-  private static async fetchIDs(size: number) {
+  private async fetchIDs(size: number) {
     const uri = `${backendUrl}/uuid?size=${size}`;
     const uris = await fetch(uri).then((resp) => resp.json());
     return uris;
   }
-  private static storeIDsAt(index: number, payload: string[], token: string) {
-    Runtime.IDBank[index] = { payload, token };
+  private storeIDsAt(index: number, payload: string[], token: string) {
+    this.IDBank[index] = { payload, token };
   }
-  public static getID() {
+  public getID() {
     const ID =
-      Runtime.IDBank[Math.floor(Runtime.currIndex / AccountSize)]?.payload[
-        Runtime.currIndex % AccountSize
+      this.IDBank[Math.floor(this.currIndex / AccountSize)]?.payload[
+        this.currIndex % AccountSize
       ];
-    Runtime.currIndex++;
+    this.currIndex++;
     // reload the pool if it's depleted
     // TODO: fetch early i.e. dont let the pool deplete
-    if (Runtime.currIndex % AccountSize === 0) {
-      Runtime.fetchIDs(AccountSize).then((val: IDPoolResponse) => {
-        Runtime.storeIDsAt(
-          Math.floor(Runtime.currIndex / AccountSize),
+    if (this.currIndex % AccountSize === 0) {
+      this.fetchIDs(AccountSize).then((val: IDPoolResponse) => {
+        this.storeIDsAt(
+          Math.floor(this.currIndex / AccountSize),
           val.payload.pool,
           val.token
         );
       });
     }
     if (ID) {
-      (Runtime.IDIssued as any)[ID] = true;
+      (this.IDIssued as any)[ID] = true;
       return ID;
     } else {
       throw new Error("ID Bank is bankrupt");
     }
   }
-  private static sendEvent(event: WebBusEvent) {
+  private sendEvent(event: WebBusEvent) {
     const { token } = getAuth();
     const projectID = getProjectID();
     if (!token || !projectID) {
@@ -135,17 +146,75 @@ export class Runtime {
       resp.json()
     );
   }
-  private static syncEvents() {
+  private syncEvents() {
     setTimeout(async () => {
-      for (let i = Runtime.currSyncIndex; i < Runtime.tempEvents.length; i++) {
-        await Runtime.sendEvent(Runtime.tempEvents[Runtime.currSyncIndex]);
-        Runtime.currSyncIndex++;
+      for (let i = this.currSyncIndex; i < this.tempEvents.length; i++) {
+        await this.sendEvent(this.tempEvents[this.currSyncIndex]);
+        this.currSyncIndex++;
       }
-      Runtime.syncEvents();
+      this.syncEvents();
     }, 5000);
   }
-  public static addEvent(event: WebBusEvent) {
+  public addEvent(event: WebBusEvent) {
     this.tempEvents.push(event);
   }
+
+  //Commands
+
+  postCreateEvent = (
+    payload: Omit<WebCreateData, "ID">,
+    busOptions?: BusPostOptions
+  ): string => {
+    return PostCreateEvent(payload, busOptions);
+  };
+  postPatchEvent = (
+    payload: WebPatchData,
+    busOptions?: BusPostOptions
+  ): string => {
+    const webEvent: WebBusEvent = {
+      payload: { ...payload },
+      type: "PATCH",
+    };
+    Runtime.addEvent({ ...webEvent });
+    SessionWebBus.post({ ...webEvent }, busOptions);
+    WebBus.post({ ...webEvent }, busOptions);
+    return payload.ID;
+  };
+  postLinkEvent = (
+    payload: WebLinkData,
+    busOptions?: BusPostOptions
+  ): string => {
+    const webEvent: WebBusEvent = {
+      payload: { ...payload },
+      type: "LINK",
+    };
+    Runtime.addEvent({ ...webEvent });
+    SessionWebBus.post({ ...webEvent }, busOptions);
+    WebBus.post({ ...webEvent }, busOptions);
+    return payload.ID;
+  };
+
+  postWebDevBusEvent(event: WebDevBusEvent) {
+    WebDevBus.post(event);
+  }
+
+  subscribeWebDevBus = (
+    observer: Partial<Observer<WebDevBusEvent>>
+  ): Subscription => {
+    return WebDevBus.subscribe(observer);
+  };
+
+  subscribeWebBus = (
+    observer: Partial<Observer<WebBusEvent>>
+  ): Subscription => {
+    return WebBus.subscribe(observer);
+  };
+
+  subscribeSessionWebBus = (
+    observer: Partial<Observer<WebBusEvent>>
+  ): Subscription => {
+    return SessionWebBus.subscribe(observer);
+  };
 }
-const runtime = Runtime.getRuntime();
+export const Runtime = RuntimeClass.getRuntime();
+createGlobalVariable("Runtime", Runtime);
