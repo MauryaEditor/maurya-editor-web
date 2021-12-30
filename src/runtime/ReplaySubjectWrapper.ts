@@ -14,7 +14,6 @@ export class ReplaySubjectWrapper<
   T extends { [key: string | number]: any }
 > extends ReplaySubject<T> {
   slices: { [key: string | number]: any } = {};
-  //private SubscriberField = "__sliceSubscribers";
   constructor(
     _bufferSize?: number | undefined,
     _windowTime?: number | undefined,

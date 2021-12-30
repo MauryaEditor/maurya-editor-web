@@ -14,7 +14,6 @@ export class SubjectWrapper<
   T extends { [key: string | number]: any }
 > extends Subject<T> {
   slices: { [key: string | number]: any } = {};
-  private SubscriberField = "__sliceSubscribers";
   constructor() {
     super();
     // subscribe to itself to send updates to subscribers of a slice
