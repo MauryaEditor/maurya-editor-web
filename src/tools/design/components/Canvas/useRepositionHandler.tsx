@@ -17,7 +17,7 @@ export const useRepositionHandler = (
           const canvasRootRect =
             DesignRuntime.getCanvasRoot().ref.current?.getBoundingClientRect()!;
           const elementRect =
-            DesignRuntime.getState()[v].ref.current?.getBoundingClientRect()!;
+            DesignRuntime.getRefFor(v).current?.getBoundingClientRect()!;
           const top =
             (elementRect.top - canvasRootRect.top) / CanvasScale.value + "px";
           const left =
@@ -27,7 +27,7 @@ export const useRepositionHandler = (
           const parent = DesignRuntime.getState()[v].state.parent;
           if (parent !== "root") {
             DesignRuntime.getState()[v].state.parent = "root";
-            DesignRuntime.getState()[parent].bus.next({ removechild: v });
+            DesignRuntime.getBusFor(parent).next({ removechild: v });
             DesignRuntime.getCanvasRoot().bus.next({ acceptchild: v });
           }
         }
@@ -46,15 +46,13 @@ export const useRepositionHandler = (
           event.stopPropagation();
           const ID = DraggedElement.value;
           if (
-            DesignRuntime.getState()[ID].ref.current &&
+            DesignRuntime.getRefFor(ID).current &&
             DesignRuntime.getCanvasRoot().ref.current
           ) {
             const canvasRect = getCoords(
               DesignRuntime.getCanvasRoot().ref.current!
             );
-            const elementRect = getCoords(
-              DesignRuntime.getState()[ID].ref.current!
-            );
+            const elementRect = getCoords(DesignRuntime.getRefFor(ID).current!);
             const top =
               (elementRect.top - canvasRect.top + event.movementY) /
                 CanvasScale.value +
@@ -64,7 +62,7 @@ export const useRepositionHandler = (
                 CanvasScale.value +
               "px";
             DesignRuntime.patchStyle(ID, { top, left });
-            DesignRuntime.getState()[ID].bus.next({
+            DesignRuntime.getBusFor(ID).next({
               state: DesignRuntime.getState()[ID].state,
             });
           }
@@ -76,13 +74,11 @@ export const useRepositionHandler = (
           const parent = selectParent(event, ID);
           const parentRect = getCoords(
             parent !== "root"
-              ? DesignRuntime.getState()[parent].ref.current!
+              ? DesignRuntime.getRefFor(parent).current!
               : DesignRuntime.getCanvasRoot().ref.current!
           );
 
-          const elementRect = getCoords(
-            DesignRuntime.getState()[ID].ref.current!
-          );
+          const elementRect = getCoords(DesignRuntime.getRefFor(ID).current!);
           const top =
             (elementRect.top - parentRect.top) / CanvasScale.value + "px";
           const left =
@@ -95,7 +91,7 @@ export const useRepositionHandler = (
           if (parent !== "root") {
             // re-wire to parent
             DesignRuntime.getCanvasRoot().bus.next({ removechild: ID });
-            DesignRuntime.getState()[parent].bus.next({ acceptchild: ID });
+            DesignRuntime.getBusFor(parent).next({ acceptchild: ID });
             // CAUTION: send patch after re-wiring
             DesignRuntime.patchState(ID, { parent: parent } as any, true);
           } else {

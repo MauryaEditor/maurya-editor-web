@@ -37,7 +37,7 @@ import { createGlobalVariable } from "../lib/createGlobalVariable";
 import { BusPostOptions } from "./Bus";
 import { SessionWebBus } from "./SessionWebBus";
 import { Observer, Subscription } from "rxjs";
-import { PostCreateEvent } from "./commands";
+import { PostCreateEvent, PostLinkEvent, PostPatchEvent } from "./commands";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -158,63 +158,35 @@ export class RuntimeClass {
   public addEvent(event: WebBusEvent) {
     this.tempEvents.push(event);
   }
-
-  //Commands
-
-  postCreateEvent = (
+  postCreateEvent(
     payload: Omit<WebCreateData, "ID">,
     busOptions?: BusPostOptions
-  ): string => {
+  ): string {
     return PostCreateEvent(payload, busOptions);
-  };
-  postPatchEvent = (
-    payload: WebPatchData,
-    busOptions?: BusPostOptions
-  ): string => {
-    const webEvent: WebBusEvent = {
-      payload: { ...payload },
-      type: "PATCH",
-    };
-    Runtime.addEvent({ ...webEvent });
-    SessionWebBus.post({ ...webEvent }, busOptions);
-    WebBus.post({ ...webEvent }, busOptions);
-    return payload.ID;
-  };
-  postLinkEvent = (
-    payload: WebLinkData,
-    busOptions?: BusPostOptions
-  ): string => {
-    const webEvent: WebBusEvent = {
-      payload: { ...payload },
-      type: "LINK",
-    };
-    Runtime.addEvent({ ...webEvent });
-    SessionWebBus.post({ ...webEvent }, busOptions);
-    WebBus.post({ ...webEvent }, busOptions);
-    return payload.ID;
-  };
-
+  }
+  postPatchEvent(payload: WebPatchData, busOptions?: BusPostOptions): string {
+    return PostPatchEvent(payload, busOptions);
+  }
+  postLinkEvent(payload: WebLinkData, busOptions?: BusPostOptions): string {
+    return PostLinkEvent(payload, busOptions);
+  }
   postWebDevBusEvent(event: WebDevBusEvent) {
     WebDevBus.post(event);
   }
-
-  subscribeWebDevBus = (
+  subscribeWebDevBus(
     observer: Partial<Observer<WebDevBusEvent>>
-  ): Subscription => {
+  ): Subscription {
     return WebDevBus.subscribe(observer);
-  };
-
-  subscribeWebBus = (
-    observer: Partial<Observer<WebBusEvent>>
-  ): Subscription => {
+  }
+  subscribeWebBus(observer: Partial<Observer<WebBusEvent>>): Subscription {
     return WebBus.subscribe(observer);
-  };
-
-  subscribeSessionWebBus = (
+  }
+  subscribeSessionWebBus(
     observer: Partial<Observer<WebBusEvent>>
-  ): Subscription => {
+  ): Subscription {
     return SessionWebBus.subscribe(observer);
-  };
+  }
 }
+
 export const Runtime = RuntimeClass.getRuntime();
 createGlobalVariable("Runtime", Runtime);

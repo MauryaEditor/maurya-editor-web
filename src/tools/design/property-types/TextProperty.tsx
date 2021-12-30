@@ -14,7 +14,7 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { PostPatchEvent } from "../../../runtime/commands";
+import { Runtime } from "../../../runtime/Runtime";
 import { checkIfPathExists } from "../lib/checkIfPathExists";
 import { extractSlice } from "../lib/extractSlice";
 import { getValueFromSlice } from "../lib/getValueFromSlice";
@@ -27,7 +27,7 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
     getValueFromSlice(props.ID, props.slice) || ""
   );
   const [firstRenderDone, setFirstRenderDone] = useState<boolean>(false);
-  const bus = DesignRuntime.getState()[props.ID].bus;
+  const bus = DesignRuntime.getBusFor(props.ID);
   // set flag for first render
   useEffect(() => {
     setFirstRenderDone(true);
@@ -55,7 +55,7 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
     if (firstRenderDone) {
       updateSlice(DesignRuntime.getState()[props.ID].state, props.slice, value);
       bus.next(DesignRuntime.getState()[props.ID]);
-      PostPatchEvent({
+      Runtime.postPatchEvent({
         ID: props.ID,
         slice: extractSlice(props.ID, props.slice),
       });

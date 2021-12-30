@@ -31,7 +31,7 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
           );
         }
         const decorators = [PostElementRenderedDecorator, DraggableDecorator]; // default decorators
-        const ref = DesignRuntime.getState()[childID].ref;
+        const ref = DesignRuntime.getRefFor(childID);
         if (designElement.decorators) {
           decorators.push(...designElement.decorators);
         }

@@ -6,7 +6,7 @@ import { PropertyPanelHeader } from "../types/PropertyPanelHeaders";
 
 export const SelectOnClickDecorator: React.FC<{ ID: string }> = (props) => {
   useEffect(() => {
-    if (DesignRuntime.getState()[props.ID].ref) {
+    if (DesignRuntime.getRefFor(props.ID)) {
       const onclick = () => {
         ElementSelected.next(props.ID);
         PropertyPanelBus.next({
@@ -14,17 +14,17 @@ export const SelectOnClickDecorator: React.FC<{ ID: string }> = (props) => {
           activeHeader: PropertyPanelHeader.Properties,
         });
       };
-      DesignRuntime.getState()[props.ID].ref.current?.addEventListener(
+      DesignRuntime.getRefFor(props.ID).current?.addEventListener(
         "click",
         onclick
       );
       return () => {
-        DesignRuntime.getState()[props.ID].ref.current?.removeEventListener(
+        DesignRuntime.getRefFor(props.ID).current?.removeEventListener(
           "click",
           onclick
         );
       };
     }
-  }, [props.ID, DesignRuntime.getState()[props.ID].ref]);
+  }, [props.ID, DesignRuntime.getRefFor(props.ID)]);
   return <>{props.children}</>;
 };

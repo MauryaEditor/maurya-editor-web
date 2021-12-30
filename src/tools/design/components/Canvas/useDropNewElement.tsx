@@ -19,7 +19,7 @@ export const useDropNewElement = (
           let { top, left } = getCoords(rootRef.current!);
           if (parent !== "root") {
             ({ top, left } = getCoords(
-              DesignRuntime.getState()[parent].ref.current!
+              DesignRuntime.getRefFor(parent).current!
             ));
           }
           const ID = PostCreateEvent({

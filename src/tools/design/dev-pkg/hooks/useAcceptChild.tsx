@@ -6,9 +6,9 @@ export const useAcceptChild = (ID: string) => {
   const bus = useBus(ID);
   const [children, setChildren] = useState<string[]>([]);
   useEffect(() => {
-    DesignRuntime.registerParent(ID);
+    DesignRuntime.registerChildAcceptor(ID);
     return () => {
-      DesignRuntime.removeParent(ID);
+      DesignRuntime.deregisterChildAcceptor(ID);
     };
   }, [ID]);
   useEffect(() => {
