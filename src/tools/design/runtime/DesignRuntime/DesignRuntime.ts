@@ -46,35 +46,29 @@ class DesignRuntimeClass {
   };
   private state: { [ID: string]: ElementState } = {};
   private acceptsChild: string[] = [];
-  private sessionBusSubscription: Subscription;
-  // private webBusSubscription: Subscription;
-  private devBusSubscription: Subscription;
   private constructor() {
     const gen = Runtime.getWebBusEventGenerator();
     for (const webBusEvent in gen) {
       console.log(webBusEvent);
     }
-    // this.webBusSubscription = Runtime.subscribeWebBus({
-    //   next: (v) => {
-    //     if (v.type === "CREATE") {
-    //       this.handleCreateEvent(v);
-    //     }
-    //     switch (v.type) {
-    //       case "CREATE":
-    //         this.handleCreateEvent(v);
-    //         break;
-    //       case "PATCH":
-    //         this.handlePatchEvent(v);
-    //         break;
-    //       default:
-    //         console.error("unhandled type of event", v);
-    //     }
-    //   },
-    // });
-    this.sessionBusSubscription = Runtime.subscribeSessionWebBus({
+    Runtime.subscribeWebBus({
+      next: (v) => {
+        switch (v.type) {
+          case "CREATE":
+            this.handleCreateEvent(v);
+            break;
+          case "PATCH":
+            this.handlePatchEvent(v);
+            break;
+          default:
+            console.error("unhandled type of event", v);
+        }
+      },
+    });
+    Runtime.subscribeSessionWebBus({
       next: () => {},
     });
-    this.devBusSubscription = Runtime.subscribeWebDevBus({
+    Runtime.subscribeWebDevBus({
       next: () => {},
     });
   }
