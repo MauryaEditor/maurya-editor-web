@@ -24,9 +24,9 @@ export const useRepositionHandler = (
             (elementRect.left - canvasRootRect.left) / CanvasScale.value + "px";
           DesignRuntime.patchStyle(v, { top, left, position: "absolute" });
           // re-wire element to root
-          const parent = DesignRuntime.getState()[v].state.parent;
+          const parent = DesignRuntime.getStateFor(v).state.parent;
           if (parent !== "root") {
-            DesignRuntime.getState()[v].state.parent = "root";
+            DesignRuntime.getStateFor(v).state.parent = "root";
             DesignRuntime.getBusFor(parent).next({ removechild: v });
             DesignRuntime.getCanvasRoot().bus.next({ acceptchild: v });
           }
@@ -63,7 +63,7 @@ export const useRepositionHandler = (
               "px";
             DesignRuntime.patchStyle(ID, { top, left });
             DesignRuntime.getBusFor(ID).next({
-              state: DesignRuntime.getState()[ID].state,
+              state: DesignRuntime.getStateFor(ID).state,
             });
           }
         }

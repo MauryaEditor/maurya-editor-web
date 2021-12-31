@@ -301,8 +301,8 @@ class DesignRuntimeClass {
     patch: Pick<ElementState, "state">,
     record: boolean = false
   ) {
-    DesignRuntime.getState()[ID].state = {
-      ...DesignRuntime.getState()[ID].state,
+    DesignRuntime.getStateFor(ID).state = {
+      ...DesignRuntime.getStateFor(ID).state,
       ...patch,
     };
     if (record) {
@@ -314,8 +314,8 @@ class DesignRuntimeClass {
     patch: React.CSSProperties,
     record: boolean = false
   ) {
-    DesignRuntime.getState()[ID].state.style = {
-      ...DesignRuntime.getState()[ID].state.style,
+    DesignRuntime.getStateFor(ID).state.style = {
+      ...DesignRuntime.getStateFor(ID).state.style,
       ...patch,
     };
     if (record) {

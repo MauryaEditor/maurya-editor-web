@@ -23,12 +23,12 @@ export function useAttachProperty<ReturnType>(
 ) {
   const bus = useBus(ID);
   const [value, setValue] = useState<ReturnType>(
-    DesignRuntime.getState()[ID].state.properties[propertyName]
+    DesignRuntime.getStateFor(ID).state.properties[propertyName]
   );
   // attach property
   useEffect(() => {
     // check if property already exists
-    const property = DesignRuntime.getState()[ID].propertyMap.find((map) => {
+    const property = DesignRuntime.getStateFor(ID).propertyMap.find((map) => {
       if (map.key === propertyName) {
         return true;
       }
@@ -36,8 +36,8 @@ export function useAttachProperty<ReturnType>(
     if (property) {
       return;
     }
-    DesignRuntime.getState()[ID].propertyMap = [
-      ...DesignRuntime.getState()[ID].propertyMap,
+    DesignRuntime.getStateFor(ID).propertyMap = [
+      ...DesignRuntime.getStateFor(ID).propertyMap,
       {
         key: propertyName,
         type: propertyType,
@@ -55,7 +55,9 @@ export function useAttachProperty<ReturnType>(
           v["state"]["properties"] &&
           v["state"]["properties"][propertyName] !== undefined
         ) {
-          setValue(DesignRuntime.getState()[ID].state.properties[propertyName]);
+          setValue(
+            DesignRuntime.getStateFor(ID).state.properties[propertyName]
+          );
         }
       },
     });

@@ -7,16 +7,16 @@ export const AdjustChildPositionOnDrop: React.FC<{ ID: string }> = (props) => {
       next: (v) => {
         if (v && v["acceptchild"]) {
           if (
-            DesignRuntime.getState()[props.ID].state &&
+            DesignRuntime.getStateFor(props.ID).state &&
             DesignRuntime.getRefFor(props.ID) &&
             DesignRuntime.getRefFor(props.ID).current
           ) {
             const currTop = parseFloat(
-              DesignRuntime.getState()[v["acceptchild"]].state.style
+              DesignRuntime.getStateFor(v["acceptchild"]).state.style
                 .top as string
             );
             const currLeft = parseFloat(
-              DesignRuntime.getState()[v["acceptchild"]].state.style
+              DesignRuntime.getStateFor(v["acceptchild"]).state.style
                 .left as string
             );
             const topBorderWidth = parseFloat(
@@ -30,13 +30,13 @@ export const AdjustChildPositionOnDrop: React.FC<{ ID: string }> = (props) => {
               ).borderLeftWidth
             );
             if (currTop && currLeft) {
-              DesignRuntime.getState()[v["acceptchild"]].state.style = {
-                ...DesignRuntime.getState()[v["acceptchild"]].state.style,
+              DesignRuntime.getStateFor(v["acceptchild"]).state.style = {
+                ...DesignRuntime.getStateFor(v["acceptchild"]).state.style,
                 top: currTop - topBorderWidth + "px",
                 left: `${currLeft - leftBorderWidth}px`,
               };
               DesignRuntime.getBusFor(v["acceptchild"]).next({
-                state: DesignRuntime.getState()[v["acceptchild"]].state,
+                state: DesignRuntime.getStateFor(v["acceptchild"]).state,
               });
             }
           }

@@ -25,8 +25,8 @@ export function useAttachAppearance<ReturnType>(
   const [value, setValue] = useState<ReturnType>();
   // attach property
   useEffect(() => {
-    DesignRuntime.getState()[ID].propertyMap = [
-      ...DesignRuntime.getState()[ID].propertyMap,
+    DesignRuntime.getStateFor(ID).propertyMap = [
+      ...DesignRuntime.getStateFor(ID).propertyMap,
       {
         key: appearanceName,
         type: propertyType,
@@ -45,7 +45,7 @@ export function useAttachAppearance<ReturnType>(
           v["state"]["appearance"][appearanceName]
         ) {
           setValue(
-            DesignRuntime.getState()[0].state.appearance[appearanceName]
+            DesignRuntime.getStateFor(ID).state.appearance[appearanceName]
           );
         }
       },

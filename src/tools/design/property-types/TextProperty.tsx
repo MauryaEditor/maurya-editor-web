@@ -53,8 +53,12 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
   // send changes after first render
   useEffect(() => {
     if (firstRenderDone) {
-      updateSlice(DesignRuntime.getState()[props.ID].state, props.slice, value);
-      bus.next(DesignRuntime.getState()[props.ID]);
+      updateSlice(
+        DesignRuntime.getStateFor(props.ID).state,
+        props.slice,
+        value
+      );
+      bus.next(DesignRuntime.getStateFor(props.ID));
       Runtime.postPatchEvent({
         ID: props.ID,
         slice: extractSlice(props.ID, props.slice),

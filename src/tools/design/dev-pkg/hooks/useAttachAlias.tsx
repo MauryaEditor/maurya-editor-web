@@ -4,6 +4,6 @@ import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 export const useAttachAlias = (ID: string) => {
   // TODO: get an auto-generated alias initially
   useEffect(() => {
-    DesignRuntime.getState()[ID].isAliasable = true;
+    DesignRuntime.getStateFor(ID).isAliasable = true;
   }, []);
 };
