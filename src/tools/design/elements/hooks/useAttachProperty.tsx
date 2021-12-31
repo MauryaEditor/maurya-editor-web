@@ -36,14 +36,16 @@ export function useAttachProperty<ReturnType>(
     if (property) {
       return;
     }
-    DesignRuntime.getStateFor(ID).propertyMap = [
-      ...DesignRuntime.getStateFor(ID).propertyMap,
-      {
-        key: propertyName,
-        type: propertyType,
-        slice: ["properties", propertyName],
-      },
-    ];
+    DesignRuntime.patchDevState(ID, {
+      propertyMap: [
+        ...DesignRuntime.getStateFor(ID).propertyMap,
+        {
+          key: propertyName,
+          type: propertyType,
+          slice: ["properties", propertyName],
+        },
+      ],
+    });
   }, [propertyName, propertyType, ID]);
   // listen for changes
   useEffect(() => {

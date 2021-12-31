@@ -16,6 +16,8 @@
 import React from "react";
 import { ReplaySubject, Subject, Subscription } from "rxjs";
 import { createGlobalVariable } from "../../../../lib/createGlobalVariable";
+import { ObjectVisitor } from "../../../../lib/ObjectVisitor";
+import { VisitableObject } from "../../../../lib/VisitableObject";
 import { Runtime } from "../../../../runtime/Runtime";
 
 import { SessionWebBus } from "../../../../runtime/SessionWebBus";
@@ -220,6 +222,24 @@ class DesignRuntimeClass {
   public getCanvasRoot() {
     return { ...this.canvasRoot };
   }
+  public patchDevState(ID: string, patch: Partial<ElementState>) {
+    const visitable = new VisitableObject(patch);
+    visitable.visit(
+      new ObjectVisitor({
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
+          const _visitable = new VisitableObject(this.state[ID]);
+          _visitable.visitPath(
+            pathSoFar,
+            new ObjectVisitor({
+              enterTerminal: (_key, _value, _parentObj, _pathSoFar) => {
+                _parentObj[key] = value;
+              },
+            })
+          );
+        },
+      })
+    );
+  }
   /**
    * if record is true than a PatchRequest to backend will be sent
    */
@@ -228,10 +248,22 @@ class DesignRuntimeClass {
     patch: Pick<ElementState, "state">,
     record: boolean = false
   ) {
-    this.state[ID] = {
-      ...this.state[ID],
-      ...patch,
-    };
+    const visitable = new VisitableObject(patch);
+    visitable.visit(
+      new ObjectVisitor({
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
+          const _visitable = new VisitableObject(this.state[ID].state);
+          _visitable.visitPath(
+            pathSoFar,
+            new ObjectVisitor({
+              enterTerminal: (_key, _value, _parentObj, _pathSoFar) => {
+                _parentObj[key] = value;
+              },
+            })
+          );
+        },
+      })
+    );
     if (record) {
       Runtime.postPatchEvent({ ID, slice: patch });
     }
