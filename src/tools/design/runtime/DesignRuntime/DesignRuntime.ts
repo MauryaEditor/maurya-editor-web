@@ -273,10 +273,22 @@ class DesignRuntimeClass {
     patch: React.CSSProperties,
     record: boolean = false
   ) {
-    this.state[ID].state.style = {
-      ...this.state[ID].state.style,
-      ...patch,
-    };
+    const visitable = new VisitableObject(patch);
+    visitable.visit(
+      new ObjectVisitor({
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
+          const _visitable = new VisitableObject(this.state[ID].state.style);
+          _visitable.visitPath(
+            pathSoFar,
+            new ObjectVisitor({
+              enterTerminal: (_key, _value, _parentObj, _pathSoFar) => {
+                _parentObj[key] = value;
+              },
+            })
+          );
+        },
+      })
+    );
     if (record) {
       Runtime.postPatchEvent({ ID, slice: { style: patch } });
     }
@@ -323,35 +335,6 @@ class DesignRuntimeClass {
         categoryName,
         designElementManifest
       );
-    }
-  }
-  /**
-   * if record is true than a PatchRequest to backend will be sent
-   */
-  public static patchState(
-    ID: string,
-    patch: Pick<ElementState, "state">,
-    record: boolean = false
-  ) {
-    DesignRuntime.getStateFor(ID).state = {
-      ...DesignRuntime.getStateFor(ID).state,
-      ...patch,
-    };
-    if (record) {
-      Runtime.postPatchEvent({ ID, slice: patch });
-    }
-  }
-  public static patchStyle(
-    ID: string,
-    patch: React.CSSProperties,
-    record: boolean = false
-  ) {
-    DesignRuntime.getStateFor(ID).state.style = {
-      ...DesignRuntime.getStateFor(ID).state.style,
-      ...patch,
-    };
-    if (record) {
-      Runtime.postPatchEvent({ ID, slice: { style: patch } });
     }
   }
 }
