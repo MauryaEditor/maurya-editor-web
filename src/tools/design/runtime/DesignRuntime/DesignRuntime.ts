@@ -231,15 +231,17 @@ class DesignRuntimeClass {
     visitable.visit(
       new ObjectVisitor({
         enterTerminal: (key, value, parentObj, pathSoFar) => {
-          const _visitable = new VisitableObject(this.state[ID]);
-          _visitable.visitPath(
-            pathSoFar,
-            new ObjectVisitor({
-              enterTerminal: (_key, _value, _parentObj, _pathSoFar) => {
-                _parentObj[key] = value;
-              },
-            })
-          );
+          let cur: any = this.state[ID];
+          for (let i = 0; i < pathSoFar.length; i++) {
+            if (i === pathSoFar.length - 1) {
+              cur[pathSoFar[i]] = value;
+              break;
+            }
+            if (cur[pathSoFar[i]] === undefined) {
+              cur[pathSoFar[i]] = {};
+            }
+            cur = cur[pathSoFar[i]];
+          }
         },
       })
     );
@@ -283,15 +285,17 @@ class DesignRuntimeClass {
     visitable.visit(
       new ObjectVisitor({
         enterTerminal: (key, value, parentObj, pathSoFar) => {
-          const _visitable = new VisitableObject(this.state[ID].state.style);
-          _visitable.visitPath(
-            pathSoFar,
-            new ObjectVisitor({
-              enterTerminal: (_key, _value, _parentObj, _pathSoFar) => {
-                _parentObj[key] = value;
-              },
-            })
-          );
+          let cur: any = this.state[ID].state.style;
+          for (let i = 0; i < pathSoFar.length; i++) {
+            if (i === pathSoFar.length - 1) {
+              cur[pathSoFar[i]] = value;
+              break;
+            }
+            if (cur[pathSoFar[i]] === undefined) {
+              cur[pathSoFar[i]] = {};
+            }
+            cur = cur[pathSoFar[i]];
+          }
         },
       })
     );
