@@ -30,7 +30,6 @@ export class Bus<T> {
   }
   post(event: T, options?: BusPostOptions) {
     this.postOptions = options;
-    console.log("[Bus.post] event received", event);
     this.subject.next(event);
   }
   accept() {

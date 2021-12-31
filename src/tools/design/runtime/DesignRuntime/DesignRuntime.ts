@@ -47,10 +47,10 @@ class DesignRuntimeClass {
   private state: { [ID: string]: ElementState } = {};
   private acceptsChild: string[] = [];
   private constructor() {
-    const gen = Runtime.getWebBusEventGenerator();
-    for (const webBusEvent in gen) {
-      console.log(webBusEvent);
-    }
+    // const gen = Runtime.getWebBusEventGenerator();
+    // for (const webBusEvent in gen) {
+    //   console.log(webBusEvent);
+    // }
     Runtime.subscribeWebBus({
       next: (v) => {
         switch (v.type) {
@@ -251,12 +251,11 @@ class DesignRuntimeClass {
       Runtime.postPatchEvent({ ID, slice: { style: patch } });
     }
   }
-
   public populateCanvas() {
     // TODO: put reverse into a different function
-    var r: { [parent: string]: string[] } = {};
+    const r: { [parent: string]: string[] } = {};
     for (const [key, value] of Object.entries(this.state)) {
-      var parent = value.state.parent;
+      const parent = value.state.parent;
       if (!r[parent]) {
         r[parent] = [];
       }
@@ -268,13 +267,13 @@ class DesignRuntimeClass {
     currNode: string,
     mapping: { [parent: string]: string[] }
   ) {
-    var ar = mapping[currNode];
+    const ar = mapping[currNode];
     if (!ar) {
       return;
     }
     // first render the currNode
     // then recursively render all it's child nodes
-    for (const value in ar) {
+    for (const value of ar) {
       this.wireElement(currNode, value);
       this.traverseState(value, mapping);
     }

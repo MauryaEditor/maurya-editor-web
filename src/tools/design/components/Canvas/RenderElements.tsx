@@ -23,7 +23,6 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
   useEffect(() => {
     const newComps = props.children.map(
       (childID): RenderableElementDescription => {
-        console.log("[RenderElements]", childID, DesignRuntime.getState());
         const compKey = DesignRuntime.getState()[childID].compKey;
         const designElement = DesignElementRegistry.getElementByKey(compKey);
         if (!designElement) {
