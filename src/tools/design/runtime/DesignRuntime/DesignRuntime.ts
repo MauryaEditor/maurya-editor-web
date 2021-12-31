@@ -47,26 +47,30 @@ class DesignRuntimeClass {
   private state: { [ID: string]: ElementState } = {};
   private acceptsChild: string[] = [];
   private sessionBusSubscription: Subscription;
-  private webBusSubscription: Subscription;
+  // private webBusSubscription: Subscription;
   private devBusSubscription: Subscription;
   private constructor() {
-    this.webBusSubscription = Runtime.subscribeWebBus({
-      next: (v) => {
-        if (v.type === "CREATE") {
-          this.handleCreateEvent(v);
-        }
-        switch (v.type) {
-          case "CREATE":
-            this.handleCreateEvent(v);
-            break;
-          case "PATCH":
-            this.handlePatchEvent(v);
-            break;
-          default:
-            console.error("unhandled type of event", v);
-        }
-      },
-    });
+    const gen = Runtime.getWebBusEventGenerator();
+    for (const webBusEvent in gen) {
+      console.log(webBusEvent);
+    }
+    // this.webBusSubscription = Runtime.subscribeWebBus({
+    //   next: (v) => {
+    //     if (v.type === "CREATE") {
+    //       this.handleCreateEvent(v);
+    //     }
+    //     switch (v.type) {
+    //       case "CREATE":
+    //         this.handleCreateEvent(v);
+    //         break;
+    //       case "PATCH":
+    //         this.handlePatchEvent(v);
+    //         break;
+    //       default:
+    //         console.error("unhandled type of event", v);
+    //     }
+    //   },
+    // });
     this.sessionBusSubscription = Runtime.subscribeSessionWebBus({
       next: () => {},
     });
@@ -255,6 +259,7 @@ class DesignRuntimeClass {
   }
 
   public populateCanvas() {
+    // TODO: put reverse into a different function
     var r: { [parent: string]: string[] } = {};
     for (const [key, value] of Object.entries(this.state)) {
       var parent = value.state.parent;
@@ -265,14 +270,19 @@ class DesignRuntimeClass {
     }
     this.traverseState("root", r);
   }
-  private traverseState(node: string, mapping: { [parent: string]: string[] }) {
-    var ar = mapping[node];
+  private traverseState(
+    currNode: string,
+    mapping: { [parent: string]: string[] }
+  ) {
+    var ar = mapping[currNode];
+    if (!ar) {
+      return;
+    }
+    // first render the currNode
+    // then recursively render all it's child nodes
     for (const value in ar) {
-      if (!mapping[value]) {
-        this.wireElement(node, value);
-      } else {
-        this.traverseState(value, mapping);
-      }
+      this.wireElement(currNode, value);
+      this.traverseState(value, mapping);
     }
   }
 

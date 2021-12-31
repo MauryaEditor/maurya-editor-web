@@ -22,6 +22,7 @@ export const useDropNewElement = (
               DesignRuntime.getRefFor(parent).current!
             ));
           }
+          console.log("mouse up called");
           const ID = PostCreateEvent({
             compKey: SelectedDesignElement.value.key,
             pkg: "design",

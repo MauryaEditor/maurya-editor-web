@@ -41,13 +41,13 @@ import { PostCreateEvent, PostLinkEvent, PostPatchEvent } from "./commands";
 
 export const RuntimeState: {
   IDIssued: any;
-  tempEvents: WebBusEvent[]; // stores the events in this user session
+  sessionEvents: WebBusEvent[]; // stores the events in this user session
   currIndex: number;
   IDBank: { payload: string[]; token: string }[];
   currSyncIndex: number;
 } = {
   IDIssued: {},
-  tempEvents: [],
+  sessionEvents: [],
   currIndex: 0,
   IDBank: [],
   currSyncIndex: 0,
@@ -56,16 +56,22 @@ export const RuntimeState: {
 const AccountSize = 20;
 
 export class RuntimeClass {
+  // the single instance of RuntimeClass
   static instance: RuntimeClass;
+  // store the id's issued. just to double check if the id assigned to an
+  // element is from the pool of id received
   private IDIssued: any = {};
-  private tempEvents: WebBusEvent[] = [];
-  private currIndex: number = 0;
+  // stores event from this session only
+  private sessionEvents: WebBusEvent[] = [];
+  // stores fresh/unused IDs that can be assigned to elements
   private IDBank: { payload: string[]; token: string }[] = [];
+  // stores the index at which the next entry will be added in the IDBank
+  private currIndex: number = 0;
+  // stores the index of next event from this.sessionEvents to be sent to the backend
   private currSyncIndex: number = 0;
   private constructor() {
     this.retrieveEvents().then((events) => {
       if (events) {
-        this.tempEvents.push(...events);
         events.forEach((event) => {
           WebBus.post(event);
         });
@@ -80,6 +86,7 @@ export class RuntimeClass {
     if (!RuntimeClass.instance) RuntimeClass.instance = new RuntimeClass();
     return this.instance;
   }
+  // retrieve old events from the backend
   private async retrieveEvents(): Promise<WebBusEvent[] | undefined> {
     const { token } = getAuth();
     const projectID = getProjectID();
@@ -92,14 +99,19 @@ export class RuntimeClass {
       `${backendUrl}/web-events?pid=${projectID}&token=${token}`
     ).then((resp) => resp.json());
   }
+  // fetch new IDs from the backend
+  // these IDs will be assigned to dragged elements etc.
   private async fetchIDs(size: number) {
     const uri = `${backendUrl}/uuid?size=${size}`;
     const uris = await fetch(uri).then((resp) => resp.json());
     return uris;
   }
+  // helper function to store the IDs from this.fetchIDs at correct index
   private storeIDsAt(index: number, payload: string[], token: string) {
     this.IDBank[index] = { payload, token };
   }
+  // returns a fresh ID from this.IDBank
+  // also handles if new IDs should be fetched
   public getID() {
     const ID =
       this.IDBank[Math.floor(this.currIndex / AccountSize)]?.payload[
@@ -124,6 +136,7 @@ export class RuntimeClass {
       throw new Error("ID Bank is bankrupt");
     }
   }
+  // helper function to send event to the backend
   private sendEvent(event: WebBusEvent) {
     const { token } = getAuth();
     const projectID = getProjectID();
@@ -141,17 +154,18 @@ export class RuntimeClass {
       resp.json()
     );
   }
+  // syncs events with the backend
   private syncEvents() {
     setTimeout(async () => {
-      for (let i = this.currSyncIndex; i < this.tempEvents.length; i++) {
-        await this.sendEvent(this.tempEvents[this.currSyncIndex]);
+      for (let i = this.currSyncIndex; i < this.sessionEvents.length; i++) {
+        await this.sendEvent(this.sessionEvents[this.currSyncIndex]);
         this.currSyncIndex++;
       }
       this.syncEvents();
     }, 5000);
   }
   public addEvent(event: WebBusEvent) {
-    this.tempEvents.push(event);
+    this.sessionEvents.push(event);
   }
   postCreateEvent(
     payload: Omit<WebCreateData, "ID">,
@@ -175,6 +189,9 @@ export class RuntimeClass {
   }
   subscribeWebBus(observer: Partial<Observer<WebBusEvent>>): Subscription {
     return WebBus.subscribe(observer);
+  }
+  getWebBusEventGenerator() {
+    return WebBus.getEventsGenerator();
   }
   subscribeSessionWebBus(
     observer: Partial<Observer<WebBusEvent>>

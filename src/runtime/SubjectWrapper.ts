@@ -98,7 +98,6 @@ export class SubjectWrapper<
   }
   private sendSliceToSubscribers(v: any) {
     const callSliceSubscribers = (path: (string | number)[]) => {
-      console.log("[callSliceSubscribers] path", path);
       const visitable = new VisitableObject(this.slices);
       try {
         visitable.visitPath(

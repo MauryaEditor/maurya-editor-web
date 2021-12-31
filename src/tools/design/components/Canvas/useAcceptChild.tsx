@@ -7,12 +7,14 @@ export const useAcceptChild = () => {
     const subscription = DesignRuntime.getCanvasRoot().bus.subscribe({
       next: (v) => {
         if (v && v["acceptchild"]) {
+          console.log("called acceptachild");
           setChildren((children) => {
             return [...children, v["acceptchild"]!];
           });
         }
         if (v && v["removechild"]) {
           setChildren((children) => {
+            console.log("called removechikd");
             return children.filter((child) => {
               return child !== v["removechild"];
             });
