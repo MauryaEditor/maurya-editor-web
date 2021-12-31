@@ -14,11 +14,9 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { Runtime } from "../../../runtime/Runtime";
 import { checkIfPathExists } from "../lib/checkIfPathExists";
-import { extractSlice } from "../lib/extractSlice";
+import { createSlice } from "../lib/createStateSlice";
 import { getValueFromSlice } from "../lib/getValueFromSlice";
-import { updateSlice } from "../lib/updateSlice";
 import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
 import { PropertyTypeProps } from "../types/PropertyTypeProps";
 
@@ -52,17 +50,10 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
   }, [props.slice, setValue, bus]);
   // send changes after first render
   useEffect(() => {
-    if (firstRenderDone) {
-      updateSlice(
-        DesignRuntime.getStateFor(props.ID).state,
-        props.slice,
-        value
-      );
+    if (firstRenderDone && value) {
+      const newSlice = createSlice(props.slice, value);
+      DesignRuntime.patchState(props.ID, newSlice, true);
       bus.next(DesignRuntime.getStateFor(props.ID));
-      Runtime.postPatchEvent({
-        ID: props.ID,
-        slice: extractSlice(props.ID, props.slice),
-      });
     }
   }, [value, firstRenderDone, props.ID, props.slice]);
   return (
