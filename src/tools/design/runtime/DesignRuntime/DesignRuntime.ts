@@ -14,21 +14,16 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { ReplaySubject, Subject, Subscription } from "rxjs";
+import { Subject } from "rxjs";
 import { createGlobalVariable } from "../../../../lib/createGlobalVariable";
 import { ObjectVisitor } from "../../../../lib/ObjectVisitor";
 import { VisitableObject } from "../../../../lib/VisitableObject";
 import { Runtime } from "../../../../runtime/Runtime";
-
-import { SessionWebBus } from "../../../../runtime/SessionWebBus";
-import { WebBus } from "../../../../runtime/WebBus";
 import {
   WebBusEvent,
   WebCreateData,
   WebPatchData,
 } from "../../../../runtime/WebBusEvent";
-import { WebDevBus } from "../../../../runtime/WebDevBus";
-import { DEV_ELEMENT_RENDERED } from "../../decorators/PostElementRenderedDecoratot";
 import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
 import { AcceptsChild } from "../../types/AcceptsChild";
 import { DesignElement } from "../../types/DesignElement";
@@ -49,10 +44,19 @@ class DesignRuntimeClass {
   private state: { [ID: string]: ElementState } = {};
   private acceptsChild: string[] = [];
   private constructor() {
-    // const gen = Runtime.getWebBusEventGenerator();
-    // for (const webBusEvent in gen) {
-    //   console.log(webBusEvent);
-    // }
+    const gen = Runtime.getWebBusEventGenerator();
+    for (const webBusEvent of gen) {
+      switch (webBusEvent.type) {
+        case "CREATE":
+          this.handleCreateEvent(webBusEvent);
+          break;
+        case "PATCH":
+          this.handlePatchEvent(webBusEvent);
+          break;
+        default:
+          console.error("unhandled type of event", webBusEvent);
+      }
+    }
     Runtime.subscribeWebBus({
       next: (v) => {
         switch (v.type) {
@@ -185,23 +189,23 @@ class DesignRuntimeClass {
         case "style":
         case "appearance":
         case "properties":
-          if (this.getState()[payload.ID]["state"][key]) {
-            this.getState()[payload.ID]["state"][key] = {
-              ...this.getState()[payload.ID]["state"][key],
+          if (this.state[payload.ID]["state"][key]) {
+            this.state[payload.ID]["state"][key] = {
+              ...this.state[payload.ID]["state"][key],
               ...payload.slice[key],
             };
           } else {
-            this.getState()[payload.ID]["state"][key] = {
+            this.state[payload.ID]["state"][key] = {
               ...payload.slice[key],
             };
           }
           this.getBusFor(payload.ID).next({
-            state: this.getState()[payload.ID]["state"],
+            state: this.state[payload.ID]["state"],
           });
           break;
         case "parent":
           const newParent = payload.slice.parent;
-          const oldParent = this.getState()[payload.ID].state.parent;
+          const oldParent = this.state[payload.ID].state.parent;
           this.rewireElement(oldParent, newParent, payload.ID);
           break;
       }
