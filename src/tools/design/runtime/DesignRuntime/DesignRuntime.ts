@@ -107,15 +107,13 @@ class DesignRuntimeClass {
       [ID: string]: SerializableElementState;
     };
   }
-  public getStateFor(ID: string): { [ID: string]: SerializableElementState } {
+  public getStateFor(ID: string): SerializableElementState {
     if (this.state[ID]) {
       const stringifiable: Partial<ElementState> = { ...this.state[ID] };
       delete stringifiable.bus;
       delete stringifiable.ref;
       const elementState = JSON.stringify(stringifiable);
-      return JSON.parse(elementState) as {
-        [ID: string]: SerializableElementState;
-      };
+      return JSON.parse(elementState) as SerializableElementState;
     } else {
       throw Error("Fetching state for non-existent element with ID" + ID);
     }
@@ -230,8 +228,8 @@ class DesignRuntimeClass {
     patch: Pick<ElementState, "state">,
     record: boolean = false
   ) {
-    this.getState()[ID].state = {
-      ...this.getState()[ID].state,
+    this.state[ID] = {
+      ...this.state[ID],
       ...patch,
     };
     if (record) {
@@ -243,8 +241,8 @@ class DesignRuntimeClass {
     patch: React.CSSProperties,
     record: boolean = false
   ) {
-    this.getState()[ID].state.style = {
-      ...this.getState()[ID].state.style,
+    this.state[ID].state.style = {
+      ...this.state[ID].state.style,
       ...patch,
     };
     if (record) {
