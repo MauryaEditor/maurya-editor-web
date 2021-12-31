@@ -92,11 +92,11 @@ export const useRepositionHandler = (
             // re-wire to parent
             DesignRuntime.getCanvasRoot().bus.next({ removechild: ID });
             DesignRuntime.getBusFor(parent).next({ acceptchild: ID });
-            // CAUTION: send patch after re-wiring
-            DesignRuntime.patchState(ID, { parent: parent } as any, true);
           } else {
             // no-need to re-wire
           }
+          // always patchState on drop
+          DesignRuntime.patchState(ID, { parent: parent } as any, true);
           DraggedElement.next(null);
           selectElement(ID);
           // TODO: PostPatchEvent with current style & current parent
