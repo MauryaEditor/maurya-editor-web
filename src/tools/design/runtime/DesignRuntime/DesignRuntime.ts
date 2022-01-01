@@ -24,6 +24,7 @@ import {
   WebCreateData,
   WebPatchData,
 } from "../../../../runtime/WebBusEvent";
+import { PickAndFlatten } from "../../lib/utilityTypes";
 import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
 import { AcceptsChild } from "../../types/AcceptsChild";
 import { DesignElement } from "../../types/DesignElement";
@@ -195,6 +196,30 @@ class DesignRuntimeClass {
     // send to parent
     this.wireElement(payload.state!.parent, payload.ID);
   }
+  // apply to patch to the DesignRuntime.state
+  private __handlePatchEvent(
+    ID: string,
+    patch: Partial<PickAndFlatten<ElementState, "state">>
+  ) {
+    const visitable = new VisitableObject(patch);
+    visitable.visit(
+      new ObjectVisitor({
+        enterTerminal: (key, value, parentObj, pathSoFar) => {
+          let cur: any = this.state[ID].state;
+          for (let i = 0; i < pathSoFar.length; i++) {
+            if (i === pathSoFar.length - 1) {
+              cur[pathSoFar[i]] = value;
+              break;
+            }
+            if (cur[pathSoFar[i]] === undefined) {
+              cur[pathSoFar[i]] = {};
+            }
+            cur = cur[pathSoFar[i]];
+          }
+        },
+      })
+    );
+  }
   private handlePatchEvent(v: WebBusEvent) {
     // check if parent got updated
     // send removechild to old parent and acceptchild to new parent
@@ -206,23 +231,15 @@ class DesignRuntimeClass {
         case "style":
         case "appearance":
         case "properties":
-          if (this.state[payload.ID]["state"][key]) {
-            this.state[payload.ID]["state"][key] = {
-              ...this.state[payload.ID]["state"][key],
-              ...payload.slice[key],
-            };
-          } else {
-            this.state[payload.ID]["state"][key] = {
-              ...payload.slice[key],
-            };
-          }
+          this.__handlePatchEvent(payload.ID, payload.slice);
           this.getBusFor(payload.ID).next({
             state: this.state[payload.ID]["state"],
           });
           break;
         case "parent":
-          const newParent = payload.slice.parent;
           const oldParent = this.state[payload.ID].state.parent;
+          this.__handlePatchEvent(payload.ID, { parent: payload.slice.parent });
+          const newParent = this.state[payload.ID].state.parent;
           this.rewireElement(oldParent, newParent, payload.ID);
           break;
       }
@@ -314,29 +331,13 @@ class DesignRuntimeClass {
    */
   public patchState(
     ID: string,
-    patch: Pick<ElementState, "state">,
+    patch: Partial<PickAndFlatten<ElementState, "state">>,
     record: boolean = false
   ) {
-    const visitable = new VisitableObject(patch);
-    visitable.visit(
-      new ObjectVisitor({
-        enterTerminal: (key, value, parentObj, pathSoFar) => {
-          let cur: any = this.state[ID].state;
-          for (let i = 0; i < pathSoFar.length; i++) {
-            if (i === pathSoFar.length - 1) {
-              cur[pathSoFar[i]] = value;
-              break;
-            }
-            if (cur[pathSoFar[i]] === undefined) {
-              cur[pathSoFar[i]] = {};
-            }
-            cur = cur[pathSoFar[i]];
-          }
-        },
-      })
-    );
     if (record) {
       Runtime.postPatchEvent({ ID, slice: patch });
+    } else {
+      this.handlePatchEvent({ type: "PATCH", payload: { ID, slice: patch } });
     }
   }
   public patchStyle(
@@ -344,27 +345,7 @@ class DesignRuntimeClass {
     patch: React.CSSProperties,
     record: boolean = false
   ) {
-    const visitable = new VisitableObject(patch);
-    visitable.visit(
-      new ObjectVisitor({
-        enterTerminal: (key, value, parentObj, pathSoFar) => {
-          let cur: any = this.state[ID].state.style;
-          for (let i = 0; i < pathSoFar.length; i++) {
-            if (i === pathSoFar.length - 1) {
-              cur[pathSoFar[i]] = value;
-              break;
-            }
-            if (cur[pathSoFar[i]] === undefined) {
-              cur[pathSoFar[i]] = {};
-            }
-            cur = cur[pathSoFar[i]];
-          }
-        },
-      })
-    );
-    if (record) {
-      Runtime.postPatchEvent({ ID, slice: { style: patch } });
-    }
+    this.patchState(ID, { style: patch }, record);
   }
   public registerDesignElement(
     categoryName: string,
