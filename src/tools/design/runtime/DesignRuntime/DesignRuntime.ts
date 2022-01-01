@@ -240,6 +240,7 @@ class DesignRuntimeClass {
           const oldParent = this.state[payload.ID].state.parent;
           this.__handlePatchEvent(payload.ID, { parent: payload.slice.parent });
           const newParent = this.state[payload.ID].state.parent;
+          console.log("calling rewiring for", oldParent, newParent, payload.ID);
           this.rewireElement(oldParent, newParent, payload.ID);
           break;
       }

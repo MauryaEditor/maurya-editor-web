@@ -24,12 +24,7 @@ export const useRepositionHandler = (
             (elementRect.left - canvasRootRect.left) / CanvasScale.value + "px";
           DesignRuntime.patchStyle(v, { top, left, position: "absolute" });
           // re-wire element to root
-          const parent = DesignRuntime.getStateFor(v).state.parent;
-          if (parent !== "root") {
-            DesignRuntime.getStateFor(v).state.parent = "root";
-            DesignRuntime.getBusFor(parent).next({ removechild: v });
-            DesignRuntime.getCanvasRoot().bus.next({ acceptchild: v });
-          }
+          DesignRuntime.patchState(v, { parent: "root" });
         }
       },
     });
