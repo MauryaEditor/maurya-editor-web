@@ -264,6 +264,31 @@ class DesignRuntimeClass {
   public getCanvasRoot() {
     return { ...this.canvasRoot };
   }
+  /**
+   * record the event if the element will appear in the produced App
+   * don't record if it's just an element needed during development inside canvas
+   */
+  public createElement(
+    compKey: string,
+    state: Pick<ElementState, "state">,
+    record: boolean = false
+  ): string {
+    const webCreateData: Omit<WebCreateData, "ID"> = {
+      compKey: compKey,
+      pkg: "design",
+      state: state.state,
+    };
+    if (record) {
+      return Runtime.postCreateEvent(webCreateData);
+    } else {
+      const newID = Runtime.getID();
+      this.handleCreateEvent({
+        type: "CREATE",
+        payload: { ID: newID, ...webCreateData },
+      });
+      return newID;
+    }
+  }
   public patchDevState(ID: string, patch: Partial<ElementState>) {
     const visitable = new VisitableObject(patch);
     visitable.visit(
