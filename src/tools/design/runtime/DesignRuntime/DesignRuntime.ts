@@ -124,6 +124,55 @@ class DesignRuntimeClass {
       throw Error("Fetching state for non-existent element with ID" + ID);
     }
   }
+  public getBusFor(ID: string): ElementBus {
+    return this.state[ID].bus;
+  }
+  public getRefFor(ID: string): React.RefObject<HTMLElement> {
+    return this.state[ID].ref;
+  }
+  private wireElement(parentID: string, childID: string): void {
+    console.log("[wireElement]", parentID, childID);
+    if (parentID === "root") {
+      this.canvasRoot.bus.next({ acceptchild: childID });
+    } else if (parentID) {
+      this.state[parentID].bus.next({
+        acceptchild: childID,
+      });
+    } else {
+      throw new Error("parent should have existed already");
+    }
+  }
+  private dewireElement(parentID: string, childID: string): void {
+    console.log("[dewireElement]", parentID, childID);
+    if (parentID === "root") {
+      this.canvasRoot.bus.next({ removechild: childID });
+    } else if (parentID) {
+      this.state[parentID].bus.next({
+        removechild: childID,
+      });
+    } else {
+      throw new Error("parent should have existed already");
+    }
+  }
+  private rewireElement(
+    oldParentID: string,
+    newParentID: string,
+    childID: string
+  ) {
+    console.log("[rewireElement]", oldParentID, newParentID, childID);
+    if (oldParentID === newParentID) return;
+    // TODO: find the relation between oldParent and newParent
+    // send the change to the parent that is
+    // ancestor of the other parent later
+    if (oldParentID === "root") {
+      this.wireElement(newParentID, childID);
+      this.dewireElement(oldParentID, childID);
+    }
+    if (newParentID === "root") {
+      this.dewireElement(oldParentID, childID);
+      this.wireElement(newParentID, childID);
+    }
+  }
   private handleCreateEvent(v: WebBusEvent) {
     // update runtime state
     const payload = v.payload as WebCreateData;
@@ -146,38 +195,6 @@ class DesignRuntimeClass {
     // send to parent
     this.wireElement(payload.state!.parent, payload.ID);
   }
-  private wireElement(parentID: string, childID: string): void {
-    if (parentID === "root") {
-      this.canvasRoot.bus.next({ acceptchild: childID });
-    } else if (parentID) {
-      this.state[parentID].bus.next({
-        acceptchild: childID,
-      });
-    } else {
-      throw new Error("parent should have existed already");
-    }
-  }
-  private dewireElement(parentID: string, childID: string): void {
-    if (parentID === "root") {
-      this.canvasRoot.bus.next({ removechild: childID });
-    } else if (parentID) {
-      this.state[parentID].bus.next({
-        removechild: childID,
-      });
-    } else {
-      throw new Error("parent should have existed already");
-    }
-  }
-
-  private rewireElement(
-    oldParentID: string,
-    newParentID: string,
-    childID: string
-  ) {
-    this.dewireElement(oldParentID, childID);
-    this.wireElement(newParentID, childID);
-  }
-
   private handlePatchEvent(v: WebBusEvent) {
     // check if parent got updated
     // send removechild to old parent and acceptchild to new parent
@@ -211,17 +228,38 @@ class DesignRuntimeClass {
       }
     }
   }
-  public getBusFor(ID: string): ElementBus {
-    return this.state[ID].bus;
+  public populateCanvas() {
+    // TODO: put reverse into a different function
+    const r: { [parent: string]: string[] } = {};
+    for (const [key, value] of Object.entries(this.state)) {
+      const parent = value.state.parent;
+      if (!r[parent]) {
+        r[parent] = [];
+      }
+      r[parent].push(key);
+    }
+    this.traverseState("root", r);
   }
-  public getRefFor(ID: string): React.RefObject<HTMLElement> {
-    return this.state[ID].ref;
+  private traverseState(
+    currNode: string,
+    mapping: { [parent: string]: string[] }
+  ) {
+    const ar = mapping[currNode];
+    if (!ar) {
+      return;
+    }
+    // first render the currNode
+    // then recursively render all it's child nodes
+    for (const value of ar) {
+      this.wireElement(currNode, value);
+      this.traverseState(value, mapping);
+    }
   }
   public setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
     // only ref changes, others are same as previous
     this.canvasRoot.ref = ref;
     // populate canvas
-    this.populateCanvas();
+    // this.populateCanvas();
   }
   public getCanvasRoot() {
     return { ...this.canvasRoot };
@@ -303,34 +341,6 @@ class DesignRuntimeClass {
       Runtime.postPatchEvent({ ID, slice: { style: patch } });
     }
   }
-  public populateCanvas() {
-    // TODO: put reverse into a different function
-    const r: { [parent: string]: string[] } = {};
-    for (const [key, value] of Object.entries(this.state)) {
-      const parent = value.state.parent;
-      if (!r[parent]) {
-        r[parent] = [];
-      }
-      r[parent].push(key);
-    }
-    this.traverseState("root", r);
-  }
-  private traverseState(
-    currNode: string,
-    mapping: { [parent: string]: string[] }
-  ) {
-    const ar = mapping[currNode];
-    if (!ar) {
-      return;
-    }
-    // first render the currNode
-    // then recursively render all it's child nodes
-    for (const value of ar) {
-      this.wireElement(currNode, value);
-      this.traverseState(value, mapping);
-    }
-  }
-
   public registerDesignElement(
     categoryName: string,
     designElementManifest: DesignElement
