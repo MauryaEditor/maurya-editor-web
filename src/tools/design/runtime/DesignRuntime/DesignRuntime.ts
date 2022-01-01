@@ -132,7 +132,6 @@ class DesignRuntimeClass {
     return this.state[ID].ref;
   }
   private wireElement(parentID: string, childID: string): void {
-    console.log("[wireElement]", parentID, childID);
     if (parentID === "root") {
       this.canvasRoot.bus.next({ acceptchild: childID });
     } else if (parentID) {
@@ -144,7 +143,6 @@ class DesignRuntimeClass {
     }
   }
   private dewireElement(parentID: string, childID: string): void {
-    console.log("[dewireElement]", parentID, childID);
     if (parentID === "root") {
       this.canvasRoot.bus.next({ removechild: childID });
     } else if (parentID) {
@@ -160,19 +158,9 @@ class DesignRuntimeClass {
     newParentID: string,
     childID: string
   ) {
-    console.log("[rewireElement]", oldParentID, newParentID, childID);
     if (oldParentID === newParentID) return;
-    // TODO: find the relation between oldParent and newParent
-    // send the change to the parent that is
-    // ancestor of the other parent later
-    if (oldParentID === "root") {
-      this.wireElement(newParentID, childID);
-      this.dewireElement(oldParentID, childID);
-    }
-    if (newParentID === "root") {
-      this.dewireElement(oldParentID, childID);
-      this.wireElement(newParentID, childID);
-    }
+    this.dewireElement(oldParentID, childID);
+    this.wireElement(newParentID, childID);
   }
   private handleCreateEvent(v: WebBusEvent) {
     // update runtime state
@@ -240,7 +228,6 @@ class DesignRuntimeClass {
           const oldParent = this.state[payload.ID].state.parent;
           this.__handlePatchEvent(payload.ID, { parent: payload.slice.parent });
           const newParent = this.state[payload.ID].state.parent;
-          console.log("calling rewiring for", oldParent, newParent, payload.ID);
           this.rewireElement(oldParent, newParent, payload.ID);
           break;
       }
@@ -277,7 +264,7 @@ class DesignRuntimeClass {
     // only ref changes, others are same as previous
     this.canvasRoot.ref = ref;
     // populate canvas
-    // this.populateCanvas();
+    this.populateCanvas();
   }
   public getCanvasRoot() {
     return { ...this.canvasRoot };
