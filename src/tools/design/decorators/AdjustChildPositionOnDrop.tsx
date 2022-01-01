@@ -35,9 +35,6 @@ export const AdjustChildPositionOnDrop: React.FC<{ ID: string }> = (props) => {
                 left: `${currLeft - leftBorderWidth}px`,
               };
               DesignRuntime.patchStyle(v["acceptchild"], newPosition);
-              DesignRuntime.getBusFor(v["acceptchild"]).next({
-                state: DesignRuntime.getStateFor(v["acceptchild"]).state,
-              });
             }
           }
         }

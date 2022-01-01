@@ -57,9 +57,6 @@ export const useRepositionHandler = (
                 CanvasScale.value +
               "px";
             DesignRuntime.patchStyle(ID, { top, left });
-            DesignRuntime.getBusFor(ID).next({
-              state: DesignRuntime.getStateFor(ID).state,
-            });
           }
         }
       };
@@ -83,14 +80,6 @@ export const useRepositionHandler = (
             { top, left, position: "absolute" },
             true
           );
-          if (parent !== "root") {
-            // re-wire to parent
-            DesignRuntime.getCanvasRoot().bus.next({ removechild: ID });
-            DesignRuntime.getBusFor(parent).next({ acceptchild: ID });
-          } else {
-            // no-need to re-wire
-          }
-          // always patchState on drop
           DesignRuntime.patchState(ID, { parent: parent } as any, true);
           DraggedElement.next(null);
           selectElement(ID);
