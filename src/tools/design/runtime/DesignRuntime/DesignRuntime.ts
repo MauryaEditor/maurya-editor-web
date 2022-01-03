@@ -24,6 +24,7 @@ import {
   WebCreateData,
   WebPatchData,
 } from "../../../../runtime/WebBusEvent";
+import { DEV_ELEMENT_RENDERED } from "../../decorators/PostElementRenderedDecoratot";
 import { PickAndFlatten } from "../../lib/utilityTypes";
 import { DesignElementRegistry } from "../../registry/DesignElementRegistry";
 import { AcceptsChild } from "../../types/AcceptsChild";
@@ -44,39 +45,54 @@ class DesignRuntimeClass {
   };
   private state: { [ID: string]: ElementState } = {};
   private acceptsChild: string[] = [];
+  // true if first render has been done
+  // first render is treated special because we need to
+  // carefully render element one by one. Here render means
+  // until the element has subscribed to it's bus
+  // first render is done by populateCanvas method
+  private firstRenderDone: boolean = false;
+  // an array to store all the callbacks once Runtime is ready
+  private onReadySubscribers: (() => void)[] = [];
+  // a flag to indicate whether the Runtime is ready
+  // Runtime is ready once all the events have been loaded on WebBus
+  private isReady: boolean = false;
   private constructor() {
-    const gen = Runtime.getWebBusEventGenerator();
-    for (const webBusEvent of gen) {
-      switch (webBusEvent.type) {
-        case "CREATE":
-          this.handleCreateEvent(webBusEvent);
-          break;
-        case "PATCH":
-          this.handlePatchEvent(webBusEvent);
-          break;
-        default:
-          console.error("unhandled type of event", webBusEvent);
-      }
-    }
-    Runtime.subscribeWebBus({
-      next: (v) => {
-        switch (v.type) {
+    Runtime.onReady(() => {
+      const gen = Runtime.getWebBusEventGenerator();
+      for (const webBusEvent of gen) {
+        switch (webBusEvent.type) {
           case "CREATE":
-            this.handleCreateEvent(v);
+            this.handleCreateEvent(webBusEvent);
             break;
           case "PATCH":
-            this.handlePatchEvent(v);
+            this.handlePatchEvent(webBusEvent);
             break;
           default:
-            console.error("unhandled type of event", v);
+            console.error("unhandled type of event", webBusEvent);
         }
-      },
-    });
-    Runtime.subscribeSessionWebBus({
-      next: () => {},
-    });
-    Runtime.subscribeWebDevBus({
-      next: () => {},
+      }
+      this.callOnReadySubscribers();
+      this.isReady = true;
+      Runtime.subscribeWebBus({
+        next: (v) => {
+          switch (v.type) {
+            case "CREATE":
+              this.handleCreateEvent(v);
+              break;
+            case "PATCH":
+              this.handlePatchEvent(v);
+              break;
+            default:
+              console.error("unhandled type of event", v);
+          }
+        },
+      });
+      Runtime.subscribeSessionWebBus({
+        next: () => {},
+      });
+      Runtime.subscribeWebDevBus({
+        next: () => {},
+      });
     });
   }
   public static getInstance() {
@@ -84,6 +100,24 @@ class DesignRuntimeClass {
       DesignRuntimeClass.instance = new DesignRuntimeClass();
     }
     return DesignRuntimeClass.instance;
+  }
+  private callOnReadySubscribers() {
+    if (!this.isReady) {
+      // an extra guide to prevent from being called more than once
+      this.onReadySubscribers.forEach((f) => {
+        f();
+      });
+    }
+  }
+  // register/call cb once DesignRuntime is ready
+  onReady(cb: () => void) {
+    // call immediately if the DesignRuntime is already ready
+    // else push in onReadySubscibers
+    if (this.isReady) {
+      cb();
+    } else {
+      this.onReadySubscribers.push(cb);
+    }
   }
   public addElement(ID: string, state: ElementState) {
     this.state[ID] = state;
@@ -182,7 +216,8 @@ class DesignRuntimeClass {
     };
     this.addElement(payload.ID, newElement);
     // send to parent
-    this.wireElement(payload.state!.parent, payload.ID);
+    if (this.firstRenderDone)
+      this.wireElement(payload.state!.parent, payload.ID);
   }
   // apply to patch to the DesignRuntime.state
   private __handlePatchEvent(
@@ -219,16 +254,28 @@ class DesignRuntimeClass {
         case "style":
         case "appearance":
         case "properties":
-          this.__handlePatchEvent(payload.ID, payload.slice);
-          this.getBusFor(payload.ID).next({
-            state: this.state[payload.ID]["state"],
-          });
+          if (this.firstRenderDone) {
+            this.__handlePatchEvent(payload.ID, payload.slice);
+            this.getBusFor(payload.ID).next({
+              state: this.state[payload.ID]["state"],
+            });
+          } else {
+            this.__handlePatchEvent(payload.ID, payload.slice);
+          }
           break;
         case "parent":
-          const oldParent = this.state[payload.ID].state.parent;
-          this.__handlePatchEvent(payload.ID, { parent: payload.slice.parent });
-          const newParent = this.state[payload.ID].state.parent;
-          this.rewireElement(oldParent, newParent, payload.ID);
+          if (this.firstRenderDone) {
+            const oldParent = this.state[payload.ID].state.parent;
+            this.__handlePatchEvent(payload.ID, {
+              parent: payload.slice.parent,
+            });
+            const newParent = this.state[payload.ID].state.parent;
+            this.rewireElement(oldParent, newParent, payload.ID);
+          } else {
+            this.__handlePatchEvent(payload.ID, {
+              parent: payload.slice.parent,
+            });
+          }
           break;
       }
     }
@@ -256,15 +303,25 @@ class DesignRuntimeClass {
     // first render the currNode
     // then recursively render all it's child nodes
     for (const value of ar) {
+      const subscription = Runtime.subscribeWebDevBus({
+        next: (v) => {
+          if (v.type === DEV_ELEMENT_RENDERED && v.payload === value) {
+            subscription.unsubscribe();
+            this.traverseState(value, mapping);
+          }
+        },
+      });
       this.wireElement(currNode, value);
-      this.traverseState(value, mapping);
+    }
+    if (currNode === "root") {
+      this.firstRenderDone = true;
     }
   }
   public setCanvasRoot(ref: React.RefObject<HTMLDivElement>) {
     // only ref changes, others are same as previous
     this.canvasRoot.ref = ref;
     // populate canvas
-    this.populateCanvas();
+    this.onReady(this.populateCanvas.bind(this));
   }
   public getCanvasRoot() {
     return { ...this.canvasRoot };
