@@ -69,18 +69,55 @@ export class RuntimeClass {
   private currIndex: number = 0;
   // stores the index of next event from this.sessionEvents to be sent to the backend
   private currSyncIndex: number = 0;
+  // an array to store all the callbacks once Runtime is ready
+  private onReadySubscribers: (() => void)[] = [];
+  // a flag to indicate whether the Runtime is ready
+  // Runtime is ready once all the events have been loaded on WebBus
+  private isReady: boolean = false;
   private constructor() {
-    this.retrieveEvents().then((events) => {
-      if (events) {
-        events.forEach((event) => {
-          WebBus.post(event);
-        });
-      }
-    });
-    this.fetchIDs(AccountSize).then(({ payload, token }: IDPoolResponse) => {
-      this.storeIDsAt(0, payload.pool, token);
+    this.initialSync().then(() => {
+      this.callOnReadySubscribers();
+      this.isReady = true;
     });
     this.syncEvents();
+  }
+  // fetch latest save of the project
+  private initialSync(): Promise<void> {
+    return new Promise<void>((res, rej) => {
+      const requests = Promise.all([
+        this.retrieveEvents(),
+        this.fetchIDs(AccountSize),
+      ]);
+      requests.then((values) => {
+        const events = values[0];
+        if (events) {
+          events.forEach((event) => {
+            WebBus.post(event);
+          });
+        }
+        const { payload, token } = values[1] as IDPoolResponse;
+        this.storeIDsAt(0, payload.pool, token);
+        res();
+      });
+    });
+  }
+  private callOnReadySubscribers() {
+    if (!this.isReady) {
+      // an extra guide to prevent from being called more than once
+      this.onReadySubscribers.forEach((f) => {
+        f();
+      });
+    }
+  }
+  // register/call cb once Runtime is ready
+  onReady(cb: () => void) {
+    // call immediately if the Runtime is already ready
+    // else push in onReadySubscibers
+    if (this.isReady) {
+      cb();
+    } else {
+      this.onReadySubscribers.push(cb);
+    }
   }
   public static getRuntime() {
     if (!RuntimeClass.instance) RuntimeClass.instance = new RuntimeClass();
