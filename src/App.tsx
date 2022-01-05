@@ -33,9 +33,9 @@ function App() {
         return oldCounter++;
       });
     };
-    window.addEventListener("reloadMauryaApp", reloadAppListener);
+    window.addEventListener("reloadmauryaapp", reloadAppListener);
     return () => {
-      window.removeEventListener("reloadMauryaApp", reloadAppListener);
+      window.removeEventListener("reloadmauryaapp", reloadAppListener);
     };
   }, [setReloadCounter]);
   console.log("Rendering app with reload counter", reloadCounter);
