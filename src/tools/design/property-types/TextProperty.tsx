@@ -14,11 +14,9 @@
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useState } from "react";
-import { PostPatchEvent } from "../../../runtime/commands";
 import { checkIfPathExists } from "../lib/checkIfPathExists";
-import { extractSlice } from "../lib/extractSlice";
+import { createSlice } from "../lib/createStateSlice";
 import { getValueFromSlice } from "../lib/getValueFromSlice";
-import { updateSlice } from "../lib/updateSlice";
 import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
 import { PropertyTypeProps } from "../types/PropertyTypeProps";
 
@@ -27,7 +25,7 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
     getValueFromSlice(props.ID, props.slice) || ""
   );
   const [firstRenderDone, setFirstRenderDone] = useState<boolean>(false);
-  const bus = DesignRuntime.getState()[props.ID].bus;
+  const bus = DesignRuntime.getBusFor(props.ID);
   // set flag for first render
   useEffect(() => {
     setFirstRenderDone(true);
@@ -52,13 +50,10 @@ export const TextProperty: React.FC<PropertyTypeProps> = React.memo((props) => {
   }, [props.slice, setValue, bus]);
   // send changes after first render
   useEffect(() => {
-    if (firstRenderDone) {
-      updateSlice(DesignRuntime.getState()[props.ID].state, props.slice, value);
-      bus.next(DesignRuntime.getState()[props.ID]);
-      PostPatchEvent({
-        ID: props.ID,
-        slice: extractSlice(props.ID, props.slice),
-      });
+    if (firstRenderDone && value) {
+      const newSlice = createSlice(props.slice, value);
+      DesignRuntime.patchState(props.ID, newSlice, true);
+      bus.next(DesignRuntime.getStateFor(props.ID));
     }
   }, [value, firstRenderDone, props.ID, props.slice]);
   return (

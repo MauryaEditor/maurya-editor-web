@@ -23,16 +23,27 @@ export function useAttachAppearance<ReturnType>(
 ) {
   const bus = useBus(ID);
   const [value, setValue] = useState<ReturnType>();
-  // attach property
+  // attach property to appearnceMap
   useEffect(() => {
-    DesignRuntime.getState()[ID].propertyMap = [
-      ...DesignRuntime.getState()[ID].propertyMap,
-      {
-        key: appearanceName,
-        type: propertyType,
-        slice: ["appearance", appearanceName],
-      },
-    ];
+    // check if property already exists
+    const property = DesignRuntime.getStateFor(ID).appearanceMap.find((map) => {
+      if (map.key === appearanceName) {
+        return true;
+      }
+    });
+    if (property) {
+      return;
+    }
+    DesignRuntime.patchDevState(ID, {
+      appearanceMap: [
+        ...DesignRuntime.getStateFor(ID).appearanceMap,
+        {
+          key: appearanceName,
+          type: propertyType,
+          slice: ["appearance", appearanceName],
+        },
+      ],
+    });
   }, [appearanceName, propertyType, ID]);
   // listen for changes
   useEffect(() => {
@@ -45,7 +56,7 @@ export function useAttachAppearance<ReturnType>(
           v["state"]["appearance"][appearanceName]
         ) {
           setValue(
-            DesignRuntime.getState()[0].state.appearance[appearanceName]
+            DesignRuntime.getStateFor(ID).state.appearance[appearanceName]
           );
         }
       },

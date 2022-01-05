@@ -20,10 +20,10 @@ import { DraggedElement } from "../runtime/interaction-states/DraggedElement";
 export const DraggableDecorator: React.FC<{ ID: string }> = (props) => {
   useEffect(() => {
     if (
-      DesignRuntime.getState()[props.ID].ref &&
-      DesignRuntime.getState()[props.ID].ref.current
+      DesignRuntime.getRefFor(props.ID) &&
+      DesignRuntime.getRefFor(props.ID).current
     ) {
-      const component = DesignRuntime.getState()[props.ID].ref.current!;
+      const component = DesignRuntime.getRefFor(props.ID).current!;
       const onmousedown = (event: MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();

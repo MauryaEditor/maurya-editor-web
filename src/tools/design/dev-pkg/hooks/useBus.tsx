@@ -3,9 +3,9 @@ import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 import { ElementBus } from "../../types/ElementBus";
 
 export const useBus = (ID: string) => {
-  const [bus, setBus] = useState<ElementBus>(DesignRuntime.getState()[ID].bus);
+  const [bus, setBus] = useState<ElementBus>(DesignRuntime.getBusFor(ID));
   useEffect(() => {
-    setBus(DesignRuntime.getState()[ID].bus);
-  }, [DesignRuntime.getState()[ID].bus, ID]);
+    setBus(DesignRuntime.getBusFor(ID));
+  }, [DesignRuntime.getBusFor(ID)]);
   return bus;
 };

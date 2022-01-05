@@ -7,7 +7,7 @@ export const mergeObjects = (
 ) => {
   const visitable = new VisitableObject(baseObj);
   const visitor = new ObjectVisitor({
-    terminal: (key, value, parentObj, pathSoFar) => {
+    enterTerminal: (key, value, parentObj, pathSoFar) => {
       const visitable = new VisitableObject(priorityObj);
       // what happens when path doesn't exists?
       visitable.visitPath(pathSoFar, new ObjectVisitor({}));

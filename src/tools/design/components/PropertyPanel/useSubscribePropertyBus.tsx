@@ -14,9 +14,9 @@ export const useSubscribePropertyBus = () => {
     const subscription = PropertyPanelBus.subscribe({
       next: (v) => {
         if (v && v.activeHeader && v.ID) {
-          const propertyMap = DesignRuntime.getState()[v.ID].propertyMap;
+          const propertyMap = DesignRuntime.getStateFor(v.ID).propertyMap;
           if (
-            DesignRuntime.getState()[v.ID].isAliasable &&
+            DesignRuntime.getStateFor(v.ID).isAliasable &&
             !propertyMap.find((m) => {
               return m.key === "Alias";
             })

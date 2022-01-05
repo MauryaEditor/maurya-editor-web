@@ -23,7 +23,7 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
   useEffect(() => {
     const newComps = props.children.map(
       (childID): RenderableElementDescription => {
-        const compKey = DesignRuntime.getState()[childID].compKey;
+        const compKey = DesignRuntime.getStateFor(childID).compKey;
         const designElement = DesignElementRegistry.getElementByKey(compKey);
         if (!designElement) {
           throw new Error(
@@ -31,7 +31,7 @@ export const RenderElements: React.FC<RenderElementsProps> = (props) => {
           );
         }
         const decorators = [PostElementRenderedDecorator, DraggableDecorator]; // default decorators
-        const ref = DesignRuntime.getState()[childID].ref;
+        const ref = DesignRuntime.getRefFor(childID);
         if (designElement.decorators) {
           decorators.push(...designElement.decorators);
         }

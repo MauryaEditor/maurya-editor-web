@@ -34,11 +34,8 @@ export const selectParent = (event: MouseEvent, draggedElementID?: string) => {
     if (ID === draggedElementID) {
       return;
     }
-    if (
-      DesignRuntime.getState()[ID].ref &&
-      DesignRuntime.getState()[ID].ref.current
-    ) {
-      return isInsideRect(DesignRuntime.getState()[ID].ref.current!, event);
+    if (DesignRuntime.getRefFor(ID) && DesignRuntime.getRefFor(ID).current) {
+      return isInsideRect(DesignRuntime.getRefFor(ID).current!, event);
     } else {
       throw new Error("child acceptors should have ref");
     }

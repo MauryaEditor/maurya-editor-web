@@ -5,7 +5,7 @@ import { BehaviorSubjectWrapper } from "./BehaviorSubjectWrapper";
 
 export interface BusPostOptions {
   onAccept?: () => void;
-  onReject?: () => {};
+  onReject?: () => void;
 }
 
 export class Bus<T> {

@@ -6,6 +6,7 @@ import { selectParent } from "../../lib/selectParent";
 import { DesignRuntime } from "../../runtime/DesignRuntime/DesignRuntime";
 import { CanvasScale } from "../../runtime/interaction-states/CanvasScale";
 import { SelectedDesignElement } from "../../runtime/interaction-states/SelectedDesignElement";
+import { ElementState } from "../../types/ElementState";
 
 export const useDropNewElement = (
   subcontainerRef: React.RefObject<HTMLElement>,
@@ -19,12 +20,11 @@ export const useDropNewElement = (
           let { top, left } = getCoords(rootRef.current!);
           if (parent !== "root") {
             ({ top, left } = getCoords(
-              DesignRuntime.getState()[parent].ref.current!
+              DesignRuntime.getRefFor(parent).current!
             ));
           }
-          const ID = PostCreateEvent({
-            compKey: SelectedDesignElement.value.key,
-            pkg: "design",
+          const compKey = SelectedDesignElement.value.key;
+          const state: Pick<ElementState, "state"> = {
             state: {
               style: {
                 position: "absolute",
@@ -32,8 +32,12 @@ export const useDropNewElement = (
                 left: `${(event.clientX - left) / CanvasScale.value + 10}px`,
               },
               parent: parent,
+              properties: {},
+              appearance: {},
+              alias: "",
             },
-          });
+          };
+          const ID = DesignRuntime.createElement(compKey, state, true);
           SelectedDesignElement.next(null);
           selectElement(ID);
         }

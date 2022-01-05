@@ -62,7 +62,6 @@ export const PropertyPanel: React.FC = React.memo((props) => {
       >
         {/** property element goes here*/}
         {comps?.comps.map((Comp) => {
-          console.log("rendering options");
           return (
             <Comp.Comp {...Comp.props} key={Comp.props.name + Comp.props.ID} />
           );

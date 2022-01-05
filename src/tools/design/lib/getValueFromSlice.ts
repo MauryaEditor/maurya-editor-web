@@ -23,7 +23,7 @@ import { DesignRuntime } from "../runtime/DesignRuntime/DesignRuntime";
  */
 export const getValueFromSlice = (ID: string, slice: (string | number)[]) => {
   try {
-    let curr: any = DesignRuntime.getState()[ID].state;
+    let curr: any = DesignRuntime.getStateFor(ID).state;
     for (let i = 0; i < slice.length; i++) {
       curr = curr[slice[i]];
     }
