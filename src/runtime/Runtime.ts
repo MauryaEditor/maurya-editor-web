@@ -38,6 +38,9 @@ import { BusPostOptions } from "./Bus";
 import { SessionWebBus } from "./SessionWebBus";
 import { Observer, Subscription } from "rxjs";
 import { PostCreateEvent, PostLinkEvent, PostPatchEvent } from "./commands";
+import { getEvents } from "../api/getEvents";
+import { getIDPool } from "../api/getIDPool";
+import { postEvent } from "../api/postEvent";
 
 export const RuntimeState: {
   IDIssued: any;
@@ -132,15 +135,13 @@ export class RuntimeClass {
       return;
     }
     // TODO: check if the request to retrieve events was successful
-    return await fetch(
-      `${backendUrl}/web-events?pid=${projectID}&token=${token}`
-    ).then((resp) => resp.json());
+    return await getEvents(token, projectID);
   }
   // fetch new IDs from the backend
   // these IDs will be assigned to dragged elements etc.
   private async fetchIDs(size: number) {
     const uri = `${backendUrl}/uuid?size=${size}`;
-    const uris = await fetch(uri).then((resp) => resp.json());
+    const uris = await getIDPool(size);
     return uris;
   }
   // helper function to store the IDs from this.fetchIDs at correct index
@@ -180,16 +181,7 @@ export class RuntimeClass {
     if (!token || !projectID) {
       return;
     }
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    const options = {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({ ...event, token, projectID }),
-    };
-    return fetch(`${backendUrl}/web-events`, options).then((resp) =>
-      resp.json()
-    );
+    return postEvent(token, projectID, event);
   }
   // syncs events with the backend
   private syncEvents() {
