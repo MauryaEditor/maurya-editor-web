@@ -26,8 +26,6 @@ export const PostCreateEvent = (
   return ID;
 };
 
-(window as any).PostCreateEvent = PostCreateEvent;
-
 export const PostPatchEvent = (
   payload: WebPatchData,
   busOptions?: BusPostOptions
@@ -41,8 +39,6 @@ export const PostPatchEvent = (
   WebBus.post({ ...webEvent }, busOptions);
   return payload.ID;
 };
-
-(window as any).PostPatchEvent = PostPatchEvent;
 
 export const PostLinkEvent = (
   payload: WebLinkData,
@@ -58,10 +54,6 @@ export const PostLinkEvent = (
   return payload.ID;
 };
 
-(window as any).PostLinkEvent = PostLinkEvent;
-
 export function PostWebDevBusEvent(event: WebDevBusEvent) {
   WebDevBus.post(event);
 }
-
-(window as any).PostWebDevBusEvent = PostWebDevBusEvent;

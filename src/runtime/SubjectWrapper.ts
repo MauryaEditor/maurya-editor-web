@@ -14,7 +14,6 @@ export class SubjectWrapper<
   T extends { [key: string | number]: any }
 > extends Subject<T> {
   slices: { [key: string | number]: any } = {};
-  private SubscriberField = "__sliceSubscribers";
   constructor() {
     super();
     // subscribe to itself to send updates to subscribers of a slice
@@ -100,21 +99,31 @@ export class SubjectWrapper<
   private sendSliceToSubscribers(v: any) {
     const callSliceSubscribers = (path: (string | number)[]) => {
       const visitable = new VisitableObject(this.slices);
-      visitable.visitPath(
-        [...path],
-        new ObjectVisitor({
-          enterTerminal: (key, value) => {
-            if (Array.isArray(value)) {
-              for (let i = 0; i < value.length; i++) {
-                if (typeof value[i] === "function") value[i]();
-                else {
-                  throw new Error(InvalidFunction);
+      try {
+        visitable.visitPath(
+          [...path],
+          new ObjectVisitor({
+            enterTerminal: (key, value) => {
+              if (Array.isArray(value)) {
+                for (let i = 0; i < value.length; i++) {
+                  if (typeof value[i] === "function") value[i]();
+                  else {
+                    throw new Error(InvalidFunction);
+                  }
                 }
               }
-            }
-          },
-        })
-      );
+            },
+          })
+        );
+      } catch (err: any) {
+        if (err.message === "Path Doesn't Exists") {
+          // ignore because it may happen that there is no
+          // subscriber for a slice on this path
+        } else {
+          console.log(err);
+        }
+        // it just means that there are
+      }
     };
 
     const visitable = new VisitableObject(v);
