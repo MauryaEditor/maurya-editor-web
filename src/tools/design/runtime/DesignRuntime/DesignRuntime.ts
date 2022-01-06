@@ -417,7 +417,7 @@ class DesignRuntimeClass {
     if (!DesignElementRegistry.getCategoryByName(categoryName)) {
       DesignElementRegistry.registerCategory({
         category: categoryName,
-        elements: [designElementManifest],
+        elements: [],
       });
     }
     // remove design element if it exists
