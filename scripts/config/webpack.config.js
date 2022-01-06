@@ -135,7 +135,7 @@ module.exports = function configFactory(webpackEnv) {
     target: "web",
     entry: entry,
     output: {
-      path: path.resolve("build"),
+      path: paths.appBuild,
       filename: "[name].bundle.js",
       publicPath: paths.publicUrlOrPath,
       // this defaults to 'window', but by setting it to 'this' then

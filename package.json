@@ -22,7 +22,7 @@
     "start": "node scripts/scripts/start.js",
     "start:local": "env-cmd -e local node scripts/scripts/start.js",
     "start:dev": "env-cmd -e dev node scripts/scripts/start.js",
-    "build:web:prod": "node scripts/scripts/build.js",
+    "build:web:prod": "BUILD_PATH=build/web node scripts/scripts/build.js",
     "build:web:dev": "env-cmd -e dev node scripts/scripts/build.js",
     "test": "react-scripts test",
     "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --jsx preserve --outDir build/dist",
