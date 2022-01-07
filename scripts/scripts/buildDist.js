@@ -83,6 +83,10 @@ const webpackConfig = {
   output: {
     path: path.resolve(__dirname, "..", "..", "build", "dist"),
     filename: "index.js",
+    library: {
+      name: "maurya",
+      type: "umd",
+    },
   },
   module: {
     rules: [
@@ -90,7 +94,7 @@ const webpackConfig = {
         oneOf: [
           {
             test: /\.(js|mjs|jsx|ts|tsx)$/,
-            include: path.resolve("src"),
+            include: path.resolve(__dirname, "..", "..", "src"),
             exclude: /node_modules/,
             use: [
               {
@@ -124,6 +128,10 @@ const webpackConfig = {
     extensions: moduleFileExtensions.map((ext) => `.${ext}`),
   },
   plugins: [new MiniCssExtractPlugin()],
+  devtool: "inline-source-map",
+  externals: {
+    react: "react",
+  },
 };
 
 yargs
