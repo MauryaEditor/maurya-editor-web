@@ -82,7 +82,7 @@ const webpackConfig = {
   entry: path.resolve(__dirname, "..", "config", "packageExports.tsx"),
   output: {
     path: path.resolve(__dirname, "..", "..", "build", "dist"),
-    filename: "bundle.js",
+    filename: "index.js",
   },
   module: {
     rules: [
