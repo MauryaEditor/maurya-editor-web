@@ -13,9 +13,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "downlevelIteration": true
+    "noEmit": false,
+    "jsx": "preserve",
+    "downlevelIteration": true,
+    "typeRoots": ["./node_modules/@types", "./scripts/lib"],
+    "outDir": "build/dist",
+    "declaration": true,
+    "declarationMap": true
   },
   "include": ["src"]
 }

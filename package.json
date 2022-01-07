@@ -2,7 +2,7 @@
   "name": "maurya",
   "version": "0.1.0",
   "private": true,
-  "main": "dist/index.js",
+  "main": "dist/exports.jsx",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
@@ -24,9 +24,8 @@
     "start:local": "env-cmd -e local node scripts/scripts/start.js",
     "start:dev": "env-cmd -e dev node scripts/scripts/start.js",
     "build:web:prod": "BUILD_PATH=build/web node scripts/scripts/build.js",
-    "build:web:dev": "env-cmd -e dev node scripts/scripts/build.js",
     "test": "react-scripts test",
-    "build:dist": "tsc src/**/*.ts src/**/*.tsx --declaration --jsx preserve --outDir build/dist",
+    "build:dist": "node scripts/scripts/buildDist.js",
     "lint:check": "prettier --check \"src/**/*\""
   },
   "eslintConfig": {
