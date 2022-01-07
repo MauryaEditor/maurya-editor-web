@@ -25,7 +25,7 @@
     "start:dev": "env-cmd -e dev node scripts/scripts/start.js",
     "build:web:prod": "BUILD_PATH=build/web node scripts/scripts/build.js",
     "test": "react-scripts test",
-    "build:dist": "node scripts/scripts/buildDist.js",
+    "build:dist": "node scripts/scripts/buildDist.js build",
     "lint:check": "prettier --check \"src/**/*\""
   },
   "eslintConfig": {
