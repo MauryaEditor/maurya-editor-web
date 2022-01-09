@@ -1,0 +1,5 @@
+{
+  "name": "maurya-editor-web-scripts",
+  "version": "1.0.0",
+  "types": "./lib/react-app.d.ts"
+}

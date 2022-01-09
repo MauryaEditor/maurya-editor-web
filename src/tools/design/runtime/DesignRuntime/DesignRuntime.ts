@@ -408,6 +408,49 @@ class DesignRuntimeClass {
       );
     }
   }
+  // inserts or updates a new design element in the registry
+  upsertDesignElement(
+    categoryName: string,
+    designElementManifest: DesignElement
+  ) {
+    // register category if not registered
+    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
+      DesignElementRegistry.registerCategory({
+        category: categoryName,
+        elements: [],
+      });
+    }
+    // remove design element if it exists
+    try {
+      DesignElementRegistry.unregisterElementByKey(designElementManifest.key);
+    } catch (err: any) {
+      if (err.message === "element doesn't exist in the registry") {
+      } else {
+        throw err;
+      }
+    }
+    // register design element again
+    DesignElementRegistry.registerElement(categoryName, designElementManifest);
+  }
+  // remove design element if it exists, otherwise throw error
+  removeDesignElement(
+    categoryName: string,
+    designElementManifest: DesignElement
+  ) {
+    DesignElementRegistry.unregisterElementByKey(designElementManifest.key);
+    // remove category is it becomes empty after removing the design element
+    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
+      throw Error(`category ${categoryName} doesn't exist`);
+    }
+    if (
+      DesignElementRegistry.getCategoryByName(categoryName)?.elements.length ===
+      0
+    ) {
+      DesignElementRegistry.unregister(
+        DesignElementRegistry.getCategoryByName(categoryName)!
+      );
+    }
+  }
 }
 
 export const DesignRuntime = createGlobalVariable(

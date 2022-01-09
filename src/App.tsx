@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Editor } from "./pages";
 import "./rxjs/EditorConfig";
@@ -26,6 +26,19 @@ import DevtoolConfig from "./tools/devtools/index";
 import WorkflowConfig from "./tools/workflow/index";
 import DataConfig from "./tools/data/index";
 function App() {
+  const [reloadCounter, setReloadCounter] = useState<number>(0);
+  useEffect(() => {
+    const reloadAppListener = () => {
+      setReloadCounter((oldCounter) => {
+        return oldCounter++;
+      });
+    };
+    window.addEventListener("reloadmauryaapp", reloadAppListener);
+    return () => {
+      window.removeEventListener("reloadmauryaapp", reloadAppListener);
+    };
+  }, [setReloadCounter]);
+  console.log("Rendering app with reload counter", reloadCounter);
   // code during development
   useEffect(() => {
     (window as any).ConfigBus.next(DesignConfig);
