@@ -24,7 +24,7 @@
     "start:local": "env-cmd -e local node scripts/scripts/start.js",
     "start:dev": "env-cmd -e dev node scripts/scripts/start.js",
     "build:web:prod": "BUILD_PATH=build/web node scripts/scripts/build.js",
-    "test": "react-scripts test",
+    "test": "node scripts/scripts/test.js",
     "build:dist": "node scripts/scripts/buildDist.js build",
     "lint:check": "prettier --check \"src/**/*\""
   },
