@@ -44,33 +44,6 @@ beforeEach(() => {
   });
 });
 
-test("onReady gets called", () => {
-  jest.mock("../lib/getAuth", () => {
-    return {
-      getAuth: () => {
-        return {
-          token: "sometoken",
-        };
-      },
-    };
-  });
-  const isReady = jest.fn();
-  return import("./Runtime")
-    .then((mod) => {
-      return new Promise<void>((res) => {
-        const Runtime = mod.RuntimeClass.getRuntime();
-        Runtime.onReady(() => {
-          console.log("calling onReady");
-          isReady();
-          res();
-        });
-      });
-    })
-    .then((err) => {
-      expect(isReady).toBeCalled();
-    });
-});
-
 test.skip("token and projectID is required by Runtime to get ready", () => {
   jest.mock("../lib/getAuth", () => {
     return {
@@ -100,7 +73,7 @@ test.skip("token and projectID is required by Runtime to get ready", () => {
     });
 });
 
-test("web events generator is working properply", () => {
+test("web events generator is working properly", () => {
   const isReady = jest.fn();
   let count = 0;
   return import("./Runtime")
@@ -199,7 +172,7 @@ describe("postCreateEvent", () => {
       });
   });
 
-  test("postCreateEvent thows Error or not if called for the 20th time", () => {
+  test("postCreateEvent throws Error or not if called for the 20th time", () => {
     let errorMessage: string;
     return import("./Runtime")
       .then((mod) => {
@@ -334,7 +307,7 @@ describe("postLinkEvent", () => {
 
 // ----------------------------------------postWebDevBusEvent--------------------------------------------
 
-describe.only("postWebDevBusEvent", () => {
+describe("postWebDevBusEvent", () => {
   test("WebDevBus.post is called or not", () => {
     const WebDevBusEvent = {
       type: "WebDevBusEvent",
