@@ -1,9 +1,7 @@
-// constructing correctly or not
-// Runtime.onReady should get called
-// DesignRuntime.onReady should get called
-// state field should be populated correctly
 beforeEach(() => {
+  jest.clearAllMocks();
   jest.resetModules();
+  jest.resetAllMocks();
   jest.mock("../../../../runtime/Runtime", () => {
     const RuntimeClass = function () {
       this.onReady = (cb: () => void) => {
@@ -22,7 +20,14 @@ beforeEach(() => {
         const random = Math.floor(Math.random() * 369);
         return "Skennedy" + random;
       };
-      this.postCreateEvent = () => {};
+      this.postCreateEvent = () => {
+        const random = Math.floor(Math.random() * 369);
+        return "poisonIV" + random;
+      };
+      this.postPatchEvent = () => {
+        const random = Math.floor(Math.random() * 369);
+        return "randomIV" + random;
+      };
     };
     return {
       RuntimeClass: RuntimeClass,
@@ -30,9 +35,12 @@ beforeEach(() => {
     };
   });
 });
+
 // ---------------------------------------DesignRuntime constructor-----------------------------------------
+
 describe("DesignRuntime constructor working correctly or not", () => {
   // ----------DesignRuntime and Runtime constructor-----------
+
   it("Design onReady and Runtime onReady called or not", () => {
     // import runtime
     const Runtime = require("../../../../runtime/Runtime");
@@ -54,7 +62,9 @@ describe("DesignRuntime constructor working correctly or not", () => {
         expect(runtimeOnReadySpy).toBeCalledTimes(1);
       });
   });
+
   // -----------------webEventsGenerator----------------
+
   it("web events generator and DesignState is working properly", () => {
     // import runtime
     const Runtime = require("../../../../runtime/Runtime");
@@ -81,8 +91,12 @@ describe("DesignRuntime constructor working correctly or not", () => {
       });
   });
 });
-// ---------------------------------------addElement-----------------------------------------
+
+// ----------------------------------------------addElement-----------------------------------------------
+
 describe("addElement", () => {
+  // ---------------------addElement----------------
+
   it("addElement is working correcly or not", () => {
     let designState;
     const payload = {
@@ -112,7 +126,11 @@ describe("addElement", () => {
   });
 });
 
+// -------------------------------------------acceptsChild-------------------------------------------------
+
 describe("acceptsChild", () => {
+  // ---------------------registerChildAcceptor----------------
+
   it("registerChildAcceptor is working correcly or not", () => {
     const testChildId = [
       "child#0",
@@ -140,15 +158,10 @@ describe("acceptsChild", () => {
         expect(childState).toStrictEqual(testChildId);
       });
   });
+
+  // ---------------------deregisterChildAcceptor----------------
+
   it("deregisterChildAcceptor is working correcly or not", () => {
-    const testChildId = [
-      "child#0",
-      "child#1",
-      "child#2",
-      "child#3",
-      "child#4",
-      "child#5",
-    ];
     let childState;
     return import("./DesignRuntime")
       .then((mod) => {
@@ -163,7 +176,6 @@ describe("acceptsChild", () => {
         });
       })
       .then(() => {
-        console.log(childState);
         expect(childState).toStrictEqual([
           "child#0",
           "child#1",
@@ -173,8 +185,10 @@ describe("acceptsChild", () => {
       });
   });
 });
-
+// ---------------------------------getStateFor,getBusFor,getRefFor-----------------------------------------
 describe("getStateFor,getBusFor,getRefFor is working correctly or not", () => {
+  // ---------------------getStateFor----------------
+
   it("getStateFor returns the corect state", () => {
     let allstate;
     let singleState;
@@ -195,6 +209,9 @@ describe("getStateFor,getBusFor,getRefFor is working correctly or not", () => {
         expect(singleState).toStrictEqual(allstate[id]);
       });
   });
+
+  // ---------------------getStateFor----------------
+
   it("getStateFor throws an error if passed incorrect ID", () => {
     let singleState;
     let id = "lockheed";
@@ -214,6 +231,9 @@ describe("getStateFor,getBusFor,getRefFor is working correctly or not", () => {
         );
       });
   });
+
+  // ---------------------getBusFor,getRefFor----------------
+
   it.skip("getBusFor,getRefFor returns correct", () => {
     let allstate;
     let singleState;
@@ -241,7 +261,11 @@ describe("getStateFor,getBusFor,getRefFor is working correctly or not", () => {
       });
   });
 });
+
+// -------------------------------------------createElement-------------------------------------------------
+
 describe("createElement is working correctly or not", () => {
+  // ---------------------new element is created----------------
   it("new element gets created or not", () => {
     const payload = {
       state: {
@@ -270,6 +294,9 @@ describe("createElement is working correctly or not", () => {
         expect(searchId.state.alias).toStrictEqual(payload.state.alias);
       });
   });
+
+  // ---------------------Runtime.postCreateEvent----------------
+
   it("new element created or not and postCreateEvent is called or not if record is true", () => {
     const payload = {
       state: {
@@ -278,7 +305,6 @@ describe("createElement is working correctly or not", () => {
         alias: ["wanda", "noobmaster69"],
       },
     };
-    let searchId;
     let returnId;
     const Runtime = require("../../../../runtime/Runtime");
     const MockedRuntime = Runtime.Runtime;
@@ -289,16 +315,76 @@ describe("createElement is working correctly or not", () => {
           const DesignRuntime = mod.DesignRuntime;
           DesignRuntime.onReady(() => {
             returnId = DesignRuntime.createElement("thunder", payload, true);
-            searchId = DesignRuntime.getStateFor(returnId);
             res();
           });
         });
       })
       .then(() => {
-        expect(searchId.compKey).toStrictEqual("thunder");
         expect(postCreateEventSpy).toBeCalledTimes(1);
-        expect(searchId.state.parent).toStrictEqual(payload.state.parent);
-        expect(searchId.state.alias).toStrictEqual(payload.state.alias);
+        expect(returnId).toBeTruthy();
+      });
+  });
+});
+
+// --------------------------------------patchState and patchStyle-------------------------------------------
+
+describe("patchDevState and patchStyle working correctly or not", () => {
+  // ---------------------Runtime.postCreateEvent----------------
+
+  it("Runtime.postPatchEvent is called or not if record is true", () => {
+    const payload = {
+      state: {
+        style: { position: "solo" },
+        parent: "chrisRedfield",
+        alias: ["wanda", "noobmaster69"],
+      },
+    };
+    const Runtime = require("../../../../runtime/Runtime");
+    const MockedRuntime = Runtime.Runtime;
+    // MockedRuntime.postPatchEvent = jest.fn().mockImplementation(() => {
+    //   console.log("postPatchEvent from jest mockImplementation");
+    // });
+    const postPatchEventSpy = jest.spyOn(MockedRuntime, "postPatchEvent");
+    return import("./DesignRuntime")
+      .then((mod) => {
+        return new Promise<void>((res) => {
+          const DesignRuntime = mod.DesignRuntime;
+          DesignRuntime.onReady(() => {
+            DesignRuntime.patchState("thunder", payload, true);
+            res();
+          });
+        });
+      })
+      .then(() => {
+        expect(postPatchEventSpy).toBeCalledTimes(1);
+      });
+  });
+
+  // ---------------------patchState----------------
+
+  it("patchState is called inside patch style or not", () => {
+    const payload = {
+      state: {
+        style: { position: "solo" },
+        parent: "chrisRedfield",
+        alias: ["wanda", "noobmaster69"],
+      },
+    };
+    let patchStateSpy;
+    return import("./DesignRuntime")
+      .then((mod) => {
+        return new Promise<void>((res) => {
+          const DesignRuntime = mod.DesignRuntime;
+          DesignRuntime.patchState = jest.fn().mockImplementation(() => {});
+          patchStateSpy = jest.spyOn(DesignRuntime, "patchState");
+          DesignRuntime.onReady(() => {
+            DesignRuntime.patchStyle("thunder", payload, true);
+            res();
+          });
+        });
+      })
+      .then(() => {
+        expect(patchStateSpy).toBeCalledTimes(1);
       });
   });
 });
