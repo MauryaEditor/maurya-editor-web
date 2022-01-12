@@ -281,7 +281,13 @@ class DesignRuntimeClass {
     }
   }
   public populateCanvas() {
-    // TODO: put reverse into a different function
+    // Create a reverse mapping of this.state
+    const reverse_mapped = this.reverseMapping();
+    this.__populateCanvas("root", reverse_mapped);
+  }
+
+  // This Function will Reverse map the State and Parents would become keys and Children woud be their values.
+  private reverseMapping() {
     const r: { [parent: string]: string[] } = {};
     for (const [key, value] of Object.entries(this.state)) {
       const parent = value.state.parent;
@@ -290,12 +296,14 @@ class DesignRuntimeClass {
       }
       r[parent].push(key);
     }
-    this.traverseState("root", r);
+    return r;
   }
-  private traverseState(
+  // This method is a helper function which will populate the canvas
+  private __populateCanvas(
     currNode: string,
     mapping: { [parent: string]: string[] }
   ) {
+    // This method will traverse through the Reverse Mapped Tree.
     const ar = mapping[currNode];
     if (!ar) {
       return;
@@ -307,7 +315,7 @@ class DesignRuntimeClass {
         next: (v) => {
           if (v.type === DEV_ELEMENT_RENDERED && v.payload === value) {
             subscription.unsubscribe();
-            this.traverseState(value, mapping);
+            this.__populateCanvas(value, mapping);
           }
         },
       });
@@ -405,49 +413,6 @@ class DesignRuntimeClass {
       DesignElementRegistry.registerElement(
         categoryName,
         designElementManifest
-      );
-    }
-  }
-  // inserts or updates a new design element in the registry
-  upsertDesignElement(
-    categoryName: string,
-    designElementManifest: DesignElement
-  ) {
-    // register category if not registered
-    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
-      DesignElementRegistry.registerCategory({
-        category: categoryName,
-        elements: [],
-      });
-    }
-    // remove design element if it exists
-    try {
-      DesignElementRegistry.unregisterElementByKey(designElementManifest.key);
-    } catch (err: any) {
-      if (err.message === "element doesn't exist in the registry") {
-      } else {
-        throw err;
-      }
-    }
-    // register design element again
-    DesignElementRegistry.registerElement(categoryName, designElementManifest);
-  }
-  // remove design element if it exists, otherwise throw error
-  removeDesignElement(
-    categoryName: string,
-    designElementManifest: DesignElement
-  ) {
-    DesignElementRegistry.unregisterElementByKey(designElementManifest.key);
-    // remove category is it becomes empty after removing the design element
-    if (!DesignElementRegistry.getCategoryByName(categoryName)) {
-      throw Error(`category ${categoryName} doesn't exist`);
-    }
-    if (
-      DesignElementRegistry.getCategoryByName(categoryName)?.elements.length ===
-      0
-    ) {
-      DesignElementRegistry.unregister(
-        DesignElementRegistry.getCategoryByName(categoryName)!
       );
     }
   }
