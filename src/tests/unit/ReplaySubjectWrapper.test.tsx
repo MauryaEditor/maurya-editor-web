@@ -1,4 +1,5 @@
 import assert from "assert";
+import { Subject } from "rxjs";
 
 import {
   PathIsSmaller,
@@ -94,6 +95,7 @@ test("UnsubscribeSlice Test when an Existent Function is given", () => {
   const path = [1, 2, 3];
   const subject = new ReplaySubjectWrapper();
   subject.subscribeSlice(path, test);
+  subject.next({ 1: { 2: { 3: "" } } });
   assert(a == 2);
   a = 1;
   subject.unsubscribeSlice(path, test);
@@ -101,29 +103,34 @@ test("UnsubscribeSlice Test when an Existent Function is given", () => {
 });
 test("UnsubscribeSlice Test when multiple functions are subscirbed to", () => {
   var a = 1;
+  let array = [a];
+  var b = new Subject<number>();
+  b.subscribe({
+    next: (v: number) => {
+      array.push(v);
+    },
+  });
   const test = () => {
-    a = 2;
+    b.next(2);
   };
   const test2 = () => {
-    a = 3;
+    b.next(3);
   };
   const test3 = () => {
-    a = 4;
+    b.next(4);
   };
 
   const obj = { 1: { 2: { 3: [] } } };
   const path = [1, 2, 3];
-  const array = [a];
+
   const subject = new ReplaySubjectWrapper();
   subject.subscribeSlice(path, test);
-  array.push(a);
+
   subject.subscribeSlice(path, test2);
-  array.push(a);
 
   subject.subscribeSlice(path, test3);
-  array.push(a);
+  subject.next({ 1: { 2: { 3: "" } } });
   assert(checkIfSame(array, [1, 2, 3, 4]));
-  subject.unsubscribeSlice(path, test);
 });
 function checkIfSame(array1: any[], array2: any[]) {
   if (array1.length == array2.length) {
@@ -138,55 +145,6 @@ function checkIfSame(array1: any[], array2: any[]) {
   }
 }
 
-test("Subscribing Multiple functions then unsubscribing to one of them to ensure that proper unsubscription protocol is in place", () => {
-  const obj = { 1: { 2: { 3: [] } } };
-  const path = [1, 2, 3];
-  const subject = new ReplaySubjectWrapper();
-  let functionStatus = {
-    test1Subscribed: false,
 
-    test2Subscribed: false,
-
-    test3Subscribed: false,
-    test4Subscribed: false,
-  };
-  const test1 = () => {
-    functionStatus["test1Subscribed"] = !functionStatus["test1Subscribed"];
-  };
-  const test2 = () => {
-    functionStatus["test2Subscribed"] = !functionStatus["test2Subscribed"];
-  };
-  const test3 = () => {
-    functionStatus["test3Subscribed"] = !functionStatus["test3Subscribed"];
-  };
-  const test4 = () => {
-    functionStatus["test4Subscribed"] = !functionStatus["test4Subscribed"];
-  };
-  const check = () => {
-    return (
-      functionStatus["test1Subscribed"] &&
-      functionStatus["test2Subscribed"] &&
-      functionStatus["test3Subscribed"]
-    );
-  };
-  subject.subscribeSlice(path, test1);
-
-  subject.subscribeSlice(path, test2);
-
-  subject.subscribeSlice(path, test3);
-
-  assert(check);
-  subject.unsubscribeSlice(path, test1);
-  subject.subscribeSlice(path, test4);
-
-  subject.next({ 1: { 2: { 3: [] } } });
-
-  assert(
-    !functionStatus["test2Subscribed"] &&
-      !functionStatus["test3Subscribed"] &&
-      !functionStatus["test4Subscribed"]
-  );
-  assert(functionStatus["test1Subscribed"]);
-});
 
 export {};

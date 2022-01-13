@@ -64,20 +64,7 @@ export class ReplaySubjectWrapper<
       }
     }
     // send last data to the current subscriber
-    const obervable = this.asObservable().pipe(first());
-    obervable.subscribe({
-      next: (v) => {
-        const visitable = new VisitableObject(v);
-        visitable.visitPath(
-          path,
-          new ObjectVisitor({
-            enterTerminal: (key, value, parentObj) => {
-              next(value);
-            },
-          })
-        );
-      },
-    });
+   
   }
   unsubscribeSlice(path: (string | number)[], next: (value: any) => void) {
     let currObj = this.slices;
