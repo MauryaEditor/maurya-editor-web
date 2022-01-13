@@ -3,7 +3,7 @@ export {};
 beforeEach(() => {
   jest.resetModules();
   jest.useFakeTimers();
-  jest.mock("../lib/getAuth", () => {
+  jest.mock("../../lib/getAuth", () => {
     return {
       getAuth: () => {
         return {
@@ -12,40 +12,38 @@ beforeEach(() => {
       },
     };
   });
-  jest.mock("../lib/getProjectID", () => {
+  jest.mock("../../lib/getProjectID", () => {
     return {
       getProjectID: () => {
         return "testproject";
       },
     };
   });
-  jest.mock("../api/getEvents", () => {
+  jest.mock("../../api/getEvents", () => {
     return {
       getEvents: () => {
-        const events = require("../../src/runtime/Runtime.events.test.json");
+        const events = require("../../runtime/Runtime.events.test.json");
         return Promise.resolve(events);
       },
     };
   });
-  jest.mock("../api/getIDPool", () => {
+  jest.mock("../../api/getIDPool", () => {
     return {
       getIDPool: () => {
-        const idpool = require("../../src/runtime/Runtime.idpool.test.json");
+        const idpool = require("../../runtime/Runtime.idpool.test.json");
         return Promise.resolve(idpool);
       },
     };
   });
-  jest.mock("../api/postEvent", () => {
+  jest.mock("../../api/postEvent", () => {
     return {
-      postEvent: () => {
-        console.log("posting mock event");
-      },
+      postEvent: () => {},
     };
   });
 });
 
 test.skip("token and projectID is required by Runtime to get ready", () => {
-  jest.mock("../lib/getAuth", () => {
+  jest.mock("../../lib/getAuth", () => {
     return {
       getAuth: () => {
         return {
@@ -55,8 +53,7 @@ test.skip("token and projectID is required by Runtime to get ready", () => {
     };
   });
   const isReady = jest.fn();
-
-  return import("../../src/runtime/Runtime")
+  return import("../../runtime/Runtime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
@@ -72,11 +69,10 @@ test.skip("token and projectID is required by Runtime to get ready", () => {
       console.log(err);
     });
 });
-
 test("web events generator is working properly", () => {
   const isReady = jest.fn();
   let count = 0;
-  return import("../../src/runtime/Runtime")
+  return import("../../runtime/Runtime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
@@ -93,29 +89,25 @@ test("web events generator is working properly", () => {
     .then(() => {
       expect(isReady).toBeCalled();
       expect(
-        count === require("../../src/runtime/Runtime.events.test.json").length
+        count === require("../../runtime/Runtime.events.test.json").length
       ).toBeTruthy();
     });
 });
-
-// -------------------------------------------------postCreateEvent-------------------------------------------
-
+// ---------------------------------------postCreateEvent----------------
 describe("postCreateEvent", () => {
   //  - - - - - - - - - - - TEST - - - - - - - - - -
-
   test("postEvent gets called on posting event", () => {
-    const postEvent = require("../api/postEvent");
+    const postEvent = require("../../api/postEvent");
     const spy = jest.spyOn(postEvent, "postEvent");
     const fn = jest.fn();
     let webbusEvent: any = {};
-    return import("../../src/runtime/Runtime")
+    return import("../../runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
           Runtime.onReady(() => {
             Runtime.subscribeWebBus({
               next: (v) => {
-                console.log(v);
                 webbusEvent = v.payload;
                 fn();
               },
@@ -143,12 +135,11 @@ describe("postCreateEvent", () => {
   });
 
   //  - - - - - - - - - - - TEST - - - - - - - - - -
-
   test("postCreateEvent returns correct ids or not", () => {
-    const idPool = require("../../src/runtime/Runtime.idpool.test.json");
+    const idPool = require("../../runtime/Runtime.idpool.test.json");
     const ids = idPool.payload.pool;
     let returnIDS: string[] = [];
-    return import("../../src/runtime/Runtime")
+    return import("../../runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -171,10 +162,9 @@ describe("postCreateEvent", () => {
         expect(ids).toEqual(returnIDS);
       });
   });
-
   test("postCreateEvent throws Error or not if called for the 20th time", () => {
     let errorMessage: string;
-    return import("../../src/runtime/Runtime")
+    return import("../../runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -208,12 +198,10 @@ describe("postCreateEvent", () => {
       });
   });
 });
-
-// ------------------------------------------postPatchEvent------------------------------------------------
-
+// ---------------------------------postPatchEvent------------------------
 describe("postPatchEvent", () => {
   test("postEvent gets called on postPatchEvent and return values matches the initial", () => {
-    const postEvent = require("../api/postEvent");
+    const postEvent = require("../../api/postEvent");
     const spy = jest.spyOn(postEvent, "postEvent");
     const fn = jest.fn();
     const payload = {
@@ -223,7 +211,7 @@ describe("postPatchEvent", () => {
     let webBusPayload: Object;
     let sessionBusPayload: Object;
     let returnID: string;
-    return import("../../src/runtime/Runtime")
+    return import("../../runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -256,12 +244,10 @@ describe("postPatchEvent", () => {
       });
   });
 });
-
-// ------------------------------------------postLinkEvent------------------------------------------------
-
+// ------------------------------------postLinkEvent-------------------------
 describe("postLinkEvent", () => {
   test("postEvent gets called on postLinkEvent and return values matches the initial", () => {
-    const postEvent = require("../api/postEvent");
+    const postEvent = require("../../api/postEvent");
     const spy = jest.spyOn(postEvent, "postEvent");
     const fn = jest.fn();
     const payload = {
@@ -271,7 +257,7 @@ describe("postLinkEvent", () => {
     let webBusPayload: Object;
     let sessionBusPayload: Object;
     let returnID: string;
-    return import("../../src/runtime/Runtime")
+    return import("../../runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -304,9 +290,7 @@ describe("postLinkEvent", () => {
       });
   });
 });
-
-// ----------------------------------------postWebDevBusEvent--------------------------------------------
-
+// -----------------------------postWebDevBusEvent----------------------
 describe("postWebDevBusEvent", () => {
   test("WebDevBus.post is called or not", () => {
     const WebDevBusEvent = {
@@ -315,7 +299,7 @@ describe("postWebDevBusEvent", () => {
     };
     const fn = jest.fn();
     let webDevBus: any;
-    return import("../../src/runtime/Runtime").then((mod) => {
+    return import("../../runtime/Runtime").then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
         Runtime.onReady(() => {

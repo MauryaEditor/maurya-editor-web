@@ -3,13 +3,13 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.resetModules();
   jest.resetAllMocks();
-  jest.mock("../../../../runtime/Runtime", () => {
+  jest.mock("../../runtime/Runtime", () => {
     const RuntimeClass = function () {
       this.onReady = (cb: () => void) => {
         cb();
       };
       this.getWebBusEventGenerator = function* () {
-        const events = require("../../../../runtime/Runtime.events.test.json");
+        const events = require("../../runtime/Runtime.events.test.json");
         for (let event of events) {
           yield event;
         }
@@ -40,11 +40,11 @@ beforeEach(() => {
 // ----------DesignRuntime and Runtime constructor-----------
 it("Design onReady and Runtime onReady called or not", () => {
   // import runtime
-  const Runtime = require("../../../../runtime/Runtime");
+  const Runtime = require("../../runtime/Runtime");
   const MockedRuntime = Runtime.Runtime;
   const runtimeOnReadySpy = jest.spyOn(MockedRuntime, "onReady");
   const isReady = jest.fn();
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -59,7 +59,6 @@ it("Design onReady and Runtime onReady called or not", () => {
       expect(runtimeOnReadySpy).toBeCalledTimes(1);
     });
 });
-
 // -----------------webEventsGenerator throws error----------------
 it("onReady throws an error if wrong webBusEvent.type", () => {
   // import runtime
@@ -79,7 +78,7 @@ it("onReady throws an error if wrong webBusEvent.type", () => {
     dispatcher: "dispatcher",
     projectID: "projectID",
   };
-  const Runtime = require("../../../../runtime/Runtime");
+  const Runtime = require("../../runtime/Runtime");
   const MockedRuntime = Runtime.Runtime;
   MockedRuntime.getWebBusEventGenerator = jest.fn().mockImplementation(() => {
     return [webEvent];
@@ -87,7 +86,7 @@ it("onReady throws an error if wrong webBusEvent.type", () => {
   // console.error
   console.error = jest.fn();
   const onReadySpy = jest.spyOn(MockedRuntime, "onReady");
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -103,15 +102,15 @@ it("onReady throws an error if wrong webBusEvent.type", () => {
 });
 it("web event generator and DesignState is working properly", () => {
   // import runtime
-  const Runtime = require("../../../../runtime/Runtime");
+  const Runtime = require("../../runtime/Runtime");
   const MockedRuntime = Runtime.Runtime;
   const generatorSpy = jest.spyOn(MockedRuntime, "getWebBusEventGenerator");
   const subscribeWebBusSpy = jest.spyOn(MockedRuntime, "subscribeWebBus");
-  const events = require("../../../../runtime/Runtime.events.test.json");
+  const events = require("../../runtime/Runtime.events.test.json");
   // extract ids of unique events
   const uniqueEventId = [...new Set(events.map((item) => item.payload.ID))];
   let designState;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -140,7 +139,7 @@ it("addElement is working correcly or not", () => {
       alias: "noobmaster69",
     },
   };
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -157,7 +156,6 @@ it("addElement is working correcly or not", () => {
       expect(lastElement.state).toStrictEqual(payload.state);
     });
 });
-
 // -------------------------------------------acceptsChild-------------------------------------------------
 // ---------------------registerChildAcceptor----------------
 it("registerChildAcceptor is working correcly or not", () => {
@@ -170,7 +168,7 @@ it("registerChildAcceptor is working correcly or not", () => {
     "child#5",
   ];
   let childState;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -190,7 +188,7 @@ it("registerChildAcceptor is working correcly or not", () => {
 // ---------------------deregisterChildAcceptor----------------
 it("deregisterChildAcceptor is working correcly or not", () => {
   let childState;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -216,7 +214,7 @@ it("getStateFor returns the corect state", () => {
   let allstate;
   let singleState;
   let id;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -236,7 +234,7 @@ it("getStateFor returns the corect state", () => {
 it("getStateFor throws an error if passed incorrect ID", () => {
   let singleState;
   let id = "lockheed";
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -258,7 +256,7 @@ it("getBusFor,getRefFor returns correct", () => {
   let id;
   let singleBus;
   let singleRef;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -288,7 +286,7 @@ it("new element gets created or not", () => {
   };
   let searchId;
   let returnId;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -316,10 +314,10 @@ it("new element created or not and postCreateEvent is called or not if record is
     },
   };
   let returnId;
-  const Runtime = require("../../../../runtime/Runtime");
+  const Runtime = require("../../runtime/Runtime");
   const MockedRuntime = Runtime.Runtime;
   const postCreateEventSpy = jest.spyOn(MockedRuntime, "postCreateEvent");
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -344,13 +342,13 @@ it("Runtime.postPatchEvent is called or not if record is true", () => {
       alias: ["wanda", "noobmaster69"],
     },
   };
-  const Runtime = require("../../../../runtime/Runtime");
+  const Runtime = require("../../runtime/Runtime");
   const MockedRuntime = Runtime.Runtime;
   // MockedRuntime.postPatchEvent = jest.fn().mockImplementation(() => {
   //   console.log("postPatchEvent from jest mockImplementation");
   // });
   const postPatchEventSpy = jest.spyOn(MockedRuntime, "postPatchEvent");
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -374,7 +372,7 @@ it("patchState is called inside patch style or not", () => {
     },
   };
   let patchStateSpy;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -395,7 +393,7 @@ it("setCanvasRoot is working correctly or not", () => {
   const testRef = React.createRef();
   let onReadySpy;
   let getCanvas;
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;
@@ -425,10 +423,10 @@ it.skip("registerDesignElement is working correctly or not", () => {
     renderComp: {},
     renderCompProps: {},
   };
-  const DesignElementFile = require("../../../design/registry/DesignElementRegistry");
+  const DesignElementFile = require("../../tools/design/registry/DesignElementRegistry");
   const DesignElement = DesignElementFile.DesignElementRegistry;
   const spy = jest.spyOn(DesignElement, "registerElement");
-  return import("./DesignRuntime")
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const DesignRuntime = mod.DesignRuntime;

@@ -1,7 +1,7 @@
 import assert from "assert";
 
-import { ObjectVisitor } from "../../src/lib/ObjectVisitor";
-import { VisitableObject } from "../../src/lib/VisitableObject";
+import { ObjectVisitor } from "../../lib/ObjectVisitor";
+import { VisitableObject } from "../../lib/VisitableObject";
 
 const check = (logs: string[]): Boolean => {
   for (let i = 0; i < logs.length; i++) {
