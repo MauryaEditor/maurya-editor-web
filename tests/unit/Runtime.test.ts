@@ -22,7 +22,7 @@ beforeEach(() => {
   jest.mock("../api/getEvents", () => {
     return {
       getEvents: () => {
-        const events = require("./Runtime.events.test.json");
+        const events = require("../../src/runtime/Runtime.events.test.json");
         return Promise.resolve(events);
       },
     };
@@ -30,7 +30,7 @@ beforeEach(() => {
   jest.mock("../api/getIDPool", () => {
     return {
       getIDPool: () => {
-        const idpool = require("./Runtime.idpool.test.json");
+        const idpool = require("../../src/runtime/Runtime.idpool.test.json");
         return Promise.resolve(idpool);
       },
     };
@@ -56,7 +56,7 @@ test.skip("token and projectID is required by Runtime to get ready", () => {
   });
   const isReady = jest.fn();
 
-  return import("./Runtime")
+  return import("../../src/runtime/Runtime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
@@ -76,7 +76,7 @@ test.skip("token and projectID is required by Runtime to get ready", () => {
 test("web events generator is working properly", () => {
   const isReady = jest.fn();
   let count = 0;
-  return import("./Runtime")
+  return import("../../src/runtime/Runtime")
     .then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
@@ -93,7 +93,7 @@ test("web events generator is working properly", () => {
     .then(() => {
       expect(isReady).toBeCalled();
       expect(
-        count === require("./Runtime.events.test.json").length
+        count === require("../../src/runtime/Runtime.events.test.json").length
       ).toBeTruthy();
     });
 });
@@ -108,7 +108,7 @@ describe("postCreateEvent", () => {
     const spy = jest.spyOn(postEvent, "postEvent");
     const fn = jest.fn();
     let webbusEvent: any = {};
-    return import("./Runtime")
+    return import("../../src/runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -145,10 +145,10 @@ describe("postCreateEvent", () => {
   //  - - - - - - - - - - - TEST - - - - - - - - - -
 
   test("postCreateEvent returns correct ids or not", () => {
-    const idPool = require("./Runtime.idpool.test.json");
+    const idPool = require("../../src/runtime/Runtime.idpool.test.json");
     const ids = idPool.payload.pool;
     let returnIDS: string[] = [];
-    return import("./Runtime")
+    return import("../../src/runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -174,7 +174,7 @@ describe("postCreateEvent", () => {
 
   test("postCreateEvent throws Error or not if called for the 20th time", () => {
     let errorMessage: string;
-    return import("./Runtime")
+    return import("../../src/runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -223,7 +223,7 @@ describe("postPatchEvent", () => {
     let webBusPayload: Object;
     let sessionBusPayload: Object;
     let returnID: string;
-    return import("./Runtime")
+    return import("../../src/runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -271,7 +271,7 @@ describe("postLinkEvent", () => {
     let webBusPayload: Object;
     let sessionBusPayload: Object;
     let returnID: string;
-    return import("./Runtime")
+    return import("../../src/runtime/Runtime")
       .then((mod) => {
         return new Promise<void>((res) => {
           const Runtime = mod.RuntimeClass.getRuntime();
@@ -315,7 +315,7 @@ describe("postWebDevBusEvent", () => {
     };
     const fn = jest.fn();
     let webDevBus: any;
-    return import("./Runtime").then((mod) => {
+    return import("../../src/runtime/Runtime").then((mod) => {
       return new Promise<void>((res) => {
         const Runtime = mod.RuntimeClass.getRuntime();
         Runtime.onReady(() => {
