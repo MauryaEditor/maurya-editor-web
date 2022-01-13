@@ -4,8 +4,8 @@ import {
   PathIsSmaller,
   PathIsLonger,
   FunctionDoesNotExist,
-} from "../../src/errors/lib/BehaviorSubjectWrapperErrors";
-import { SubjectWrapper } from "../../src/runtime/SubjectWrapper";
+} from "../../errors/lib/BehaviorSubjectWrapperErrors";
+import { SubjectWrapper } from "../../runtime/SubjectWrapper";
 
 test("subscribeSlice on empty slice with path of size 1", () => {
   const path = [1];
