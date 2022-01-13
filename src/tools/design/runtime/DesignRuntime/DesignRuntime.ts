@@ -452,7 +452,6 @@ class DesignRuntimeClass {
     }
   }
 }
-
 export const DesignRuntime = createGlobalVariable(
   "DesignRuntime",
   DesignRuntimeClass.getInstance()
