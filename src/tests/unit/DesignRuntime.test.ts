@@ -413,7 +413,7 @@ it("setCanvasRoot is working correctly or not", () => {
     });
 });
 // ---------------------registerDesignElement----------------
-it.skip("registerDesignElement is working correctly or not", () => {
+it("registerCategory is called if unknown category given", () => {
   const payload = {
     key: "testKey",
     comp: {},
@@ -425,7 +425,8 @@ it.skip("registerDesignElement is working correctly or not", () => {
   };
   const DesignElementFile = require("../../tools/design/registry/DesignElementRegistry");
   const DesignElement = DesignElementFile.DesignElementRegistry;
-  const spy = jest.spyOn(DesignElement, "registerElement");
+  const registerCategorySpy = jest.spyOn(DesignElement, "registerCategory");
+  const getCategoryByNameSpy = jest.spyOn(DesignElement, "getCategoryByName");
   return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
     .then((mod) => {
       return new Promise<void>((res) => {
@@ -437,7 +438,43 @@ it.skip("registerDesignElement is working correctly or not", () => {
       });
     })
     .then(() => {
-      console.log(DesignElement);
-      expect(spy).toBeCalledTimes(1);
+      expect(registerCategorySpy).toBeCalledTimes(1);
+      expect(getCategoryByNameSpy).toBeCalledTimes(1);
+    });
+});
+
+// ---------------------registerDesignElement----------------
+it("registerElement is not called if unknown category is not given", () => {
+  const payload = {
+    key: "testKey",
+    comp: {},
+    props: {},
+    ondragComp: {},
+    ondragProps: {},
+    renderComp: {},
+    renderCompProps: {},
+  };
+  const DesignElementFile = require("../../tools/design/registry/DesignElementRegistry");
+  const DesignElement = DesignElementFile.DesignElementRegistry;
+  DesignElement.getCategoryByName = jest.fn().mockImplementation(() => {
+    return true;
+  });
+  const registerCategorySpy = jest.spyOn(DesignElement, "registerCategory");
+  const registerElementSpy = jest.spyOn(DesignElement, "registerElement");
+  return import("../../tools/design/runtime/DesignRuntime/DesignRuntime")
+    .then((mod) => {
+      return new Promise<void>((res) => {
+        const DesignRuntime = mod.DesignRuntime;
+        DesignRuntime.onReady(() => {
+          DesignRuntime.registerDesignElement("notCategory", payload);
+          res();
+        });
+      });
+    })
+    .catch((err) => {
+      // expect error as this is a mock element
+      expect(err.message).toBe("element doesn't exist in the registry");
+      expect(registerCategorySpy).toBeCalledTimes(0);
+      expect(registerElementSpy).toBeCalledTimes(1);
     });
 });
